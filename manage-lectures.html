@@ -533,7 +533,7 @@
         <p><strong>المادة:</strong> ${lecture.subject && typeof lecture.subject === 'object' ? lecture.subject.name : (lecture.subject || "غير محددة")}</p>
         <div class="card-links">
           ${lecture.videoUrl ? `<a href="${lecture.videoUrl}" target="_blank">🎥 مشاهدة الفيديو</a>` : ""}
-          ${lecture.file ? `<a href="http://localhost:5000/uploads/lectures/${lecture.file}" target="_blank">📂 تحميل الملف</a>` : ""}
+          ${lecture.file ? `<a href="/uploads/lectures/${lecture.file}" target="_blank">📂 تحميل الملف</a>` : ""}
         </div>
         <div class="card-actions">
           <button class="btn-delete" onclick="deleteLecture('${lecture._id}')">حذف</button>
@@ -569,7 +569,7 @@
       formData.append("videoUrl", videoUrl);
       if (file) formData.append("file", file);
 
-      const res = await fetch("http://localhost:5000/api/lectures", {
+      const res = await fetch("/api/lectures", {
         method: "POST",
         headers: { Authorization: "Bearer " + token },
         body: formData
