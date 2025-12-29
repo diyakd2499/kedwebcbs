@@ -299,7 +299,7 @@
         <div class="card">
           <div class="card-title">${l.title}</div>
           ${l.videoUrl ? `<a href="${l.videoUrl}" target="_blank">🎥 مشاهدة الفيديو</a><br>` : ""}
-          ${l.file ? `<a href="${API_BASE_URL}/uploads/lectures/${l.file}" target="_blank">📂 تحميل الملف</a>` : ""}
+          ${l.file ? `<a href="/uploads/lectures/${l.file}" target="_blank">📂 تحميل الملف</a>` : ""}
         </div>
       `;
     });
@@ -330,7 +330,7 @@
     }
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/lectures/by-subject/${subjectId}`, {
+      const res = await fetch(`/api/lectures/by-subject/${subjectId}`, {
         headers: { Authorization: "Bearer " + token }
       });
       
@@ -349,7 +349,7 @@
     if (!subjectId || subjectId === "null" || subjectId === "undefined") return;
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/subjects/${subjectId}`, {
+      const res = await fetch(`/api/subjects/${subjectId}`, {
         headers: { Authorization: "Bearer " + token }
       });
       
@@ -372,7 +372,7 @@
     }
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/references/by-subject/${subjectId}`, {
+      const res = await fetch(`/api/references/by-subject/${subjectId}`, {
         headers: { Authorization: "Bearer " + token }
       });
       
@@ -392,7 +392,7 @@
           <div class="card">
             <div class="card-title">${r.title}</div>
             ${r.link ? `<a href="${r.link}" target="_blank">🔗 فتح الرابط</a><br>` : ""}
-            ${r.file ? `<a href="${API_BASE_URL}/uploads/lectures/${r.file}" target="_blank">📂 تحميل الملف</a>` : ""}
+            ${r.file ? `<a href="/uploads/lectures/${r.file}" target="_blank">📂 تحميل الملف</a>` : ""}
           </div>
         `;
       });
