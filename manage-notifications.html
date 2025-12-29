@@ -497,7 +497,7 @@
 
   async function loadNotifications() {
     try {
-      const res = await fetch("http://localhost:5000/api/notifications", {
+      const res = await fetch("/api/notifications", {
         headers: { Authorization: "Bearer " + token }
       });
 
@@ -555,7 +555,7 @@
     }
 
     try {
-      const res = await fetch("http://localhost:5000/api/notifications", {
+      const res = await fetch("/api/notifications", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -584,7 +584,7 @@
     if (!confirm("هل أنت متأكد من حذف هذا التنبيه؟")) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/api/notifications/${id}`, {
+      const res = await fetch(`/api/notifications/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: "Bearer " + token
