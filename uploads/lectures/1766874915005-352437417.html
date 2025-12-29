@@ -203,7 +203,7 @@
   if (!token) location.href = "login.html";
 
   async function loadSubjects() {
-    const res = await fetch("http://localhost:5000/api/subjects", {
+    const res = await fetch("/api/subjects", {
       headers: {
         Authorization: "Bearer " + token
       }
