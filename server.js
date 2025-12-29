@@ -25,7 +25,7 @@ app.use("/api/references", require("./routes/reference.routes.js"));
 
 // تعديل المسار الرئيسي لفتح ملف index.html
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "index.html")); 
+  res.sendFile(path.join(__dirname, "login.html")); 
 });
 
 // الاتصال بقاعدة البيانات
