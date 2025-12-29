@@ -488,7 +488,7 @@
 
   async function loadUsers() {
     try {
-      const res = await fetch("http://localhost:5000/api/auth", {
+      const res = await fetch("/api/auth", {
         headers: { Authorization: "Bearer " + token }
       });
 
@@ -571,8 +571,8 @@
     try {
       const method = currentEditingUserId ? "PUT" : "POST";
       const url = currentEditingUserId 
-        ? `http://localhost:5000/api/auth/${currentEditingUserId}`
-        : "http://localhost:5000/api/auth/register";
+        ? `/api/auth/${currentEditingUserId}`
+        : "/api/auth/register";
 
       const body = {
         name,
@@ -613,7 +613,7 @@
     if (!confirm("هل أنت متأكد من حذف هذا المستخدم؟")) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/api/auth/${id}`, {
+      const res = await fetch(`/api/auth/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: "Bearer " + token
