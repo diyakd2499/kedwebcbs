@@ -485,7 +485,7 @@
 
   async function loadSubjects() {
     try {
-      const res = await fetch("http://localhost:5000/api/subjects", {
+      const res = await fetch("/api/subjects", {
         headers: { Authorization: "Bearer " + token }
       });
 
@@ -502,7 +502,7 @@
 
   async function loadLectures() {
     try {
-      const res = await fetch("http://localhost:5000/api/lectures", {
+      const res = await fetch("/api/lectures", {
         headers: { Authorization: "Bearer " + token }
       });
 
@@ -595,7 +595,7 @@
     if (!confirm("هل أنت متأكد من حذف هذه المحاضرة؟")) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/api/lectures/${id}`, {
+      const res = await fetch(`/api/lectures/${id}`, {
         method: "DELETE",
         headers: { Authorization: "Bearer " + token }
       });
