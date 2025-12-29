@@ -474,7 +474,7 @@
 
   async function loadSubjects() {
     try {
-      const res = await fetch("http://localhost:5000/api/subjects", {
+      const res = await fetch("/api/subjects", {
         headers: { Authorization: "Bearer " + token }
       });
 
@@ -545,8 +545,8 @@
     try {
       const method = currentEditingSubjectId ? "PUT" : "POST";
       const url = currentEditingSubjectId 
-        ? `http://localhost:5000/api/subjects/${currentEditingSubjectId}`
-        : "http://localhost:5000/api/subjects";
+        ? `/api/subjects/${currentEditingSubjectId}`
+        : "/api/subjects";
 
       const res = await fetch(url, {
         method,
@@ -577,7 +577,7 @@
     if (!confirm("هل أنت متأكد من حذف هذه المادة؟")) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/api/subjects/${id}`, {
+      const res = await fetch(`/api/subjects/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: "Bearer " + token
