@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>المواد | كلية تقنية المعلومات</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #f4f6f8;
+      min-height: 100vh;
+      transition: 0.3s;
+    }
+
+    /* ===== Dark Mode ===== */
+    body.dark {
+      background: #121212;
+      color: #e0e0e0;
+    }
+
+    body.dark .card {
+      background: #1e1e1e;
+    }
+
+    body.dark .card-title {
+      color: #90caf9;
+    }
+
+    body.dark .main-header {
+      background: #0a2540;
+    }
+    .btn {
+      background: white;
+      color: #0d3b66;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      min-height: 44px;
+    }
+
+    /* ===== Header ===== */
+    .main-header {
+      background: #0d3b66;
+      color: white;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .logo {
+      width: 50px;
+      height: 50px;
+    }
+
+    .header-title strong {
+      font-size: 16px;
+    }
+
+    .header-title small {
+      font-size: 13px;
+      opacity: 0.85;
+    }
+
+    .back-btn {
+      background: white;
+      color: #0d3b66;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    /* ===== Content ===== */
+    .container {
+      padding: 30px;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .page-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #0d3b66;
+      margin-bottom: 25px;
+    }
+
+    /* ===== Grid ===== */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 25px;
+    }
+
+    /* ===== Card ===== */
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 14px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      transition: 0.3s;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    }
+
+    .card h4 {
+      margin: 0;
+      margin-bottom: 8px;
+      color: #0d3b66;
+      font-size: 17px;
+    }
+
+    .main-footer {
+      margin-top: 40px;
+      padding: 15px;
+      text-align: center;
+      font-size: 13px;
+      color: #666;
+    }
+
+    body.dark .main-footer {
+      color: #aaa;
+    }
+
+
+    .card p {
+      margin: 0;
+      margin-bottom: 12px;
+      color: #555;
+      font-size: 14px;
+    }
+
+    .doctor {
+      font-size: 13px;
+      color: #777;
+    }
+
+    .arrow {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      font-size: 20px;
+      color: #0d3b66;
+    }
+
+    .empty {
+      color: gray;
+      font-size: 15px;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- ===== Header ===== -->
+<header class="main-header">
+  <div class="header-left">
+    <img src="assets/logo.png" class="logo">
+    <div class="header-title">
+      <strong>كلية تقنية المعلومات</strong><br>
+      <small>جامعة النصر التقنية</small>
+    </div>
+  </div>
+
+  <button class="back-btn" onclick="history.back()">⬅ رجوع</button>
+    <button class="btn" onclick="toggleDark()">🌙</button>
+</header>
+
+<!-- ===== Content ===== -->
+<div class="container">
+  <div class="page-title">📚 المواد الدراسية</div>
+  <div class="grid" id="subjects"></div>
+</div>
+
+<script>
+  const token = localStorage.getItem("token");
+  if (!token) location.href = "login.html";
+
+  async function loadSubjects() {
+    const res = await fetch("http://localhost:5000/api/subjects", {
+      headers: {
+        Authorization: "Bearer " + token
+      }
+    });
+
+    const data = await res.json();
+    const container = document.getElementById("subjects");
+
+    if (data.length === 0) {
+      container.innerHTML = "<p class='empty'>لا توجد مواد</p>";
+      return;
+    }
+
+    data.forEach(sub => {
+      container.innerHTML += `
+        <div class="card" onclick="openSubject('${sub._id}')">
+          <h4>${sub.name}</h4>
+          <p>${sub.level}</p>
+          <div class="doctor">👨‍🏫 ${sub.doctor?.name || ""}</div>
+          <div class="arrow">➜</div>
+        </div>
+      `;
+    });
+  }
+
+  function openSubject(id) {
+    window.location.href = "subject.html?id=" + id;
+  }
+  
+
+  loadSubjects();
+   /* ===== Dark Mode ===== */
+  function toggleDark() {
+    document.body.classList.toggle("dark");
+    localStorage.setItem(
+      "darkMode",
+      document.body.classList.contains("dark")
+    );
+  }
+
+  if (localStorage.getItem("darkMode") === "true") {
+    document.body.classList.add("dark");
+  }
+</script>
+
+</body>
+</html>
+<footer class="main-footer">
+  إنشاء: <strong>ضياء الدين إبراهيم</strong> —  
+  حقوق النشر © <span id="year"></span> جامعة النصر التقنية
+</footer>

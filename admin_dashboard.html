@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة التحكم للإدارة | كلية تقنية المعلومات</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #f4f6f8;
+      min-height: 100vh;
+    }
+
+    /* ===== Header ===== */
+    .main-header {
+      background: #0d3b66;
+      color: white;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .logo {
+      width: 50px;
+      height: 50px;
+    }
+
+    .header-title strong {
+      font-size: 16px;
+    }
+
+    .header-title small {
+      font-size: 13px;
+      opacity: 0.85;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn {
+      background: white;
+      color: #0d3b66;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      min-height: 44px;
+    }
+
+    /* ===== Layout ===== */
+    .container {
+      padding: 25px;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .page-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #0d3b66;
+      margin-bottom: 25px;
+    }
+
+    /* ===== Grid ===== */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 25px;
+    }
+
+    /* ===== Card ===== */
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 14px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      transition: 0.3s;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    }
+
+    .icon {
+      font-size: 34px;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #0d3b66;
+    }
+
+    /* ===== Footer ===== */
+    .main-footer {
+      margin-top: 40px;
+      padding: 15px;
+      text-align: center;
+      font-size: 13px;
+      color: #666;
+    }
+
+    body.dark .main-footer {
+      color: #aaa;
+    }
+
+    /* ===== Dark Mode ===== */
+    body.dark {
+      background: #121212;
+      color: #e0e0e0;
+    }
+
+    body.dark .card {
+      background: #1e1e1e;
+    }
+
+    body.dark .card-title {
+      color: #90caf9;
+    }
+
+    body.dark .main-header {
+      background: #0a2540;
+    }
+
+    body.dark .main-footer {
+      color: #aaa;
+    }
+
+    /* ===== Mobile Responsive ===== */
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .card {
+        padding: 18px;
+      }
+
+      .welcome {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- ===== Header ===== -->
+<header class="main-header">
+  <div class="header-left">
+    <img src="assets/logo.png" class="logo">
+    <div class="header-title">
+      <strong>كلية تقنية المعلومات</strong><br>
+      <small>جامعة النصر التقنية</small>
+    </div>
+  </div>
+
+  <div class="header-actions">
+    <button class="btn" onclick="toggleDark()">🌙</button>
+    <button class="btn" onclick="logout()">خروج</button>
+  </div>
+</header>
+
+<!-- ===== Content ===== -->
+<div class="container">
+
+  <div class="page-title">📚 لوحة تحكم الإدارة</div>
+
+  <div class="grid" id="adminDashboard">
+    <!-- Cards for Managing -->
+    <div class="card" onclick="goTo('manage-subjects.html')">
+      <div class="icon">📚</div>
+      <div class="card-title">إدارة المواد</div>
+    </div>
+
+    <div class="card" onclick="goTo('manage-lectures.html')">
+      <div class="icon">🎓</div>
+      <div class="card-title">إدارة المحاضرات</div>
+    </div>
+
+    <div class="card" onclick="goTo('manage-users.html')">
+      <div class="icon">👥</div>
+      <div class="card-title">إدارة المستخدمين</div>
+    </div>
+
+    <div class="card" onclick="goTo('manage-notifications.html')">
+      <div class="icon">🔔</div>
+      <div class="card-title">إدارة التنبيهات</div>
+    </div>
+  </div>
+</div>
+
+<footer class="main-footer">
+  إنشاء: <strong>ضياء الدين إبراهيم</strong> —  
+  حقوق النشر © <span id="year"></span> جامعة النصر التقنية
+</footer>
+
+<script>
+  document.getElementById("year").innerText =
+    new Date().getFullYear();
+
+  // التحقق من صلاحيات المستخدم
+  const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+  if (!token || !user.roles || !user.roles.includes("dean")) {
+    alert("لا تملك صلاحيات للوصول إلى هذه الصفحة");
+    window.location.href = "login.html";
+  }
+
+  // Dark Mode toggle
+  function toggleDark() {
+    document.body.classList.toggle("dark");
+    localStorage.setItem(
+      "darkMode",
+      document.body.classList.contains("dark")
+    );
+  }
+
+  if (localStorage.getItem("darkMode") === "true") {
+    document.body.classList.add("dark");
+  }
+
+  function goTo(page) {
+    window.location.href = page;
+  }
+
+  function logout() {
+    localStorage.clear();
+    window.location.href = "login.html";
+  }
+</script>
+
+</body>
+</html>

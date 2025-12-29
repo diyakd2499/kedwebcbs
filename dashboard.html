@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة التحكم | كلية تقنية المعلومات</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #f4f6f8;
+      min-height: 100vh;
+      transition: 0.3s;
+    }
+
+    /* ===== Dark Mode ===== */
+    body.dark {
+      background: #121212;
+      color: #e0e0e0;
+    }
+
+    body.dark .card {
+      background: #1e1e1e;
+    }
+
+    body.dark .card-title {
+      color: #90caf9;
+    }
+
+    body.dark .main-header {
+      background: #0a2540;
+    }
+
+    /* ===== Header ===== */
+    .main-header {
+      background: #0d3b66;
+      color: white;
+      padding: 15px 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      width: 45px;
+      height: 45px;
+    }
+
+    .header-title strong {
+      font-size: 15px;
+    }
+
+    .header-title small {
+      font-size: 12px;
+      opacity: 0.85;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn {
+      background: white;
+      color: #0d3b66;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      min-height: 44px;
+      transition: 0.2s;
+    }
+
+    .btn:hover {
+      background: #f0f0f0;
+    }
+
+    /* ===== Layout ===== */
+    .container {
+      padding: 25px;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .welcome {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #0d3b66;
+      font-weight: 500;
+    }
+
+    body.dark .welcome {
+      color: #90caf9;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 20px;
+    }
+
+    /* ===== Cards ===== */
+    .card {
+      background: white;
+      padding: 22px;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      transition: 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      position: relative;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    }
+
+    .icon {
+      font-size: 34px;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #0d3b66;
+    }
+
+    .admin {
+      border-left: 6px solid #d9534f;
+    }
+
+    /* ===== Notification Badge ===== */
+    .badge {
+      position: absolute;
+      top: 12px;
+      right: 15px;
+      background: #d9534f;
+      color: white;
+      font-size: 11px;
+      font-weight: bold;
+      padding: 2px 6px;
+      border-radius: 10px;
+      display: none;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    /* ===== Toast Notification ===== */
+    #toast-container {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      z-index: 9999;
+    }
+
+    .toast {
+      background: white;
+      color: #333;
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 300px;
+      max-width: 400px;
+      border-right: 5px solid #0d3b66;
+      animation: slideInLeft 0.5s;
+      cursor: pointer;
+    }
+
+    .toast.emergency {
+      border-right-color: #d9534f;
+      background: #fff1f1;
+    }
+
+    @keyframes slideInLeft {
+      from { transform: translateX(-100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .toast-content {
+      flex: 1;
+    }
+
+    .toast-title {
+      font-weight: bold;
+      font-size: 14px;
+      margin-bottom: 3px;
+    }
+
+    .toast-message {
+      font-size: 13px;
+      color: #666;
+    }
+
+    /* ===== Footer ===== */
+    .main-footer {
+      margin-top: 40px;
+      padding: 15px;
+      text-align: center;
+      font-size: 13px;
+      color: #666;
+    }
+
+    body.dark .main-footer {
+      color: #aaa;
+    }
+
+    /* ===== Mobile ===== */
+    @media (max-width: 600px) {
+      .container {
+        padding: 15px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .card {
+        padding: 18px;
+      }
+
+      .welcome {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- ===== Header ===== -->
+<header class="main-header">
+  <div class="header-left">
+    <img src="assets/logo.png" class="logo">
+    <div class="header-title">
+      <strong>كلية تقنية المعلومات</strong><br>
+      <small>جامعة النصر التقنية</small>
+    </div>
+  </div>
+
+  <div class="header-actions">
+    <button class="btn" onclick="toggleDark()">🌙</button>
+    <button class="btn" onclick="logout()">خروج</button>
+  </div>
+</header>
+
+<!-- ===== Content ===== -->
+<div class="container">
+
+  <div class="welcome" id="welcome"></div>
+
+  <div class="grid" id="dashboard">
+    <!-- المواد -->
+    <div class="card" onclick="go('subjects.html')">
+      <div class="icon">📚</div>
+      <div class="card-title">المواد الدراسية</div>
+    </div>
+
+    <!-- التنبيهات -->
+    <div class="card" onclick="go('notifications.html')">
+      <div class="icon">🔔</div>
+      <div class="card-title">التنبيهات</div>
+      <span class="badge" id="notifBadge">0</span>
+    </div>
+  </div>
+
+</div>
+
+<div id="toast-container"></div>
+
+<footer class="main-footer">
+  إنشاء: <strong>ضياء الدين إبراهيم</strong> —  
+  حقوق النشر © <span id="year"></span> جامعة النصر التقنية
+</footer>
+
+<script>
+  document.getElementById("year").innerText = new Date().getFullYear();
+
+  const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+  if (!token || !user.name) {
+    window.location.href = "login.html";
+  }
+
+  document.getElementById("welcome").innerText = "مرحبًا، " + user.name + " 👋";
+
+  const dash = document.getElementById("dashboard");
+
+  // إضافة خيارات إضافية بناءً على الدور
+  if (user.roles.includes("leader") || user.roles.includes("doctor")) {
+    dash.innerHTML += `
+      <div class="card" onclick="go('manage-lectures.html')">
+        <div class="icon">🎓</div>
+        <div class="card-title">إدارة المحاضرات</div>
+      </div>
+    `;
+  }
+
+  if (user.roles.includes("dean")) {
+    dash.innerHTML += `
+      <div class="card admin" onclick="go('admin_dashboard.html')">
+        <div class="icon">🛠️</div>
+        <div class="card-title">لوحة تحكم الإدارة</div>
+      </div>
+    `;
+  }
+
+  function go(page) {
+    window.location.href = page;
+  }
+
+  function logout() {
+    localStorage.clear();
+    window.location.href = "login.html";
+  }
+
+  /* ===== Notifications Count & Toast ===== */
+  async function checkNotifications() {
+    try {
+      const res = await fetch("http://localhost:5000/api/notifications", {
+        headers: { Authorization: "Bearer " + token }
+      });
+      const data = await res.json();
+      
+      // تحديث العداد (غير المقروء)
+      const unreadCountRes = await fetch("http://localhost:5000/api/notifications/unread-count", {
+        headers: { Authorization: "Bearer " + token }
+      });
+      const { count } = await unreadCountRes.json();
+      
+      const badge = document.getElementById("notifBadge");
+      if (count > 0) {
+        badge.innerText = count;
+        badge.style.display = "block";
+      } else {
+        badge.style.display = "none";
+      }
+
+      // التحقق من وجود تنبيهات طارئة جديدة لم تظهر بعد
+      const lastChecked = localStorage.getItem("lastNotifCheck") || 0;
+      const newEmergency = data.filter(n => 
+        n.type === "emergency" && 
+        new Date(n.createdAt).getTime() > lastChecked
+      );
+
+      if (newEmergency.length > 0) {
+        newEmergency.forEach(n => showToast(n));
+        localStorage.setItem("lastNotifCheck", Date.now());
+      }
+    } catch (err) {
+      console.error("Error checking notifications:", err);
+    }
+  }
+
+  function showToast(n) {
+    const container = document.getElementById("toast-container");
+    const toast = document.createElement("div");
+    toast.className = `toast ${n.type === "emergency" ? "emergency" : ""}`;
+    toast.innerHTML = `
+      <div class="icon">${n.type === "emergency" ? "🚨" : "🔔"}</div>
+      <div class="toast-content">
+        <div class="toast-title">${n.title}</div>
+        <div class="toast-message">${n.message.substring(0, 50)}${n.message.length > 50 ? '...' : ''}</div>
+      </div>
+    `;
+    toast.onclick = () => go('notifications.html');
+    container.appendChild(toast);
+
+    setTimeout(() => {
+      toast.style.opacity = "0";
+      setTimeout(() => toast.remove(), 500);
+    }, 8000);
+  }
+
+  // فحص التنبيهات عند التحميل وكل دقيقة
+  checkNotifications();
+  setInterval(checkNotifications, 60000);
+
+  /* ===== Dark Mode ===== */
+  function toggleDark() {
+    document.body.classList.toggle("dark");
+    localStorage.setItem("darkMode", document.body.classList.contains("dark"));
+  }
+
+  if (localStorage.getItem("darkMode") === "true") {
+    document.body.classList.add("dark");
+  }
+</script>
+
+</body>
+</html>

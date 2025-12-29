@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إدارة المستخدمين | كلية تقنية المعلومات</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #f4f6f8;
+      min-height: 100vh;
+    }
+
+    /* ===== Header ===== */
+    .main-header {
+      background: #0d3b66;
+      color: white;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .logo {
+      width: 50px;
+      height: 50px;
+    }
+
+    .header-title strong {
+      font-size: 16px;
+    }
+
+    .header-title small {
+      font-size: 13px;
+      opacity: 0.85;
+    }
+
+    .back-btn {
+      background: white;
+      color: #0d3b66;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: 0.2s;
+    }
+
+    .back-btn:hover {
+      background: #f0f0f0;
+    }
+
+    /* ===== Content ===== */
+    .container {
+      padding: 30px;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .page-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #0d3b66;
+      margin-bottom: 25px;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      gap: 15px;
+    }
+
+    .search-box {
+      flex: 1;
+      max-width: 300px;
+      padding: 10px 15px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .btn {
+      background: #0d3b66;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: 0.2s;
+    }
+
+    .btn:hover {
+      background: #092b4c;
+    }
+
+    .btn-danger {
+      background: #d9534f;
+    }
+
+    .btn-danger:hover {
+      background: #c9302c;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    /* ===== Card ===== */
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: 0.3s;
+    }
+
+    .card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .card h4 {
+      margin: 0 0 10px 0;
+      color: #0d3b66;
+      font-size: 16px;
+    }
+
+    .card p {
+      margin: 5px 0;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .card-actions button {
+      flex: 1;
+      padding: 8px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      transition: 0.2s;
+    }
+
+    .btn-edit {
+      background: #5cb85c;
+      color: white;
+    }
+
+    .btn-edit:hover {
+      background: #4cae4c;
+    }
+
+    .btn-delete {
+      background: #d9534f;
+      color: white;
+    }
+
+    .btn-delete:hover {
+      background: #c9302c;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #999;
+    }
+
+    /* ===== Modal ===== */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      animation: fadeIn 0.3s;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-content {
+      background-color: white;
+      margin: 5% auto;
+      padding: 30px;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      animation: slideIn 0.3s;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .close-btn {
+      color: #aaa;
+      float: left;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .close-btn:hover {
+      color: #000;
+    }
+
+    .modal h3 {
+      clear: both;
+      margin-top: 0;
+      color: #0d3b66;
+      margin-bottom: 20px;
+    }
+
+    .modal label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 5px;
+      color: #333;
+      font-weight: 500;
+    }
+
+    .modal input,
+    .modal select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    .modal input:focus,
+    .modal select:focus {
+      outline: none;
+      border-color: #0d3b66;
+      box-shadow: 0 0 5px rgba(13, 59, 102, 0.3);
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .modal-buttons button {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: 0.2s;
+    }
+
+    .modal-buttons .btn-submit {
+      background: #0d3b66;
+      color: white;
+    }
+
+    .modal-buttons .btn-submit:hover {
+      background: #092b4c;
+    }
+
+    .modal-buttons .btn-cancel {
+      background: #e0e0e0;
+      color: #333;
+    }
+
+    .modal-buttons .btn-cancel:hover {
+      background: #d0d0d0;
+    }
+
+    .error-message {
+      color: #d9534f;
+      font-size: 14px;
+      margin-top: 10px;
+      padding: 10px;
+      background: #f8d7da;
+      border-radius: 4px;
+      display: none;
+    }
+
+    .success-message {
+      color: #155724;
+      font-size: 14px;
+      margin-top: 10px;
+      padding: 10px;
+      background: #d4edda;
+      border-radius: 4px;
+      display: none;
+    }
+
+    /* ===== Footer ===== */
+    .main-footer {
+      margin-top: 40px;
+      padding: 15px;
+      text-align: center;
+      font-size: 13px;
+      color: #666;
+    }
+
+    /* ===== Dark Mode ===== */
+    body.dark {
+      background: #121212;
+      color: #e0e0e0;
+    }
+
+    body.dark .card {
+      background: #1e1e1e;
+    }
+
+    body.dark .card h4 {
+      color: #90caf9;
+    }
+
+    body.dark .card p {
+      color: #b0b0b0;
+    }
+
+    body.dark .main-header {
+      background: #0a2540;
+    }
+
+    body.dark .main-footer {
+      color: #aaa;
+    }
+
+    body.dark .modal-content {
+      background: #1e1e1e;
+      color: #e0e0e0;
+    }
+
+    body.dark .modal h3 {
+      color: #90caf9;
+    }
+
+    body.dark .modal label {
+      color: #e0e0e0;
+    }
+
+    body.dark .modal input,
+    body.dark .modal select {
+      background: #2a2a2a;
+      color: #e0e0e0;
+      border-color: #444;
+    }
+
+    /* ===== Mobile Responsive ===== */
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .controls {
+        flex-direction: column;
+      }
+
+      .search-box {
+        max-width: 100%;
+      }
+
+      .modal-content {
+        width: 95%;
+        margin: 20% auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- ===== Header ===== -->
+<header class="main-header">
+  <div class="header-left">
+    <img src="assets/logo.png" class="logo">
+    <div class="header-title">
+      <strong>كلية تقنية المعلومات</strong><br>
+      <small>جامعة النصر التقنية</small>
+    </div>
+  </div>
+
+  <button class="back-btn" onclick="history.back()">⬅ رجوع</button>
+</header>
+
+<!-- ===== Content ===== -->
+<div class="container">
+
+  <div class="page-title">👥 إدارة المستخدمين</div>
+
+  <div class="controls">
+    <input type="text" class="search-box" id="searchBox" placeholder="ابحث عن مستخدم...">
+    <button class="btn" onclick="openAddUserModal()">➕ إضافة مستخدم جديد</button>
+  </div>
+
+  <div id="users" class="grid"></div>
+
+  <!-- Modal Add/Edit User -->
+  <div id="userModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal()">&times;</span>
+      <h3 id="modalTitle">إضافة مستخدم جديد</h3>
+      
+      <label for="userName">اسم المستخدم</label>
+      <input type="text" id="userName" placeholder="أدخل اسم المستخدم">
+      
+      <label for="userEmail">البريد الإلكتروني</label>
+      <input type="email" id="userEmail" placeholder="أدخل البريد الإلكتروني">
+      
+      <label for="userPassword">كلمة المرور</label>
+      <input type="password" id="userPassword" placeholder="أدخل كلمة المرور">
+      
+      <label for="userRole">الدور</label>
+      <select id="userRole">
+        <option value="student">طالب</option>
+        <option value="leader">ليدر</option>
+        <option value="doctor">دكتور</option>
+        <option value="dean">عميد</option>
+      </select>
+
+      <div class="error-message" id="errorMessage"></div>
+      <div class="success-message" id="successMessage"></div>
+
+      <div class="modal-buttons">
+        <button class="btn-submit" onclick="saveUser()">حفظ</button>
+        <button class="btn-cancel" onclick="closeModal()">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer class="main-footer">
+  إنشاء: <strong>ضياء الدين إبراهيم</strong> —  
+  حقوق النشر © <span id="year"></span> جامعة النصر التقنية
+</footer>
+
+<script>
+  document.getElementById("year").innerText = new Date().getFullYear();
+
+  const token = localStorage.getItem("token");
+  if (!token) location.href = "login.html";
+
+  let currentEditingUserId = null;
+  let allUsers = [];
+
+  async function loadUsers() {
+    try {
+      const res = await fetch("http://localhost:5000/api/auth", {
+        headers: { Authorization: "Bearer " + token }
+      });
+
+      if (!res.ok) {
+        showError("فشل في تحميل المستخدمين");
+        return;
+      }
+
+      const data = await res.json();
+      allUsers = data;
+      renderUsers(data);
+    } catch (err) {
+      showError("خطأ في الاتصال بالخادم");
+    }
+  }
+
+  function renderUsers(users) {
+    const container = document.getElementById("users");
+
+    if (users.length === 0) {
+      container.innerHTML = '<div class="empty-state"><p>لا توجد مستخدمين</p></div>';
+      return;
+    }
+
+    container.innerHTML = users.map(user => `
+      <div class="card">
+        <h4>${user.name}</h4>
+        <p><strong>البريد:</strong> ${user.email}</p>
+        <p><strong>الدور:</strong> ${user.roles.join(", ")}</p>
+        <div class="card-actions">
+          <button class="btn-edit" onclick="editUser('${user._id}')">تعديل</button>
+          <button class="btn-delete" onclick="deleteUser('${user._id}')">حذف</button>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  function openAddUserModal() {
+    currentEditingUserId = null;
+    document.getElementById("modalTitle").innerText = "إضافة مستخدم جديد";
+    document.getElementById("userName").value = "";
+    document.getElementById("userEmail").value = "";
+    document.getElementById("userPassword").value = "";
+    document.getElementById("userRole").value = "student";
+    clearMessages();
+    document.getElementById("userModal").style.display = "block";
+  }
+
+  function editUser(id) {
+    const user = allUsers.find(u => u._id === id);
+    if (!user) return;
+
+    currentEditingUserId = id;
+    document.getElementById("modalTitle").innerText = "تعديل بيانات المستخدم";
+    document.getElementById("userName").value = user.name;
+    document.getElementById("userEmail").value = user.email;
+    document.getElementById("userPassword").value = "";
+    document.getElementById("userPassword").placeholder = "اترك فارغاً لعدم تغيير كلمة المرور";
+    document.getElementById("userRole").value = user.roles[0];
+    clearMessages();
+    document.getElementById("userModal").style.display = "block";
+  }
+
+  async function saveUser() {
+    const name = document.getElementById("userName").value.trim();
+    const email = document.getElementById("userEmail").value.trim();
+    const password = document.getElementById("userPassword").value;
+    const role = document.getElementById("userRole").value;
+
+    if (!name || !email) {
+      showError("الرجاء ملء جميع الحقول المطلوبة");
+      return;
+    }
+
+    if (!currentEditingUserId && !password) {
+      showError("كلمة المرور مطلوبة للمستخدمين الجدد");
+      return;
+    }
+
+    try {
+      const method = currentEditingUserId ? "PUT" : "POST";
+      const url = currentEditingUserId 
+        ? `http://localhost:5000/api/auth/${currentEditingUserId}`
+        : "http://localhost:5000/api/auth/register";
+
+      const body = {
+        name,
+        email,
+        roles: [role]
+      };
+
+      if (password) {
+        body.password = password;
+      }
+
+      const res = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token
+        },
+        body: JSON.stringify(body)
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        showError(error || "حدث خطأ");
+        return;
+      }
+
+      showSuccess(currentEditingUserId ? "تم تحديث المستخدم بنجاح" : "تم إضافة المستخدم بنجاح");
+      setTimeout(() => {
+        closeModal();
+        loadUsers();
+      }, 1500);
+    } catch (err) {
+      showError("خطأ في الاتصال بالخادم");
+    }
+  }
+
+  async function deleteUser(id) {
+    if (!confirm("هل أنت متأكد من حذف هذا المستخدم؟")) return;
+
+    try {
+      const res = await fetch(`http://localhost:5000/api/auth/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: "Bearer " + token
+        }
+      });
+
+      if (!res.ok) {
+        showError("فشل في حذف المستخدم");
+        return;
+      }
+
+      showSuccess("تم حذف المستخدم بنجاح");
+      setTimeout(() => loadUsers(), 1500);
+    } catch (err) {
+      showError("خطأ في الاتصال بالخادم");
+    }
+  }
+
+  function closeModal() {
+    document.getElementById("userModal").style.display = "none";
+  }
+
+  function showError(message) {
+    const errorEl = document.getElementById("errorMessage");
+    errorEl.innerText = message;
+    errorEl.style.display = "block";
+  }
+
+  function showSuccess(message) {
+    const successEl = document.getElementById("successMessage");
+    successEl.innerText = message;
+    successEl.style.display = "block";
+  }
+
+  function clearMessages() {
+    document.getElementById("errorMessage").style.display = "none";
+    document.getElementById("successMessage").style.display = "none";
+  }
+
+  // البحث
+  document.getElementById("searchBox").addEventListener("keyup", (e) => {
+    const query = e.target.value.toLowerCase();
+    const filtered = allUsers.filter(user => 
+      user.name.toLowerCase().includes(query) || 
+      user.email.toLowerCase().includes(query)
+    );
+    renderUsers(filtered);
+  });
+
+  // إغلاق Modal عند الضغط خارجه
+  window.onclick = (event) => {
+    const modal = document.getElementById("userModal");
+    if (event.target === modal) {
+      closeModal();
+    }
+  };
+
+  loadUsers();
+</script>
+
+</body>
+</html>

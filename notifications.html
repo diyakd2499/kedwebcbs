@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>التنبيهات | كلية تقنية المعلومات</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #f4f6f8;
+      min-height: 100vh;
+      transition: 0.3s;
+    }
+
+    /* ===== Dark Mode ===== */
+    body.dark {
+      background: #121212;
+      color: #e0e0e0;
+    }
+
+    body.dark .note {
+      background: #1e1e1e;
+    }
+
+    body.dark .note-title {
+      color: #90caf9;
+    }
+
+    body.dark .main-header {
+      background: #0a2540;
+    }
+
+    /* ===== Header ===== */
+    .main-header {
+      background: #0d3b66;
+      color: white;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .logo {
+      width: 50px;
+      height: 50px;
+    }
+
+    .header-title strong {
+      font-size: 16px;
+    }
+
+    .header-title small {
+      font-size: 13px;
+      opacity: 0.85;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      background: white;
+      color: #0d3b66;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: 0.2s;
+    }
+
+    .btn:hover {
+      background: #f0f0f0;
+    }
+
+    /* ===== Content ===== */
+    .container {
+      padding: 30px;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+
+    .page-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #0d3b66;
+      margin: 0;
+    }
+
+    body.dark .page-title {
+      color: #90caf9;
+    }
+
+    /* ===== Notification Card ===== */
+    .note {
+      background: white;
+      padding: 20px;
+      margin-bottom: 15px;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      border-right: 6px solid #1e90ff;
+      transition: 0.3s;
+      position: relative;
+    }
+
+    .note:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    }
+
+    .note.unread {
+      background: #f0f7ff;
+    }
+
+    body.dark .note.unread {
+      background: #1a2635;
+    }
+
+    .note-title {
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #0d3b66;
+      font-size: 16px;
+    }
+
+    .note-message {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #444;
+    }
+
+    body.dark .note-message {
+      color: #ccc;
+    }
+
+    .note-date {
+      font-size: 12px;
+      color: gray;
+      margin-top: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .unread-tag {
+      background: #d9534f;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: bold;
+    }
+
+    /* ===== Emergency ===== */
+    .emergency {
+      border-right-color: #d9534f;
+    }
+
+    .note.emergency.unread {
+      background: #fff1f1;
+      animation: blink 1.5s infinite;
+    }
+
+    @keyframes blink {
+      0% { background: #fff1f1; }
+      50% { background: #ffe5e5; }
+      100% { background: #fff1f1; }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 50px;
+      color: #999;
+    }
+
+    /* ===== Footer ===== */
+    .main-footer {
+      margin-top: 40px;
+      padding: 15px;
+      text-align: center;
+      font-size: 13px;
+      color: #666;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- ===== Header ===== -->
+<header class="main-header">
+  <div class="header-left">
+    <img src="assets/logo.png" class="logo">
+    <div class="header-title">
+      <strong>كلية تقنية المعلومات</strong><br>
+      <small>جامعة النصر التقنية</small>
+    </div>
+  </div>
+
+  <div class="header-actions">
+    <button class="btn" onclick="history.back()">⬅ رجوع</button>
+    <button class="btn" onclick="toggleDark()">🌙</button>
+  </div>
+</header>
+
+<!-- ===== Content ===== -->
+<div class="container">
+  <div class="page-header">
+    <h2 class="page-title">🔔 التنبيهات</h2>
+    <button class="btn" id="readAllBtn" onclick="markAllAsRead()" style="display:none; font-size: 12px;">تحديد الكل كمقروء</button>
+  </div>
+  
+  <div id="notes"></div>
+</div>
+
+<footer class="main-footer">
+  إنشاء: <strong>ضياء الدين إبراهيم</strong> —  
+  حقوق النشر © <span id="year"></span> جامعة النصر التقنية
+</footer>
+
+<script>
+  document.getElementById("year").innerText = new Date().getFullYear();
+
+  const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+  if (!token) {
+    window.location.href = "login.html";
+  }
+
+  async function loadNotifications() {
+    try {
+      const res = await fetch("http://localhost:5000/api/notifications", {
+        headers: { Authorization: "Bearer " + token }
+      });
+
+      const data = await res.json();
+      const container = document.getElementById("notes");
+      const readAllBtn = document.getElementById("readAllBtn");
+
+      if (data.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>لا توجد تنبيهات حالياً</p></div>';
+        readAllBtn.style.display = "none";
+        return;
+      }
+
+      const unreadExists = data.some(n => !n.readBy || !n.readBy.includes(user._id));
+      readAllBtn.style.display = unreadExists ? "block" : "none";
+
+      container.innerHTML = data.map(n => {
+        const isUnread = !n.readBy || !n.readBy.includes(user._id);
+        return `
+          <div class="note ${n.type === "emergency" ? "emergency" : ""} ${isUnread ? "unread" : ""}" 
+               id="note-${n._id}" 
+               onclick="${isUnread ? `markAsRead('${n._id}')` : ''}">
+            <div class="note-title">
+              ${n.type === "emergency" ? "🚨 " : ""}${n.title}
+            </div>
+            <div class="note-message">${n.message}</div>
+            <div class="note-date">
+              <span>${new Date(n.createdAt).toLocaleString('ar-EG')}</span>
+              ${isUnread ? '<span class="unread-tag">جديد</span>' : ''}
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      // تحديث عداد الفحص الأخير
+      localStorage.setItem("lastNotifCheck", Date.now());
+    } catch (err) {
+      console.error("Error loading notifications:", err);
+    }
+  }
+
+  async function markAsRead(id) {
+    try {
+      const res = await fetch(`http://localhost:5000/api/notifications/read/${id}`, {
+        method: "POST",
+        headers: { Authorization: "Bearer " + token }
+      });
+      
+      if (res.ok) {
+        const noteEl = document.getElementById(`note-${id}`);
+        noteEl.classList.remove("unread");
+        const tag = noteEl.querySelector(".unread-tag");
+        if (tag) tag.remove();
+        noteEl.onclick = null;
+        
+        // التحقق إذا كان لا يزال هناك غير مقروء
+        const unreadNotes = document.querySelectorAll(".note.unread");
+        if (unreadNotes.length === 0) {
+          document.getElementById("readAllBtn").style.display = "none";
+        }
+      }
+    } catch (err) {
+      console.error("Error marking as read:", err);
+    }
+  }
+
+  async function markAllAsRead() {
+    try {
+      const res = await fetch("http://localhost:5000/api/notifications/read-all", {
+        method: "POST",
+        headers: { Authorization: "Bearer " + token }
+      });
+      
+      if (res.ok) {
+        loadNotifications();
+      }
+    } catch (err) {
+      console.error("Error marking all as read:", err);
+    }
+  }
+
+  loadNotifications();
+
+  /* ===== Dark Mode ===== */
+  function toggleDark() {
+    document.body.classList.toggle("dark");
+    localStorage.setItem("darkMode", document.body.classList.contains("dark"));
+  }
+
+  if (localStorage.getItem("darkMode") === "true") {
+    document.body.classList.add("dark");
+  }
+</script>
+
+</body>
+</html>
