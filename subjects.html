@@ -204,11 +204,11 @@
   if (!token) location.href = "login.html";
 
   // إعداد عنوان الخادم الأساسي
-  const API_BASE_URL = "http://localhost:5000";
+  //const API_BASE_URL = "http://localhost:5000";
 
   async function loadSubjects() {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/subjects`, {
+      const res = await fetch(`/api/subjects`, {
         headers: {
           Authorization: "Bearer " + token
         }
