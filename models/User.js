@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
 
 const userSchema = new mongoose.Schema({
   name: { 
@@ -96,11 +97,8 @@ userSchema.pre('save', async function(next) {
     this.passwordChangedAt = Date.now();
     
     // إذا كان المستخدم جديداً، يتم تعيين firstLogin = true
-    // إذا قام بتغيير كلمة السر، يتم تعيين firstLogin = false
     if (this.isNew) {
       this.firstLogin = true;
-    } else {
-      this.firstLogin = false;
     }
     
     next();
@@ -109,20 +107,20 @@ userSchema.pre('save', async function(next) {
   }
 });
 
-// Middleware قبل التحديث: عند تغيير كلمة السر من قبل العميد (كلمة سر مؤقتة)
+// Middleware قبل التحديث: عند تغيير كلمة السر من قبل العميد
 userSchema.pre('findOneAndUpdate', async function(next) {
   const update = this.getUpdate();
   
   // إذا تم تحديث كلمة السر في هذا التعديل
-  if (update.password) {
+  if (update.password && update.$set && update.$set.password) {
     try {
       // تشفير كلمة السر الجديدة
       const salt = await bcrypt.genSalt(10);
-      update.password = await bcrypt.hash(update.password, salt);
+      update.$set.password = await bcrypt.hash(update.$set.password, salt);
       
       // تعيين أول دخول = true لإجبار المستخدم على تغييرها
-      update.firstLogin = true;
-      update.passwordChangedAt = Date.now();
+      update.$set.firstLogin = true;
+      update.$set.passwordChangedAt = Date.now();
       
       this.setUpdate(update);
       next();
@@ -153,33 +151,35 @@ userSchema.methods.canResendCode = function() {
   
   const now = Date.now();
   const lastSent = new Date(this.lastCodeSentAt).getTime();
-  const thirtySeconds = 30 * 1000; // 30 ثانية بالملي ثانية
+  const thirtySeconds = 30 * 1000; // 30 ثانية
   
   return (now - lastSent) > thirtySeconds;
 };
 
 // إنشاء كود استعادة عشوائي (6 أرقام)
 userSchema.methods.generateResetCode = function() {
-  const code = Math.floor(100000 + Math.random() * 900000).toString();
-  this.resetPasswordCode = code;
+  // إنشاء كود مكون من 6 أرقام
+  const code = crypto.randomInt(100000, 999999).toString();
   
+  this.resetPasswordCode = code;
   // صلاحية الكود 20 دقيقة
   this.resetPasswordExpires = new Date(Date.now() + 20 * 60 * 1000);
-  
-  // تحديث وقت آخر إرسال كود
-  this.lastCodeSentAt = Date.now();
+  this.lastCodeSentAt = new Date();
   
   return code;
 };
 
 // التحقق من صحة كود الاستعادة
 userSchema.methods.verifyResetCode = function(code) {
-  if (!this.resetPasswordCode || !this.resetPasswordExpires) return false;
+  if (!this.resetPasswordCode || !this.resetPasswordExpires) {
+    return false;
+  }
   
-  const isValidCode = this.resetPasswordCode === code;
+  // التحقق من تطابق الكود وانتهاء الصلاحية
+  const isCodeValid = this.resetPasswordCode === code;
   const isNotExpired = Date.now() < this.resetPasswordExpires;
   
-  return isValidCode && isNotExpired;
+  return isCodeValid && isNotExpired;
 };
 
 // إعادة تعيين كلمة السر
@@ -187,29 +187,44 @@ userSchema.methods.resetPassword = async function(newPassword) {
   this.password = newPassword;
   this.resetPasswordCode = null;
   this.resetPasswordExpires = null;
+  this.firstLogin = false; // بعد إعادة التعيين، لم يعد أول دخول
+  this.failedLoginAttempts = 0; // إعادة تعيين المحاولات الفاشلة
+  this.lockUntil = null; // إلغاء قفل الحساب
+  
+  await this.save();
+  return true;
+};
+
+// تغيير كلمة السر عند أول دخول
+userSchema.methods.changePasswordFirstLogin = async function(newPassword) {
+  this.password = newPassword;
   this.firstLogin = false;
+  this.failedLoginAttempts = 0;
+  this.lockUntil = null;
   
   await this.save();
   return true;
 };
 
 // زيادة عدد محاولات الدخول الفاشلة
-userSchema.methods.incrementFailedAttempts = function() {
+userSchema.methods.incrementFailedAttempts = async function() {
   this.failedLoginAttempts += 1;
   
   // إذا كانت المحاولات 5 أو أكثر، قفل الحساب لمدة 15 دقيقة
   if (this.failedLoginAttempts >= 5) {
-    this.lockUntil = new Date(Date.now() + 15 * 60 * 1000); // 15 دقيقة
+    this.lockUntil = new Date(Date.now() + 15 * 60 * 1000);
   }
   
-  return this.save();
+  await this.save();
+  return this;
 };
 
-// إعادة تعيين محاولات الدخول الفاشلة (عند تسجيل الدخول بنجاح)
-userSchema.methods.resetFailedAttempts = function() {
+// إعادة تعيين محاولات الدخول الفاشلة
+userSchema.methods.resetFailedAttempts = async function() {
   this.failedLoginAttempts = 0;
   this.lockUntil = null;
-  return this.save();
+  await this.save();
+  return this;
 };
 
 // التحقق إذا كان الحساب مقفولاً
@@ -220,6 +235,16 @@ userSchema.methods.isLocked = function() {
   return false;
 };
 
+// حساب الوقت المتبقي للقفل
+userSchema.methods.getLockRemainingTime = function() {
+  if (!this.lockUntil) return 0;
+  
+  const now = Date.now();
+  const lockTime = new Date(this.lockUntil).getTime();
+  
+  return Math.max(0, Math.floor((lockTime - now) / 1000)); // بالثواني
+};
+
 // التحقق من صلاحية الحساب
 userSchema.methods.isAccountActive = function() {
   return this.isActive && !this.isLocked();
@@ -228,7 +253,7 @@ userSchema.methods.isAccountActive = function() {
 // ==== Static Methods ====
 
 // البحث عن مستخدم بالبريد الإلكتروني مع التحقق من النشاط
-userSchema.statics.findByEmail = async function(email) {
+userSchema.statics.findActiveByEmail = async function(email) {
   return await this.findOne({ 
     email: email.toLowerCase().trim(),
     isActive: true 
@@ -236,7 +261,7 @@ userSchema.statics.findByEmail = async function(email) {
 };
 
 // البحث عن مستخدم بكود الاستعادة الصالح
-userSchema.statics.findByResetCode = async function(code) {
+userSchema.statics.findByValidResetCode = async function(code) {
   return await this.findOne({
     resetPasswordCode: code,
     resetPasswordExpires: { $gt: Date.now() }
@@ -244,14 +269,16 @@ userSchema.statics.findByResetCode = async function(code) {
 };
 
 // إلغاء جميع أكواد الاستعادة القديمة
-userSchema.statics.invalidateOldCodes = async function() {
+userSchema.statics.cleanupExpiredCodes = async function() {
   return await this.updateMany(
     {
       resetPasswordExpires: { $lt: Date.now() }
     },
     {
-      resetPasswordCode: null,
-      resetPasswordExpires: null
+      $set: {
+        resetPasswordCode: null,
+        resetPasswordExpires: null
+      }
     }
   );
 };
