@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,7 +9,7 @@
 
   <style>
     * { box-sizing: border-box; font-family: "Segoe UI", Tahoma, sans-serif; }
-    body { margin: 0; background: #f4f6f8; min-height: 100vh; transition: 0.3s; }
+    body { margin: 0; background: #f4f6f8; min-height: 100vh; transition: 0.3s; direction: rtl; }
     body.dark { background: #121212; color: #e0e0e0; }
 
     .main-header {
@@ -87,7 +87,7 @@
 
 <header class="main-header">
   <div class="header-left">
-    <img src="assets/logo.png" class="logo">
+    <img src="assets/logo.png" class="logo" alt="شعار الكلية">
     <div class="header-title">
       <strong>كلية تقنية المعلومات</strong><br>
       <small>جامعة النصر التقنية</small>
@@ -138,51 +138,66 @@
 
   async function loadSubjects() {
     try {
-      const res = await fetch("hapi/subjects", {
+      const res = await fetch("/api/subjects", {
         headers: { Authorization: "Bearer " + token }
       });
       const subjects = await res.json();
       const select = document.getElementById("subjectSelect");
       select.innerHTML += subjects.map(s => `<option value="${s._id}">${s.name}</option>`).join("");
-    } catch (err) { console.error(err); }
+    } catch (err) { 
+      console.error("خطأ في تحميل المواد:", err);
+      Swal.fire('خطأ', 'فشل تحميل قائمة المواد', 'error');
+    }
   }
 
   async function loadStudents() {
     const subjectId = document.getElementById("subjectSelect").value;
     if (!subjectId) return Swal.fire('تنبيه', 'يرجى اختيار المادة أولاً', 'warning');
 
-    Swal.fire({ title: 'جاري تحميل قائمة الطلاب...', didOpen: () => Swal.showLoading() });
+    Swal.fire({ 
+      title: 'جاري تحميل قائمة الطلاب...', 
+      didOpen: () => Swal.showLoading() 
+    });
 
     try {
-      const res = await fetch("/api/attendance/students", {
+      const res = await fetch(`/api/attendance/students?subject=${subjectId}`, {
         headers: { Authorization: "Bearer " + token }
       });
+      
+      if (!res.ok) throw new Error('فشل تحميل الطلاب');
+      
       studentsData = await res.json();
+      attendanceStatus = {}; // إعادة تعيين حالة الحضور
       
       renderStudents();
       document.getElementById("attendanceList").style.display = "block";
       document.getElementById("footerActions").style.display = "flex";
       Swal.close();
     } catch (err) {
-      Swal.fire('خطأ', 'فشل تحميل الطلاب', 'error');
+      Swal.fire('خطأ', 'فشل تحميل قائمة الطلاب', 'error');
     }
   }
 
   function renderStudents() {
     const list = document.getElementById("attendanceList");
+    if (studentsData.length === 0) {
+      list.innerHTML = '<div class="student-row"><div class="student-info"><span class="student-name">لا يوجد طلاب مسجلين في هذه المادة</span></div></div>';
+      return;
+    }
+    
     list.innerHTML = studentsData.map(s => {
       const status = attendanceStatus[s._id] || 'absent';
       return `
         <div class="student-row ${status === 'present' ? 'row-present' : 'row-absent'}" id="row-${s._id}">
           <div class="student-info">
             <span class="student-name">${s.name}</span>
-            <span class="student-email">${s.email}</span>
+            <span class="student-email">${s.email || 'لا يوجد بريد إلكتروني'}</span>
           </div>
           <div class="attendance-actions">
             <button class="btn-status btn-present ${status === 'present' ? 'active' : ''}" 
-                    onclick="setStatus('${s._id}', 'present')">حاضر (يمين)</button>
+                    onclick="setStatus('${s._id}', 'present')">حاضر</button>
             <button class="btn-status btn-absent ${status === 'absent' ? 'active' : ''}" 
-                    onclick="setStatus('${s._id}', 'absent')">غائب (يسار)</button>
+                    onclick="setStatus('${s._id}', 'absent')">غائب</button>
           </div>
         </div>
       `;
@@ -205,30 +220,46 @@
     const subject = document.getElementById("subjectSelect").value;
     const date = document.getElementById("attendanceDate").value;
     
-    const students = studentsData.map(s => ({
+    if (!subject) return Swal.fire('تنبيه', 'يرجى اختيار المادة أولاً', 'warning');
+    if (!date) return Swal.fire('تنبيه', 'يرجى اختيار التاريخ أولاً', 'warning');
+    
+    const attendanceRecords = studentsData.map(s => ({
       student: s._id,
       status: attendanceStatus[s._id] || 'absent'
     }));
 
-    Swal.fire({ title: 'جاري الحفظ...', didOpen: () => Swal.showLoading() });
+    Swal.fire({ 
+      title: 'جاري الحفظ...', 
+      didOpen: () => Swal.showLoading() 
+    });
 
     try {
-      const res = await fetch("/api/attendance",{
+      const res = await fetch("/api/attendance", {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
           Authorization: "Bearer " + token 
         },
-        body: JSON.stringify({ subject, date, students })
+        body: JSON.stringify({ 
+          subject, 
+          date, 
+          students: attendanceRecords 
+        })
       });
 
       if (res.ok) {
         Swal.fire('تم بنجاح', 'تم حفظ كشف الحضور لهذا اليوم', 'success');
+        // إعادة تعيين النموذج
+        attendanceStatus = {};
+        document.getElementById("attendanceList").innerHTML = '';
+        document.getElementById("attendanceList").style.display = "none";
+        document.getElementById("footerActions").style.display = "none";
       } else {
-        throw new Error();
+        const error = await res.json();
+        throw new Error(error.message || 'حدث خطأ أثناء الحفظ');
       }
     } catch (err) {
-      Swal.fire('خطأ', 'حدثت مشكلة أثناء الحفظ', 'error');
+      Swal.fire('خطأ', err.message || 'حدثت مشكلة أثناء الحفظ', 'error');
     }
   }
 
