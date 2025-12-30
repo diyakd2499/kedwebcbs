@@ -116,48 +116,27 @@
   </style>
 </head>
 
-
 <body>
 
-<!-- ===== Header ===== -->
-<header class="main-header">
-  <div class="header-left">
-    <img src="assets/logo.png" class="logo">
-    <div class="header-title">
-      <strong>كلية تقنية المعلومات</strong><br>
-      <small>جامعة النصر التقنية</small>
-    </div>
+<div class="login-container">
+
+  <div class="login-left">
+    <img src="assets/logo.png">
+    <h2>كلية تقنية المعلومات</h2>
+    <p>جامعة النصر التقنية<br>نظام إدارة المحاضرات والمواد</p>
   </div>
 
-  <div class="header-actions">
-    <button class="btn" onclick="toggleDark()">🌙</button>
-    <button class="btn" onclick="logout()">خروج</button>
-  </div>
-</header>
+  <div class="login-right">
+    <h3>تسجيل الدخول</h3>
 
-<!-- ===== Content ===== -->
-<div class="container">
+    <input type="email" id="email" placeholder="البريد الإلكتروني">
+    <input type="password" id="password" placeholder="كلمة المرور">
+    <button onclick="login()">دخول</button>
 
-  <div class="welcome" id="welcome"></div>
-
-  <div class="grid" id="dashboard">
-    <!-- المواد -->
-    <div class="card" onclick="go('subjects.html')">
-      <div class="icon">📚</div>
-      <div class="card-title">المواد الدراسية</div>
-    </div>
-
-    <!-- التنبيهات -->
-    <div class="card" onclick="go('notifications.html')">
-      <div class="icon">🔔</div>
-      <div class="card-title">التنبيهات</div>
-      <span class="badge" id="notifBadge">0</span>
-    </div>
+    <div class="error" id="error"></div>
   </div>
 
 </div>
-
-<div id="toast-container"></div>
 
 <footer class="main-footer">
   إنشاء: <strong>ضياء الدين إبراهيم</strong> —  
@@ -165,163 +144,36 @@
 </footer>
 
 <script>
-  document.getElementById("year").innerText = new Date().getFullYear();
+ document.getElementById("year").innerText = new Date().getFullYear();
 
-  const token = localStorage.getItem("token");
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  async function login() {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
 
-  if (!token || !user.name) {
-    window.location.href = "login.html";
-  }
+    const res = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
 
-  document.getElementById("welcome").innerText = "مرحبًا، " + user.name + " 👋";
+    const data = await res.json();
 
-  const dash = document.getElementById("dashboard");
-
-  // إضافة خيارات إضافية بناءً على الدور
-  if (user.roles.includes("leader") || user.roles.includes("doctor")) {
-    dash.innerHTML += `
-      <div class="card" onclick="go('manage-lectures.html')">
-        <div class="icon">🎓</div>
-        <div class="card-title">إدارة المحاضرات</div>
-      </div>
-      
-      <!-- إدارة التنبيهات للدكتور والليدر -->
-      <div class="card" onclick="go('manage-notifications.html')">
-        <div class="icon">📋</div>
-        <div class="card-title">إدارة التنبيهات</div>
-      </div>
-    `;
-    
-    // تسجيل الحضور متاح للدكتور والعميد فقط كما طلب المستخدم
-    if (user.roles.includes("doctor") || user.roles.includes("dean")) {
-      dash.innerHTML += `
-        <div class="card" onclick="go('manage-attendance.html')">
-          <div class="icon">📝</div>
-          <div class="card-title">تسجيل حضور الطلاب</div>
-        </div>
-      `;
-    }
-  }
-
-  if (user.roles.includes("dean")) {
-    dash.innerHTML += `
-      <div class="card admin" onclick="go('admin_dashboard.html')">
-        <div class="icon">🛠️</div>
-        <div class="card-title">لوحة تحكم الإدارة</div>
-      </div>
-    `;
-  }
-
-  function go(page) {
-    window.location.href = page;
-  }
-
-  function logout() {
-    localStorage.clear();
-    window.location.href = "login.html";
-  }
-
-  /* ===== Notifications Count & Toast ===== */
-  async function checkNotifications() {
-    try {
-      const res = await fetch("/api/notifications", {
-        headers: { Authorization: "Bearer " + token }
-      });
-      const data = await res.json();
-      
-      // تحديث العداد (غير المقروء)
-      const unreadCountRes = await fetch("/api/notifications/unread-count", {
-        headers: { Authorization: "Bearer " + token }
-      });
-      const { count } = await unreadCountRes.json();
-      
-      const badge = document.getElementById("notifBadge");
-      if (count > 0) {
-        badge.innerText = count;
-        badge.style.display = "block";
-      } else {
-        badge.style.display = "none";
-      }
-
-      // حل مشكلة التكرار: تخزين معرفات الإشعارات المعروضة
-      const shownNotifications = JSON.parse(localStorage.getItem("shownNotifications") || "[]");
-      const lastCheckTime = localStorage.getItem("lastNotifCheck") || 0;
-      
-      // تصفية الإشعارات الطارئة الجديدة التي لم تظهر بعد
-      const newEmergency = data.filter(n => 
-        n.type === "emergency" && 
-        !shownNotifications.includes(n._id) &&
-        new Date(n.createdAt).getTime() > lastCheckTime
-      );
-
-      if (newEmergency.length > 0) {
-        newEmergency.forEach(n => {
-          showToast(n);
-          // إضافة معرف الإشعار إلى القائمة لمنع التكرار
-          shownNotifications.push(n._id);
-        });
-        localStorage.setItem("shownNotifications", JSON.stringify(shownNotifications));
-        localStorage.setItem("lastNotifCheck", Date.now());
-      }
-    } catch (err) {
-      console.error("Error checking notifications:", err);
-    }
-  }
-
-  function showToast(n) {
-    const container = document.getElementById("toast-container");
-    
-    // التحقق من عدم وجود toast بنفس المعرف
-    if (document.querySelector(`[data-notif-id="${n._id}"]`)) {
+    if (!res.ok) {
+      document.getElementById("error").innerText = data;
       return;
     }
+
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
+
+    const user = data.user;
     
-    const toast = document.createElement("div");
-    toast.className = `toast ${n.type === "emergency" ? "emergency" : ""}`;
-    toast.setAttribute("data-notif-id", n._id);
-    toast.innerHTML = `
-      <div class="icon">${n.type === "emergency" ? "🚨" : "🔔"}</div>
-      <div class="toast-content">
-        <div class="toast-title">${n.title}</div>
-        <div class="toast-message">${n.message.substring(0, 50)}${n.message.length > 50 ? '...' : ''}</div>
-        <div style="font-size:11px; color:#666; margin-top:3px;">
-          ${new Date(n.createdAt).toLocaleTimeString('ar-EG')}
-        </div>
-      </div>
-    `;
-    toast.onclick = () => {
-      window.location.href = "notifications.html";
-    };
-    container.appendChild(toast);
-
-    setTimeout(() => {
-      toast.style.opacity = "0";
-      setTimeout(() => {
-        toast.remove();
-        // إزالة المعرف من localStorage بعد إزالة الـ toast
-        const shownNotifications = JSON.parse(localStorage.getItem("shownNotifications") || "[]");
-        const index = shownNotifications.indexOf(n._id);
-        if (index > -1) {
-          shownNotifications.splice(index, 1);
-          localStorage.setItem("shownNotifications", JSON.stringify(shownNotifications));
-        }
-      }, 500);
-    }, 8000);
-  }
-
-  // فحص التنبيهات عند التحميل وكل دقيقة
-  checkNotifications();
-  setInterval(checkNotifications, 60000);
-
-  /* ===== Dark Mode ===== */
-  function toggleDark() {
-    document.body.classList.toggle("dark");
-    localStorage.setItem("darkMode", document.body.classList.contains("dark"));
-  }
-
-  if (localStorage.getItem("darkMode") === "true") {
-    document.body.classList.add("dark");
+    // التحقق من الدور وتوجيه العميد إلى صفحة الـ Admin
+    if (user.roles.includes("dean")) {
+      window.location.href = "admin_dashboard.html";  // توجيه العميد إلى لوحة تحكم الإدارة
+    } else {
+      window.location.href = "dashboard.html";  // توجيه الطلاب والدكاترة إلى لوحة التحكم الخاصة بهم
+    }
   }
 </script>
 
