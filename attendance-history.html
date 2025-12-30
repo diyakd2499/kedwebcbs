@@ -82,7 +82,7 @@
 
   async function loadHistory() {
     try {
-      const res = await fetch("http://localhost:5000/api/attendance/history", {
+      const res = await fetch("/api/attendance/history", {
         headers: { Authorization: "Bearer " + token }
       });
       const data = await res.json();
@@ -108,7 +108,7 @@
 
   async function viewDetails(id) {
     try {
-      const res = await fetch(`http://localhost:5000/api/attendance/${id}`, {
+      const res = await fetch(`/api/attendance/${id}`, {
         headers: { Authorization: "Bearer " + token }
       });
       const data = await res.json();
