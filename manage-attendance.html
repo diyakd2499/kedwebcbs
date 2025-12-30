@@ -213,7 +213,7 @@
     Swal.fire({ title: 'جاري الحفظ...', didOpen: () => Swal.showLoading() });
 
     try {
-      const res = await fetch("/api/attendance"",{
+      const res = await fetch("/api/attendance",{
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
