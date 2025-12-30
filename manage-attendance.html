@@ -138,7 +138,7 @@
 
   async function loadSubjects() {
     try {
-      const res = await fetch("http://localhost:5000/api/subjects", {
+      const res = await fetch("hapi/subjects", {
         headers: { Authorization: "Bearer " + token }
       });
       const subjects = await res.json();
@@ -154,7 +154,7 @@
     Swal.fire({ title: 'جاري تحميل قائمة الطلاب...', didOpen: () => Swal.showLoading() });
 
     try {
-      const res = await fetch("http://localhost:5000/api/attendance/students", {
+      const res = await fetch("/api/attendance/students", {
         headers: { Authorization: "Bearer " + token }
       });
       studentsData = await res.json();
@@ -213,7 +213,7 @@
     Swal.fire({ title: 'جاري الحفظ...', didOpen: () => Swal.showLoading() });
 
     try {
-      const res = await fetch("http://localhost:5000/api/attendance", {
+      const res = await fetch("/api/attendance"",{
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
