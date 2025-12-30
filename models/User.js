@@ -83,10 +83,10 @@ const userSchema = new mongoose.Schema({
 
 // ==== Middleware قبل الحفظ ====
 
-// تشفير كلمة السر قبل الحفظ
-userSchema.pre('save', async function(next) {
+// ✅ تم التصحيح: إزالة next من async function
+userSchema.pre('save', async function() {
   // فقط إذا تم تعديل كلمة السر
-  if (!this.isModified('password')) return next();
+  if (!this.isModified('password')) return;
   
   try {
     // تشفير كلمة السر
@@ -100,35 +100,46 @@ userSchema.pre('save', async function(next) {
     if (this.isNew) {
       this.firstLogin = true;
     }
-    
-    next();
   } catch (error) {
-    next(error);
+    throw error;
   }
 });
 
-// Middleware قبل التحديث: عند تغيير كلمة السر من قبل العميد
-userSchema.pre('findOneAndUpdate', async function(next) {
+// ✅ تم التصحيح: إصلاح middleware التحديث
+userSchema.pre('findOneAndUpdate', async function() {
   const update = this.getUpdate();
   
   // إذا تم تحديث كلمة السر في هذا التعديل
-  if (update.password && update.$set && update.$set.password) {
+  if (update.password || (update.$set && update.$set.password)) {
     try {
+      const passwordToHash = update.password || (update.$set && update.$set.password);
+      
       // تشفير كلمة السر الجديدة
       const salt = await bcrypt.genSalt(10);
-      update.$set.password = await bcrypt.hash(update.$set.password, salt);
+      const hashedPassword = await bcrypt.hash(passwordToHash, salt);
       
-      // تعيين أول دخول = true لإجبار المستخدم على تغييرها
-      update.$set.firstLogin = true;
-      update.$set.passwordChangedAt = Date.now();
-      
-      this.setUpdate(update);
-      next();
+      // تحديث object التعديل
+      if (update.password) {
+        this.setUpdate({
+          ...update,
+          password: hashedPassword,
+          firstLogin: true,
+          passwordChangedAt: Date.now()
+        });
+      } else if (update.$set) {
+        this.setUpdate({
+          ...update,
+          $set: {
+            ...update.$set,
+            password: hashedPassword,
+            firstLogin: true,
+            passwordChangedAt: Date.now()
+          }
+        });
+      }
     } catch (error) {
-      next(error);
+      throw error;
     }
-  } else {
-    next();
   }
 });
 
@@ -219,12 +230,29 @@ userSchema.methods.incrementFailedAttempts = async function() {
   return this;
 };
 
-// إعادة تعيين محاولات الدخول الفاشلة
+// ✅ تم التصحيح: تحسين دالة resetFailedAttempts لتجنب مشاكل middleware
 userSchema.methods.resetFailedAttempts = async function() {
-  this.failedLoginAttempts = 0;
-  this.lockUntil = null;
-  await this.save();
-  return this;
+  try {
+    // استخدم updateOne مباشرة لتجنب trigger middleware الحفظ
+    await this.constructor.updateOne(
+      { _id: this._id },
+      { 
+        $set: { 
+          failedLoginAttempts: 0,
+          lockUntil: null 
+        } 
+      }
+    );
+    
+    // تحديث object الحالي
+    this.failedLoginAttempts = 0;
+    this.lockUntil = null;
+    
+    return this;
+  } catch (error) {
+    console.error('Error in resetFailedAttempts:', error);
+    throw error;
+  }
 };
 
 // التحقق إذا كان الحساب مقفولاً
