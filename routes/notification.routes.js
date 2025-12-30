@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const Notification = require("../models/Notification");
+const User = require("../models/User"); // تأكد من استيراد نموذج المستخدم
 const auth = require("../middleware/auth.middleware");
 const role = require("../middleware/role.middleware");
 
@@ -13,7 +14,11 @@ router.post("/", auth, role("dean", "doctor", "leader"), async (req, res) => {
       createdBy: req.user.id
     });
 
-    res.json(notification);
+    // جلب معلومات المرسل
+    const populatedNotification = await Notification.findById(notification._id)
+      .populate("createdBy", "name roles email");
+
+    res.json(populatedNotification);
   } catch (err) {
     res.status(400).json(err.message);
   }
@@ -22,10 +27,12 @@ router.post("/", auth, role("dean", "doctor", "leader"), async (req, res) => {
 // جلب جميع التنبيهات
 router.get("/", auth, async (req, res) => {
   try {
-    const notifications = await Notification.find().sort({
-      type: -1,
-      createdAt: -1
-    });
+    const notifications = await Notification.find()
+      .sort({
+        type: -1,
+        createdAt: -1
+      })
+      .populate("createdBy", "name roles email"); // إضافة populate
 
     res.json(notifications);
   } catch (err) {
