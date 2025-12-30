@@ -192,9 +192,24 @@
       background: #fff1f1;
     }
 
+    body.dark .toast {
+      background: #1e1e1e;
+      color: #e0e0e0;
+    }
+
+    body.dark .toast.emergency {
+      background: #3a1f1f;
+      border-right-color: #d9534f;
+    }
+
     @keyframes slideInLeft {
       from { transform: translateX(-100%); opacity: 0; }
       to { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
     }
 
     .toast-content {
@@ -210,6 +225,20 @@
     .toast-message {
       font-size: 13px;
       color: #666;
+    }
+
+    body.dark .toast-message {
+      color: #aaa;
+    }
+
+    .toast-sender {
+      font-size: 11px;
+      color: #888;
+      margin-top: 3px;
+    }
+
+    body.dark .toast-sender {
+      color: #888;
     }
 
     /* ===== Footer ===== */
@@ -241,6 +270,11 @@
 
       .welcome {
         font-size: 16px;
+      }
+
+      .toast {
+        min-width: 280px;
+        max-width: 90%;
       }
     }
   </style>
@@ -314,6 +348,12 @@
         <div class="icon">🎓</div>
         <div class="card-title">إدارة المحاضرات</div>
       </div>
+      
+      <!-- إضافة بطاقة إدارة التنبيهات للدكتور والليدر -->
+      <div class="card" onclick="go('manage-notifications.html')">
+        <div class="icon">📋</div>
+        <div class="card-title">إدارة التنبيهات</div>
+      </div>
     `;
     
     // تسجيل الحضور متاح للدكتور والعميد فقط كما طلب المستخدم
@@ -341,71 +381,156 @@
   }
 
   function logout() {
-    localStorage.clear();
-    window.location.href = "login.html";
+    if (confirm("هل تريد تسجيل الخروج؟")) {
+      localStorage.clear();
+      window.location.href = "login.html";
+    }
   }
 
-  /* ===== Notifications Count & Toast ===== */
+  /* ===== حل مشكلة تكرار الإشعارات الطارئة ===== */
+  let notificationCheckInterval;
+
   async function checkNotifications() {
     try {
-      const res = await fetch("/api/notifications", {
-        headers: { Authorization: "Bearer " + token }
-      });
-      const data = await res.json();
-      
-      // تحديث العداد (غير المقروء)
+      // تحديث عدد الإشعارات غير المقروءة
       const unreadCountRes = await fetch("/api/notifications/unread-count", {
         headers: { Authorization: "Bearer " + token }
       });
-      const { count } = await unreadCountRes.json();
       
-      const badge = document.getElementById("notifBadge");
-      if (count > 0) {
-        badge.innerText = count;
-        badge.style.display = "block";
-      } else {
-        badge.style.display = "none";
+      if (unreadCountRes.ok) {
+        const { count } = await unreadCountRes.json();
+        const badge = document.getElementById("notifBadge");
+        if (count > 0) {
+          badge.innerText = count > 9 ? "9+" : count;
+          badge.style.display = "block";
+        } else {
+          badge.style.display = "none";
+        }
       }
 
-      // التحقق من وجود تنبيهات طارئة جديدة لم تظهر بعد
-      const lastChecked = localStorage.getItem("lastNotifCheck") || 0;
-      const newEmergency = data.filter(n => 
-        n.type === "emergency" && 
-        new Date(n.createdAt).getTime() > lastChecked
-      );
-
-      if (newEmergency.length > 0) {
-        newEmergency.forEach(n => showToast(n));
-        localStorage.setItem("lastNotifCheck", Date.now());
-      }
+      // التحقق من الإشعارات الطارئة الجديدة فقط (بدون تكرار)
+      await checkEmergencyNotifications();
     } catch (err) {
       console.error("Error checking notifications:", err);
     }
   }
 
-  function showToast(n) {
-    const container = document.getElementById("toast-container");
-    const toast = document.createElement("div");
-    toast.className = `toast ${n.type === "emergency" ? "emergency" : ""}`;
-    toast.innerHTML = `
-      <div class="icon">${n.type === "emergency" ? "🚨" : "🔔"}</div>
-      <div class="toast-content">
-        <div class="toast-title">${n.title}</div>
-        <div class="toast-message">${n.message.substring(0, 50)}${n.message.length > 50 ? '...' : ''}</div>
-      </div>
-    `;
-    toast.onclick = () => go('notifications.html');
-    container.appendChild(toast);
-
-    setTimeout(() => {
-      toast.style.opacity = "0";
-      setTimeout(() => toast.remove(), 500);
-    }, 8000);
+  async function checkEmergencyNotifications() {
+    try {
+      // استخدام النقطة الجديدة لمنع التكرار
+      const lastCheckTime = parseInt(localStorage.getItem("lastEmergencyCheck") || "0");
+      const res = await fetch(`/api/notifications/emergency/new?lastCheck=${lastCheckTime}`, {
+        headers: { Authorization: "Bearer " + token }
+      });
+      
+      if (res.ok) {
+        const emergencies = await res.json();
+        
+        // الحصول على معرفات الإشعارات المعروضة مسبقاً
+        const shownIds = JSON.parse(localStorage.getItem("shownEmergencyIds") || "[]");
+        
+        // عرض الإشعارات الطارئة الجديدة فقط
+        for (const emergency of emergencies) {
+          if (!shownIds.includes(emergency._id)) {
+            showToast(emergency);
+            shownIds.push(emergency._id);
+          }
+        }
+        
+        // حفظ معرفات الإشعارات المعروضة
+        localStorage.setItem("shownEmergencyIds", JSON.stringify(shownIds));
+        
+        // تحديث وقت آخر فحص
+        localStorage.setItem("lastEmergencyCheck", Date.now());
+        
+        // تنظيف القائمة القديمة (تحتفظ بآخر 50 إشعار فقط)
+        if (shownIds.length > 50) {
+          localStorage.setItem("shownEmergencyIds", JSON.stringify(shownIds.slice(-50)));
+        }
+      }
+    } catch (err) {
+      console.error("Error checking emergency notifications:", err);
+    }
   }
 
-  // فحص التنبيهات عند التحميل وكل دقيقة
+  function showToast(notification) {
+    const container = document.getElementById("toast-container");
+    
+    // التحقق من عدم وجود toast بنفس المعرف
+    if (document.querySelector(`[data-notif-id="${notification._id}"]`)) {
+      return;
+    }
+    
+    // معلومات المرسل
+    const senderName = notification.createdBy?.name || "النظام";
+    const roleName = notification.createdBy?.roleName || 
+                    (notification.createdBy?.roles?.[0] === "dean" ? "العميد" :
+                     notification.createdBy?.roles?.[0] === "doctor" ? "الدكتور" :
+                     notification.createdBy?.roles?.[0] === "leader" ? "الليدر" : "النظام");
+    
+    const toast = document.createElement("div");
+    toast.className = `toast ${notification.type === "emergency" ? "emergency" : ""}`;
+    toast.setAttribute("data-notif-id", notification._id);
+    
+    toast.innerHTML = `
+      <div class="icon">${notification.type === "emergency" ? "🚨" : "🔔"}</div>
+      <div class="toast-content">
+        <div class="toast-title">${notification.title}</div>
+        <div class="toast-message">${notification.message.substring(0, 60)}${notification.message.length > 60 ? '...' : ''}</div>
+        <div class="toast-sender">
+          ${roleName} ${senderName} • ${new Date(notification.createdAt).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })}
+        </div>
+      </div>
+    `;
+    
+    toast.onclick = () => {
+      // تسجيل الإشعار كمقروء عند النقر عليه
+      markNotificationAsRead(notification._id);
+      window.location.href = "notifications.html";
+    };
+    
+    container.appendChild(toast);
+
+    // إزالة الـ toast بعد 8 ثواني
+    setTimeout(() => {
+      toast.style.animation = "fadeOut 0.5s";
+      setTimeout(() => {
+        if (toast.parentNode) {
+          toast.remove();
+        }
+      }, 500);
+    }, 8000);
+    
+    // الحد الأقصى 3 توست في نفس الوقت
+    const toasts = container.querySelectorAll('.toast');
+    if (toasts.length > 3) {
+      toasts[0].remove();
+    }
+  }
+
+  async function markNotificationAsRead(notificationId) {
+    try {
+      await fetch(`/api/notifications/read/${notificationId}`, {
+        method: "POST",
+        headers: { Authorization: "Bearer " + token }
+      });
+    } catch (err) {
+      console.error("Error marking notification as read:", err);
+    }
+  }
+
+  // فحص التنبيهات عند التحميل
   checkNotifications();
-  setInterval(checkNotifications, 60000);
+  
+  // بدء الفحص الدوري كل دقيقة
+  notificationCheckInterval = setInterval(checkNotifications, 60000);
+  
+  // تنظيف الفاصل الزمني عند مغادرة الصفحة
+  window.addEventListener('beforeunload', () => {
+    if (notificationCheckInterval) {
+      clearInterval(notificationCheckInterval);
+    }
+  });
 
   /* ===== Dark Mode ===== */
   function toggleDark() {
