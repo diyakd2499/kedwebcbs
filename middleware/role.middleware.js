@@ -1,20 +1,41 @@
 module.exports = (...allowedRoles) => {
   return (req, res, next) => {
-    const userRoles = req.user.roles;  // صلاحيات المستخدم الذي قام بتسجيل الدخول
+    // التحقق من وجود معلومات المستخدم
+    if (!req.user || !req.user.roles) {
+      return res.status(401).json({
+        success: false,
+        message: "المستخدم غير مصدق، يرجى تسجيل الدخول"
+      });
+    }
 
-    console.log("USER ROLES:", userRoles);  // هذا فقط للاختبار
-    console.log("ALLOWED ROLES:", allowedRoles);  // هذا فقط للاختبار
-
-    // تحقق مما إذا كانت صلاحيات المستخدم تحتوي على أي من الأدوار المسموح بها
+    const userRoles = req.user.roles;
+    
+    // التحقق مما إذا كانت صلاحيات المستخدم تحتوي على أي من الأدوار المسموح بها
     const hasPermission = allowedRoles.some(role =>
       userRoles.includes(role)
     );
 
     // إذا لم يكن للمستخدم أي من الأدوار المسموح بها، قم برفض الوصول
     if (!hasPermission) {
-      return res.status(403).json("Access denied");  // رفض الوصول
+      // تسجيل محاولة الوصول غير المصرح بها (فقط في وضع التطوير)
+      if (process.env.NODE_ENV === 'development') {
+        console.log("محاولة وصول غير مصرح بها:", {
+          userId: req.user.id,
+          userRoles: userRoles,
+          allowedRoles: allowedRoles,
+          path: req.path,
+          method: req.method
+        });
+      }
+      
+      return res.status(403).json({
+        success: false,
+        message: "ليس لديك صلاحية للوصول إلى هذا المورد",
+        userRoles: userRoles,
+        requiredRoles: allowedRoles
+      });
     }
 
-    next();  // المتابعة في المسار إذا كان لدى المستخدم الصلاحيات
+    next(); // المتابعة في المسار إذا كان لدى المستخدم الصلاحيات
   };
 };
