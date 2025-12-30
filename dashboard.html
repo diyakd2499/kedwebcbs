@@ -315,6 +315,16 @@
         <div class="card-title">إدارة المحاضرات</div>
       </div>
     `;
+    
+    // تسجيل الحضور متاح للدكتور والعميد فقط كما طلب المستخدم
+    if (user.roles.includes("doctor") || user.roles.includes("dean")) {
+      dash.innerHTML += `
+        <div class="card" onclick="go('manage-attendance.html')">
+          <div class="icon">📝</div>
+          <div class="card-title">تسجيل حضور الطلاب</div>
+        </div>
+      `;
+    }
   }
 
   if (user.roles.includes("dean")) {
@@ -338,13 +348,13 @@
   /* ===== Notifications Count & Toast ===== */
   async function checkNotifications() {
     try {
-      const res = await fetch("/api/notifications", {
+      const res = await fetch("http://localhost:5000/api/notifications", {
         headers: { Authorization: "Bearer " + token }
       });
       const data = await res.json();
       
       // تحديث العداد (غير المقروء)
-      const unreadCountRes = await fetch("/api/notifications/unread-count", {
+      const unreadCountRes = await fetch("http://localhost:5000/api/notifications/unread-count", {
         headers: { Authorization: "Bearer " + token }
       });
       const { count } = await unreadCountRes.json();
