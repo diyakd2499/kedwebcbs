@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>التحقق من الكود | كلية تقنية المعلومات</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      background: linear-gradient(135deg, #0d3b66, #1e6091);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      background: white;
+      width: 900px;
+      height: 500px;
+      display: flex;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+    }
+
+    .left-side {
+      flex: 1;
+      background: #0d3b66;
+      color: white;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .left-side img {
+      width: 120px;
+      margin-bottom: 20px;
+    }
+
+    .left-side h2 {
+      margin: 0;
+    }
+
+    .left-side p {
+      opacity: 0.9;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .right-side {
+      flex: 1;
+      padding: 50px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+    }
+
+    .right-side h3 {
+      margin-bottom: 20px;
+      color: #0d3b66;
+    }
+
+    .right-side p {
+      color: #666;
+      margin-bottom: 25px;
+      line-height: 1.5;
+    }
+
+    .code-inputs {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 25px;
+    }
+
+    .code-input {
+      width: 50px;
+      height: 60px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      transition: all 0.3s;
+    }
+
+    .code-input:focus {
+      border-color: #0d3b66;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(13, 59, 102, 0.1);
+    }
+
+    .right-side button {
+      padding: 12px;
+      background: #0d3b66;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+
+    .right-side button:hover {
+      background: #092b4c;
+      transform: translateY(-2px);
+    }
+
+    .right-side button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .back-link {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .back-link a {
+      color: #0d3b66;
+      text-decoration: none;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+
+    .back-link a:hover {
+      color: #1e6091;
+      text-decoration: underline;
+    }
+
+    .error {
+      margin-top: 10px;
+      color: #d9534f;
+      font-size: 14px;
+      padding: 10px;
+      background: #fff1f1;
+      border-radius: 6px;
+      border-right: 4px solid #d9534f;
+      display: none;
+    }
+
+    .success {
+      margin-top: 10px;
+      color: #28a745;
+      font-size: 14px;
+      padding: 10px;
+      background: #f0fff4;
+      border-radius: 6px;
+      border-right: 4px solid #28a745;
+      display: none;
+    }
+
+    .loading {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .countdown {
+      font-size: 12px;
+      color: #666;
+      text-align: center;
+      margin-top: 10px;
+      display: none;
+    }
+
+    .resend-link {
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .resend-link a {
+      color: #0d3b66;
+      text-decoration: none;
+      font-size: 13px;
+      transition: all 0.3s;
+    }
+
+    .resend-link a:hover {
+      color: #1e6091;
+      text-decoration: underline;
+    }
+
+    .resend-link a.disabled {
+      color: #ccc;
+      cursor: not-allowed;
+      text-decoration: none;
+    }
+
+    .main-footer {
+      margin-top: 25px;
+      font-size: 13px;
+      color: #e0e0e0;
+      text-align: center;
+    }
+
+    @media (max-width: 900px) {
+      .container {
+        flex-direction: column;
+        width: 90%;
+        height: auto;
+      }
+      
+      .left-side, .right-side {
+        padding: 30px;
+      }
+      
+      .code-input {
+        width: 40px;
+        height: 50px;
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <div class="left-side">
+    <img src="assets/logo.png">
+    <h2>كلية تقنية المعلومات</h2>
+    <p>جامعة النصر التقنية<br>التحقق من كود إعادة التعيين</p>
+  </div>
+
+  <div class="right-side">
+    <h3>أدخل كود التحقق</h3>
+    
+    <p>أدخل الكود المكون من 6 أرقام الذي وصل إلى بريدك الإلكتروني. صلاحية الكود 20 دقيقة فقط.</p>
+    
+    <div class="code-inputs" id="codeInputs">
+      <input type="text" class="code-input" maxlength="1" data-index="0">
+      <input type="text" class="code-input" maxlength="1" data-index="1">
+      <input type="text" class="code-input" maxlength="1" data-index="2">
+      <input type="text" class="code-input" maxlength="1" data-index="3">
+      <input type="text" class="code-input" maxlength="1" data-index="4">
+      <input type="text" class="code-input" maxlength="1" data-index="5">
+    </div>
+    
+    <div class="error" id="error"></div>
+    <div class="success" id="success"></div>
+    <div class="countdown" id="countdown"></div>
+    
+    <button onclick="verifyCode()" id="verifyBtn">
+      <span id="btnText">التحقق من الكود</span>
+      <span class="loading" id="loading" style="display: none;"></span>
+    </button>
+    
+    <div class="resend-link">
+      <a href="#" onclick="resendCode()" id="resendLink">إعادة إرسال الكود</a>
+    </div>
+    
+    <div class="back-link">
+      <a href="forgot-password.html">العودة إلى الصفحة السابقة</a>
+    </div>
+  </div>
+</div>
+
+<footer class="main-footer">
+  إنشاء: <strong>ضياء الدين إبراهيم</strong> —  
+  حقوق النشر © <span id="year"></span> جامعة النصر التقنية
+</footer>
+
+<script>
+  document.getElementById("year").innerText = new Date().getFullYear();
+
+  // الحصول على البريد الإلكتروني من الرابط
+  const urlParams = new URLSearchParams(window.location.search);
+  const email = urlParams.get('email');
+  
+  if (!email) {
+    window.location.href = "forgot-password.html";
+  }
+
+  let canResend = true;
+  let resendTimer = null;
+  let resendSeconds = 30;
+
+  // إعداد مدخلات الكود
+  const codeInputs = document.querySelectorAll('.code-input');
+  const verifyBtn = document.getElementById('verifyBtn');
+  const btnText = document.getElementById('btnText');
+  const loading = document.getElementById('loading');
+  const errorEl = document.getElementById('error');
+  const successEl = document.getElementById('success');
+  const resendLink = document.getElementById('resendLink');
+
+  // إضافة event listeners لحقول الكود
+  codeInputs.forEach((input, index) => {
+    // عند الكتابة، الانتقال للحقل التالي
+    input.addEventListener('input', (e) => {
+      if (e.target.value.length === 1 && index < codeInputs.length - 1) {
+        codeInputs[index + 1].focus();
+      }
+      
+      // التحقق إذا تم ملء جميع الحقول
+      checkCodeFilled();
+    });
+    
+    // عند الضغط على backspace، الانتقال للحقل السابق
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace' && !e.target.value && index > 0) {
+        codeInputs[index - 1].focus();
+      }
+    });
+    
+    // منع إدخال غير الأرقام
+    input.addEventListener('keypress', (e) => {
+      if (!/[0-9]/.test(e.key)) {
+        e.preventDefault();
+      }
+    });
+  });
+
+  // التحقق إذا تم ملء جميع الحقول
+  function checkCodeFilled() {
+    let allFilled = true;
+    codeInputs.forEach(input => {
+      if (!input.value) allFilled = false;
+    });
+    
+    verifyBtn.disabled = !allFilled;
+    return allFilled;
+  }
+
+  async function verifyCode() {
+    const code = Array.from(codeInputs).map(input => input.value).join('');
+    
+    // إخفاء الرسائل السابقة
+    errorEl.style.display = "none";
+    successEl.style.display = "none";
+    
+    // التحقق من صحة الكود
+    if (code.length !== 6) {
+      showError("الرجاء إدخال الكود المكون من 6 أرقام");
+      return;
+    }
+    
+    // عرض حالة التحميل
+    verifyBtn.disabled = true;
+    btnText.textContent = "جاري التحقق...";
+    loading.style.display = "inline-block";
+    
+    try {
+      const response = await fetch("/api/auth/verify-reset-code", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email, code })
+      });
+      
+      const data = await response.json();
+      
+      // إعادة تعيين الزر
+      verifyBtn.disabled = false;
+      btnText.textContent = "التحقق من الكود";
+      loading.style.display = "none";
+      
+      if (!response.ok) {
+        showError(data.message || "الكود غير صالح");
+        return;
+      }
+      
+      // نجاح التحقق
+      showSuccess("تم التحقق من الكود بنجاح");
+      
+      // حفظ التوكن المؤقت وتوجيه إلى صفحة كلمة المرور الجديدة
+      setTimeout(() => {
+        window.location.href = `new-password.html?tempToken=${encodeURIComponent(data.tempToken)}`;
+      }, 1500);
+      
+    } catch (error) {
+      console.error("Verify code error:", error);
+      
+      // إعادة تعيين الزر
+      verifyBtn.disabled = false;
+      btnText.textContent = "التحقق من الكود";
+      loading.style.display = "none";
+      
+      showError("حدث خطأ في الاتصال بالخادم");
+    }
+  }
+
+  async function resendCode() {
+    if (!canResend) return;
+    
+    try {
+      const response = await fetch("/api/auth/resend-reset-code", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email })
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        if (response.status === 429) {
+          showError(data.message);
+          startResendCountdown();
+          return;
+        }
+        showError(data.message || "حدث خطأ أثناء إعادة الإرسال");
+        return;
+      }
+      
+      // نجاح إعادة الإرسال
+      showSuccess("تم إعادة إرسال الكود بنجاح");
+      
+      // بدء عد تنازلي للإرسال التالي
+      startResendCountdown();
+      
+    } catch (error) {
+      console.error("Resend code error:", error);
+      showError("حدث خطأ في الاتصال بالخادم");
+    }
+  }
+
+  function startResendCountdown() {
+    canResend = false;
+    resendSeconds = 30;
+    
+    resendLink.classList.add('disabled');
+    resendLink.textContent = `إعادة الإرسال (${resendSeconds} ثانية)`;
+    
+    resendTimer = setInterval(() => {
+      resendSeconds--;
+      
+      if (resendSeconds <= 0) {
+        clearInterval(resendTimer);
+        canResend = true;
+        resendLink.classList.remove('disabled');
+        resendLink.textContent = "إعادة إرسال الكود";
+      } else {
+        resendLink.textContent = `إعادة الإرسال (${resendSeconds} ثانية)`;
+      }
+    }, 1000);
+  }
+
+  function showError(message) {
+    errorEl.textContent = message;
+    errorEl.style.display = "block";
+  }
+
+  function showSuccess(message) {
+    successEl.textContent = message;
+    successEl.style.display = "block";
+  }
+</script>
+
+</body>
+</html>
