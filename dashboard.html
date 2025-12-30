@@ -333,16 +333,42 @@
   const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
+  // التحقق من التوكن والمستخدم
   if (!token || !user.name) {
     window.location.href = "login.html";
   }
 
+  // التحقق من صلاحية التوكن
+  async function verifyToken() {
+    try {
+      const response = await fetch('/api/verify-token', {
+        headers: { Authorization: "Bearer " + token }
+      });
+      if (!response.ok) {
+        localStorage.clear();
+        window.location.href = "login.html";
+        return false;
+      }
+      return true;
+    } catch (error) {
+      localStorage.clear();
+      window.location.href = "login.html";
+      return false;
+    }
+  }
+
+  // التحقق من أول دخول أو ضرورة تغيير كلمة المرور
+  if (user.firstLogin === true || user.mustChangePassword === true) {
+    window.location.href = "change-password.html?firstLogin=true";
+  }
+
+  // إذا لم يكن هناك تحويل، نتابع تحميل الصفحة
   document.getElementById("welcome").innerText = "مرحبًا، " + user.name + " 👋";
 
   const dash = document.getElementById("dashboard");
 
   // إضافة خيارات إضافية بناءً على الدور
-  if (user.roles.includes("leader") || user.roles.includes("doctor")) {
+  if (user.roles && (user.roles.includes("leader") || user.roles.includes("doctor"))) {
     dash.innerHTML += `
       <div class="card" onclick="go('manage-lectures.html')">
         <div class="icon">🎓</div>
@@ -367,7 +393,7 @@
     }
   }
 
-  if (user.roles.includes("dean")) {
+  if (user.roles && user.roles.includes("dean")) {
     dash.innerHTML += `
       <div class="card admin" onclick="go('admin_dashboard.html')">
         <div class="icon">🛠️</div>
@@ -519,11 +545,16 @@
     }
   }
 
-  // فحص التنبيهات عند التحميل
-  checkNotifications();
-  
-  // بدء الفحص الدوري كل دقيقة
-  notificationCheckInterval = setInterval(checkNotifications, 60000);
+  // فحص صلاحية التوكن أولاً
+  verifyToken().then(isValid => {
+    if (isValid) {
+      // فحص التنبيهات عند التحميل
+      checkNotifications();
+      
+      // بدء الفحص الدوري كل دقيقة
+      notificationCheckInterval = setInterval(checkNotifications, 60000);
+    }
+  });
   
   // تنظيف الفاصل الزمني عند مغادرة الصفحة
   window.addEventListener('beforeunload', () => {
