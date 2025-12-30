@@ -422,6 +422,28 @@
         width: 95%;
         margin: 20% auto;
       }
+     <!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إدارة التنبيهات | كلية تقنية المعلومات</title>
+
+  <style>
+    /* ... (كل CSS كما هو) ... */
+    
+    /* إضافة ستايل للمرسل */
+    .card-sender {
+      font-size: 12px;
+      color: #666;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed #eee;
+    }
+    
+    body.dark .card-sender {
+      color: #aaa;
+      border-top-color: #444;
     }
   </style>
 </head>
@@ -491,7 +513,19 @@
   document.getElementById("year").innerText = new Date().getFullYear();
 
   const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  
   if (!token) location.href = "login.html";
+
+  // التحقق من الصلاحيات
+  const hasManagementRole = user.roles?.some(role => 
+    ["dean", "doctor", "leader"].includes(role)
+  );
+  
+  if (!hasManagementRole) {
+    alert("ليس لديك صلاحية للوصول إلى هذه الصفحة");
+    window.location.href = "dashboard.html";
+  }
 
   let allNotifications = [];
 
@@ -522,18 +556,40 @@
       return;
     }
 
-    container.innerHTML = notifications.map(notification => `
-      <div class="card ${notification.type === "emergency" ? "emergency" : ""}">
-        <h4>${notification.type === "emergency" ? "🚨 " : ""}${notification.title}</h4>
-        <p>${notification.message}</p>
-        <span class="card-type ${notification.type === "emergency" ? "emergency" : ""}">
-          ${notification.type === "emergency" ? "طارئ" : "عادي"}
-        </span>
-        <div class="card-actions">
-          <button class="btn-delete" onclick="deleteNotification('${notification._id}')">حذف</button>
+    container.innerHTML = notifications.map(notification => {
+      const senderName = notification.createdBy?.name || "النظام";
+      const senderRole = notification.createdBy?.roles?.[0] || "system";
+      
+      // تحديد دور المرسل
+      let roleText = "";
+      switch(senderRole) {
+        case "dean": roleText = "العميد"; break;
+        case "doctor": roleText = "الدكتور"; break;
+        case "leader": roleText = "الليدر"; break;
+        default: roleText = "النظام";
+      }
+
+      return `
+        <div class="card ${notification.type === "emergency" ? "emergency" : ""}">
+          <h4>${notification.type === "emergency" ? "🚨 " : ""}${notification.title}</h4>
+          <p>${notification.message}</p>
+          
+          <div class="card-sender">
+            <strong>المرسل:</strong> ${roleText} ${senderName}
+            <div style="font-size:11px; color:#999; margin-top:2px;">
+              ${new Date(notification.createdAt).toLocaleString('ar-EG')}
+            </div>
+          </div>
+          
+          <span class="card-type ${notification.type === "emergency" ? "emergency" : ""}">
+            ${notification.type === "emergency" ? "طارئ" : "عادي"}
+          </span>
+          <div class="card-actions">
+            <button class="btn-delete" onclick="deleteNotification('${notification._id}')">حذف</button>
+          </div>
         </div>
-      </div>
-    `).join("");
+      `;
+    }).join("");
   }
 
   function openAddNotificationModal() {
@@ -637,3 +693,4 @@
 
 </body>
 </html>
+
