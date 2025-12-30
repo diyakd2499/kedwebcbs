@@ -64,6 +64,7 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
+      position: relative;
     }
 
     .login-right h3 {
@@ -87,16 +88,92 @@
       border-radius: 6px;
       cursor: pointer;
       font-size: 15px;
+      font-weight: 500;
+      transition: all 0.3s;
     }
 
     .login-right button:hover {
       background: #092b4c;
+      transform: translateY(-2px);
+    }
+
+    .login-right button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
     }
 
     .error {
       margin-top: 10px;
-      color: red;
+      color: #d9534f;
       font-size: 14px;
+      padding: 10px;
+      background: #fff1f1;
+      border-radius: 6px;
+      border-right: 4px solid #d9534f;
+      display: none;
+    }
+
+    .success {
+      margin-top: 10px;
+      color: #28a745;
+      font-size: 14px;
+      padding: 10px;
+      background: #f0fff4;
+      border-radius: 6px;
+      border-right: 4px solid #28a745;
+      display: none;
+    }
+
+    .lock-warning {
+      margin-top: 10px;
+      color: #f57c00;
+      font-size: 14px;
+      padding: 10px;
+      background: #fff8e1;
+      border-radius: 6px;
+      border-right: 4px solid #f57c00;
+      display: none;
+    }
+
+    .forgot-password-link {
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .forgot-password-link a {
+      color: #0d3b66;
+      text-decoration: none;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+
+    .forgot-password-link a:hover {
+      color: #1e6091;
+      text-decoration: underline;
+    }
+
+    .remaining-attempts {
+      font-size: 12px;
+      color: #d9534f;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .loading {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
 
     .main-footer {
@@ -111,6 +188,10 @@
         flex-direction: column;
         width: 90%;
         height: auto;
+      }
+      
+      .login-left, .login-right {
+        padding: 30px;
       }
     }
   </style>
@@ -131,9 +212,21 @@
 
     <input type="email" id="email" placeholder="البريد الإلكتروني">
     <input type="password" id="password" placeholder="كلمة المرور">
-    <button onclick="login()">دخول</button>
-
+    
+    <div class="remaining-attempts" id="remainingAttempts"></div>
+    
     <div class="error" id="error"></div>
+    <div class="success" id="success"></div>
+    <div class="lock-warning" id="lockWarning"></div>
+    
+    <button onclick="login()" id="loginBtn">
+      <span id="loginText">دخول</span>
+      <span class="loading" id="loginLoading" style="display: none;"></span>
+    </button>
+    
+    <div class="forgot-password-link">
+      <a href="forgot-password.html">نسيت كلمة المرور؟</a>
+    </div>
   </div>
 
 </div>
@@ -144,37 +237,139 @@
 </footer>
 
 <script>
- document.getElementById("year").innerText = new Date().getFullYear();
+  document.getElementById("year").innerText = new Date().getFullYear();
+
+  // التحقق من وجود توكن سابق
+  const token = localStorage.getItem('token');
+  if (token) {
+    // توجيه مباشر إلى dashboard
+    window.location.href = 'dashboard.html';
+  }
 
   async function login() {
-    const email = document.getElementById("email").value;
+    const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
-
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password })
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      document.getElementById("error").innerText = data;
+    const loginBtn = document.getElementById("loginBtn");
+    const loginText = document.getElementById("loginText");
+    const loginLoading = document.getElementById("loginLoading");
+    
+    // إخفاء جميع الرسائل
+    document.getElementById("error").style.display = "none";
+    document.getElementById("success").style.display = "none";
+    document.getElementById("lockWarning").style.display = "none";
+    document.getElementById("remainingAttempts").style.display = "none";
+    
+    // التحقق من البيانات
+    if (!email || !password) {
+      showError("الرجاء إدخال البريد الإلكتروني وكلمة المرور");
       return;
     }
-
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("user", JSON.stringify(data.user));
-
-    const user = data.user;
     
-    // التحقق من الدور وتوجيه العميد إلى صفحة الـ Admin
-    if (user.roles.includes("dean")) {
-      window.location.href = "admin_dashboard.html";  // توجيه العميد إلى لوحة تحكم الإدارة
-    } else {
-      window.location.href = "dashboard.html";  // توجيه الطلاب والدكاترة إلى لوحة التحكم الخاصة بهم
+    // عرض حالة التحميل
+    loginBtn.disabled = true;
+    loginText.textContent = "جاري تسجيل الدخول...";
+    loginLoading.style.display = "inline-block";
+    
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await res.json();
+      
+      // إعادة تعيين زر الدخول
+      loginBtn.disabled = false;
+      loginText.textContent = "دخول";
+      loginLoading.style.display = "none";
+      
+      if (!res.ok) {
+        // حالة الحساب مقفل
+        if (res.status === 423) {
+          showLockWarning(data.message || "الحساب مقفل مؤقتاً بسبب عدة محاولات فاشلة");
+          return;
+        }
+        
+        // خطأ في تسجيل الدخول
+        let errorMessage = data.message || data;
+        
+        // عرض عدد المحاولات المتبقية
+        if (data.remainingAttempts !== undefined) {
+          document.getElementById("remainingAttempts").textContent = 
+            `المحاولات المتبقية: ${data.remainingAttempts}`;
+          document.getElementById("remainingAttempts").style.display = "block";
+        }
+        
+        showError(errorMessage);
+        return;
+      }
+
+      // تسجيل الدخول ناجح
+      showSuccess("تم تسجيل الدخول بنجاح، جاري التوجيه...");
+      
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      const user = data.user;
+      
+      // التحقق من أول دخول
+      if (user.firstLogin) {
+        // توجيه إلى صفحة تغيير كلمة المرور الإجباري
+        setTimeout(() => {
+          window.location.href = "force-change-password.html";
+        }, 1500);
+      } else {
+        // توجيه حسب الدور
+        setTimeout(() => {
+          if (user.roles.includes("dean")) {
+            window.location.href = "admin_dashboard.html";
+          } else {
+            window.location.href = "dashboard.html";
+          }
+        }, 1500);
+      }
+      
+    } catch (err) {
+      console.error("Login error:", err);
+      
+      // إعادة تعيين زر الدخول
+      loginBtn.disabled = false;
+      loginText.textContent = "دخول";
+      loginLoading.style.display = "none";
+      
+      showError("حدث خطأ في الاتصال بالخادم");
     }
   }
+
+  // دالة لعرض رسالة الخطأ
+  function showError(message) {
+    const errorEl = document.getElementById("error");
+    errorEl.textContent = message;
+    errorEl.style.display = "block";
+  }
+
+  // دالة لعرض رسالة النجاح
+  function showSuccess(message) {
+    const successEl = document.getElementById("success");
+    successEl.textContent = message;
+    successEl.style.display = "block";
+  }
+
+  // دالة لعرض تحذير القفل
+  function showLockWarning(message) {
+    const lockEl = document.getElementById("lockWarning");
+    lockEl.textContent = message;
+    lockEl.style.display = "block";
+  }
+
+  // السماح بالضغط على Enter لتسجيل الدخول
+  document.getElementById("password").addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      login();
+    }
+  });
 </script>
 
 </body>
