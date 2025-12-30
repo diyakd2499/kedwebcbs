@@ -348,13 +348,13 @@
   /* ===== Notifications Count & Toast ===== */
   async function checkNotifications() {
     try {
-      const res = await fetch("http://localhost:5000/api/notifications", {
+      const res = await fetch("/api/notifications", {
         headers: { Authorization: "Bearer " + token }
       });
       const data = await res.json();
       
       // تحديث العداد (غير المقروء)
-      const unreadCountRes = await fetch("http://localhost:5000/api/notifications/unread-count", {
+      const unreadCountRes = await fetch("/api/notifications/unread-count", {
         headers: { Authorization: "Bearer " + token }
       });
       const { count } = await unreadCountRes.json();
