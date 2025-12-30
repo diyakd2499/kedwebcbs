@@ -172,6 +172,15 @@
       color: #d9534f;
     }
 
+    /* ===== Sender Info ===== */
+    .card-sender {
+      font-size: 12px;
+      color: #666;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed #eee;
+    }
+
     .card-actions {
       display: flex;
       gap: 10px;
@@ -379,6 +388,11 @@
       color: #b0b0b0;
     }
 
+    body.dark .card-sender {
+      color: #aaa;
+      border-top-color: #444;
+    }
+
     body.dark .main-header {
       background: #0a2540;
     }
@@ -422,28 +436,6 @@
         width: 95%;
         margin: 20% auto;
       }
-     <!DOCTYPE html>
-<html lang="ar">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>إدارة التنبيهات | كلية تقنية المعلومات</title>
-
-  <style>
-    /* ... (كل CSS كما هو) ... */
-    
-    /* إضافة ستايل للمرسل */
-    .card-sender {
-      font-size: 12px;
-      color: #666;
-      margin-top: 8px;
-      padding-top: 8px;
-      border-top: 1px dashed #eee;
-    }
-    
-    body.dark .card-sender {
-      color: #aaa;
-      border-top-color: #444;
     }
   </style>
 </head>
@@ -517,7 +509,7 @@
   
   if (!token) location.href = "login.html";
 
-  // التحقق من الصلاحيات
+  // التحقق من الصلاحيات (فقط العميد، الدكتور، الليدر)
   const hasManagementRole = user.roles?.some(role => 
     ["dean", "doctor", "leader"].includes(role)
   );
@@ -531,6 +523,9 @@
 
   async function loadNotifications() {
     try {
+      const container = document.getElementById("notifications");
+      container.innerHTML = '<div class="empty-state"><p>جاري تحميل التنبيهات...</p></div>';
+      
       const res = await fetch("/api/notifications", {
         headers: { Authorization: "Bearer " + token }
       });
@@ -558,16 +553,10 @@
 
     container.innerHTML = notifications.map(notification => {
       const senderName = notification.createdBy?.name || "النظام";
-      const senderRole = notification.createdBy?.roles?.[0] || "system";
-      
-      // تحديد دور المرسل
-      let roleText = "";
-      switch(senderRole) {
-        case "dean": roleText = "العميد"; break;
-        case "doctor": roleText = "الدكتور"; break;
-        case "leader": roleText = "الليدر"; break;
-        default: roleText = "النظام";
-      }
+      const roleName = notification.createdBy?.roleName || 
+                      (notification.createdBy?.roles?.[0] === "dean" ? "العميد" :
+                       notification.createdBy?.roles?.[0] === "doctor" ? "الدكتور" :
+                       notification.createdBy?.roles?.[0] === "leader" ? "الليدر" : "النظام");
 
       return `
         <div class="card ${notification.type === "emergency" ? "emergency" : ""}">
@@ -575,7 +564,7 @@
           <p>${notification.message}</p>
           
           <div class="card-sender">
-            <strong>المرسل:</strong> ${roleText} ${senderName}
+            <strong>المرسل:</strong> ${roleName} ${senderName}
             <div style="font-size:11px; color:#999; margin-top:2px;">
               ${new Date(notification.createdAt).toLocaleString('ar-EG')}
             </div>
@@ -610,6 +599,16 @@
       return;
     }
 
+    if (title.length > 100) {
+      showError("عنوان التنبيه يجب أن يكون أقل من 100 حرف");
+      return;
+    }
+
+    if (message.length > 500) {
+      showError("رسالة التنبيه يجب أن تكون أقل من 500 حرف");
+      return;
+    }
+
     try {
       const res = await fetch("/api/notifications", {
         method: "POST",
@@ -622,7 +621,7 @@
 
       if (!res.ok) {
         const error = await res.json();
-        showError(error || "حدث خطأ");
+        showError(error.message || error.error || "حدث خطأ");
         return;
       }
 
@@ -648,7 +647,8 @@
       });
 
       if (!res.ok) {
-        showError("فشل في حذف التنبيه");
+        const error = await res.json();
+        showError(error.message || error.error || "فشل في حذف التنبيه");
         return;
       }
 
@@ -667,12 +667,22 @@
     const errorEl = document.getElementById("errorMessage");
     errorEl.innerText = message;
     errorEl.style.display = "block";
+    
+    // إخفاء الرسالة بعد 5 ثواني
+    setTimeout(() => {
+      errorEl.style.display = "none";
+    }, 5000);
   }
 
   function showSuccess(message) {
     const successEl = document.getElementById("successMessage");
     successEl.innerText = message;
     successEl.style.display = "block";
+    
+    // إخفاء الرسالة بعد 3 ثواني
+    setTimeout(() => {
+      successEl.style.display = "none";
+    }, 3000);
   }
 
   function clearMessages() {
@@ -688,9 +698,9 @@
     }
   };
 
+  // تحميل التنبيهات عند فتح الصفحة
   loadNotifications();
 </script>
 
 </body>
 </html>
-
