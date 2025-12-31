@@ -221,10 +221,10 @@ userSchema.methods.changePasswordFirstLogin = async function(newPassword) {
 userSchema.methods.incrementFailedAttempts = async function() {
   this.failedLoginAttempts += 1;
   
-  // إذا كانت المحاولات 5 أو أكثر، قفل الحساب لمدة 15 دقيقة
-  if (this.failedLoginAttempts >= 5) {
-    this.lockUntil = new Date(Date.now() + 15 * 60 * 1000);
-  }
+  // تم إيقاف ميزة قفل الحساب بناءً على طلب المستخدم
+  // if (this.failedLoginAttempts >= 5) {
+  //   this.lockUntil = new Date(Date.now() + 15 * 60 * 1000);
+  // }
   
   await this.save();
   return this;
@@ -257,9 +257,7 @@ userSchema.methods.resetFailedAttempts = async function() {
 
 // التحقق إذا كان الحساب مقفولاً
 userSchema.methods.isLocked = function() {
-  if (this.lockUntil) {
-    return Date.now() < this.lockUntil;
-  }
+  // تم إيقاف ميزة قفل الحساب بناءً على طلب المستخدم
   return false;
 };
 
