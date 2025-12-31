@@ -415,11 +415,8 @@ router.post("/reset-password", async (req, res) => {
       });
     }
 
-    // تشفير كلمة المرور الجديدة
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    
-    // تحديث كلمة المرور
-    user.password = hashedPassword;
+    // تحديث كلمة المرور (سيتم تشفيرها تلقائياً في User model middleware)
+    user.password = newPassword;
     user.resetPasswordCode = null;
     user.resetPasswordExpires = null;
     user.firstLogin = false; // بعد إعادة التعيين، لم يعد أول دخول
@@ -507,11 +504,8 @@ router.post("/force-change-password", auth, async (req, res) => {
       });
     }
 
-    // تشفير كلمة المرور الجديدة
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    
-    // تحديث كلمة المرور
-    user.password = hashedPassword;
+    // تحديث كلمة المرور (سيتم تشفيرها تلقائياً في User model middleware)
+    user.password = newPassword;
     user.firstLogin = false;
     user.passwordChangedAt = new Date();
     
@@ -609,11 +603,8 @@ router.post("/change-password", auth, async (req, res) => {
       });
     }
 
-    // تشفير كلمة المرور الجديدة
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    
-    // تحديث كلمة المرور
-    user.password = hashedPassword;
+    // تحديث كلمة المرور (سيتم تشفيرها تلقائياً في User model middleware)
+    user.password = newPassword;
     user.firstLogin = false;
     user.passwordChangedAt = new Date();
     
