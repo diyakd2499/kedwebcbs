@@ -1,6 +1,5 @@
 const router = require("express").Router();
 const User = require("../models/User");
-const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const auth = require("../middleware/auth.middleware");
 const role = require("../middleware/role.middleware");
@@ -31,21 +30,19 @@ router.post("/register", auth, role("dean"), async (req, res) => {
       });
     }
 
-    // إنشاء المستخدم الجديد مع firstLogin = true
-    // ملاحظة: يتم تشفير كلمة المرور تلقائياً في User model middleware
+    // إنشاء المستخدم الجديد - تمرير كلمة المرور كنص عادي
     const user = await User.create({
       name: name.trim(),
       email: email.toLowerCase().trim(),
-      password: password,
+      password: password, // تمرير كنص عادي - سيشفر في الـmodel
       roles: Array.isArray(roles) ? roles : [roles],
-      firstLogin: true, // إجبار تغيير كلمة المرور عند أول دخول
+      firstLogin: true,
       isActive: true
     });
 
     // إرجاع بيانات المستخدم بدون كلمة المرور
     const userResponse = user.toObject();
     delete userResponse.password;
-    delete userResponse.resetPasswordCode;
 
     res.status(201).json({
       success: true,
@@ -78,6 +75,7 @@ router.post("/login", async (req, res) => {
     const user = await User.findOne({ email: email.toLowerCase().trim() });
 
     if (!user) {
+      console.log(`❌ المستخدم غير موجود: ${email}`);
       return res.status(401).json({
         success: false,
         message: "بيانات الدخول غير صحيحة"
@@ -92,35 +90,21 @@ router.post("/login", async (req, res) => {
       });
     }
 
-    // التحقق من قفل الحساب
-    if (user.isLocked()) {
-      const remainingTime = user.getLockRemainingTime();
-      const minutes = Math.floor(remainingTime / 60);
-      const seconds = remainingTime % 60;
-      
-      return res.status(423).json({
-        success: false,
-        message: `الحساب مقفل مؤقتاً. يرجى المحاولة بعد ${minutes} دقيقة و ${seconds} ثانية`,
-        locked: true,
-        remainingTime
-      });
-    }
-
-    // التحقق من كلمة المرور
-    const ok = await bcrypt.compare(password, user.password);
-
-    if (!ok) {
-      // تم إيقاف زيادة المحاولات والقفل بناءً على طلب المستخدم
+    // استخدام دالة comparePassword من النموذج (دون أي تشفير يدوي)
+    console.log(`🔍 محاولة تسجيل دخول: ${email}`);
+    
+    const isMatch = await user.comparePassword(password);
+    
+    console.log(`✅ نتيجة مقارنة كلمة المرور: ${isMatch}`);
+    
+    if (!isMatch) {
       return res.status(401).json({
         success: false,
         message: "بيانات الدخول غير صحيحة"
       });
     }
 
-    // إعادة تعيين المحاولات الفاشلة بعد تسجيل الدخول الناجح
-    await user.resetFailedAttempts();
-
-    // إنشاء توكن مع معلومات firstLogin
+    // إنشاء توكن
     const token = jwt.sign(
       { 
         id: user._id,
@@ -155,7 +139,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// ========== طلب إعادة تعيين كلمة المرور (نسيت كلمة المرور) ==========
+// ========== طلب إعادة تعيين كلمة المرور ==========
 router.post("/forgot-password", async (req, res) => {
   try {
     const { email } = req.body;
@@ -170,7 +154,7 @@ router.post("/forgot-password", async (req, res) => {
     // البحث عن المستخدم
     const user = await User.findOne({ email: email.toLowerCase().trim() });
 
-    // لأسباب أمنية، نعطي نفس الرسالة سواء كان المستخدم موجوداً أم لا
+    // لأسباب أمنية، نعطي نفس الرسالة
     if (!user) {
       return res.json({
         success: true,
@@ -186,34 +170,20 @@ router.post("/forgot-password", async (req, res) => {
       });
     }
 
-    // التحقق من إمكانية إعادة إرسال الكود (كل 30 ثانية)
-    if (!user.canResendCode()) {
-      return res.status(429).json({
-        success: false,
-        message: "الرجاء الانتظار 30 ثانية قبل طلب كود جديد",
-        canResend: false
-      });
-    }
-
     // إنشاء كود جديد (6 أرقام)
     const resetCode = crypto.randomInt(100000, 999999).toString();
     user.resetPasswordCode = resetCode;
     user.resetPasswordExpires = new Date(Date.now() + 20 * 60 * 1000); // 20 دقيقة
-    user.lastCodeSentAt = new Date();
     
     await user.save();
 
-    // TODO: هنا يجب إرسال البريد الإلكتروني بالفعل
-    // يمكنك استخدام nodemailer أو أي خدمة بريد أخرى
-    console.log(`Password reset code for ${user.email}: ${resetCode}`);
-    
-    // في بيئة الإنتاج، أزل console.log واستخدم خدمة البريد الإلكتروني
+    // TODO: إرسال البريد الإلكتروني
+    console.log(`📧 Password reset code for ${user.email}: ${resetCode}`);
 
     res.json({
       success: true,
       message: "تم إرسال كود إعادة التعيين إلى بريدك الإلكتروني",
-      email: user.email,
-      expiresIn: 20 // بالدقائق
+      email: user.email
     });
   } catch (err) {
     console.error("Forgot password error:", err);
@@ -246,7 +216,7 @@ router.post("/verify-reset-code", async (req, res) => {
       });
     }
 
-    // التحقق من صحة الكود وانتهاء الصلاحية
+    // التحقق من صحة الكود
     if (!user.resetPasswordCode || 
         user.resetPasswordCode !== code || 
         new Date() > user.resetPasswordExpires) {
@@ -256,7 +226,7 @@ router.post("/verify-reset-code", async (req, res) => {
       });
     }
 
-    // إنشاء توكن مؤقت للتحقق (صلاحية 10 دقائق)
+    // إنشاء توكن مؤقت
     const tempToken = jwt.sign(
       { 
         id: user._id,
@@ -276,64 +246,6 @@ router.post("/verify-reset-code", async (req, res) => {
     });
   } catch (err) {
     console.error("Verify code error:", err);
-    res.status(500).json({
-      success: false,
-      message: "حدث خطأ في الخادم"
-    });
-  }
-});
-
-// ========== إعادة إرسال كود التحقق ==========
-router.post("/resend-reset-code", async (req, res) => {
-  try {
-    const { email } = req.body;
-
-    if (!email) {
-      return res.status(400).json({
-        success: false,
-        message: "البريد الإلكتروني مطلوب"
-      });
-    }
-
-    // البحث عن المستخدم
-    const user = await User.findOne({ email: email.toLowerCase().trim() });
-
-    // لأسباب أمنية، نعطي نفس الرسالة
-    if (!user) {
-      return res.json({
-        success: true,
-        message: "إذا كان البريد الإلكتروني مسجل لدينا، ستصلك رسالة بالتعليمات خلال دقائق"
-      });
-    }
-
-    // التحقق من إمكانية إعادة الإرسال
-    if (!user.canResendCode()) {
-      return res.status(429).json({
-        success: false,
-        message: "الرجاء الانتظار 30 ثانية قبل طلب كود جديد",
-        canResend: false
-      });
-    }
-
-    // إنشاء كود جديد
-    const newCode = crypto.randomInt(100000, 999999).toString();
-    user.resetPasswordCode = newCode;
-    user.resetPasswordExpires = new Date(Date.now() + 20 * 60 * 1000);
-    user.lastCodeSentAt = new Date();
-    
-    await user.save();
-
-    // TODO: إرسال البريد الإلكتروني
-    console.log(`New reset code for ${user.email}: ${newCode}`);
-
-    res.json({
-      success: true,
-      message: "تم إعادة إرسال كود إعادة التعيين",
-      email: user.email,
-      expiresIn: 20
-    });
-  } catch (err) {
-    console.error("Resend code error:", err);
     res.status(500).json({
       success: false,
       message: "حدث خطأ في الخادم"
@@ -415,13 +327,11 @@ router.post("/reset-password", async (req, res) => {
       });
     }
 
-    // تحديث كلمة المرور (سيتم تشفيرها تلقائياً في User model middleware)
-    user.password = newPassword;
+    // تحديث كلمة المرور - تمرير كنص عادي فقط
+    user.password = newPassword; // نص عادي - سيشفر في الـmodel
     user.resetPasswordCode = null;
     user.resetPasswordExpires = null;
-    user.firstLogin = false; // بعد إعادة التعيين، لم يعد أول دخول
-    user.failedLoginAttempts = 0;
-    user.lockUntil = null;
+    user.firstLogin = false;
     
     await user.save();
 
@@ -484,8 +394,8 @@ router.post("/force-change-password", auth, async (req, res) => {
       });
     }
 
-    // التحقق من كلمة المرور الحالية
-    const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.password);
+    // التحقق من كلمة المرور الحالية باستخدام دالة النموذج
+    const isCurrentPasswordValid = await user.comparePassword(currentPassword);
 
     if (!isCurrentPasswordValid) {
       return res.status(401).json({
@@ -494,24 +404,14 @@ router.post("/force-change-password", auth, async (req, res) => {
       });
     }
 
-    // التحقق من أن كلمة المرور الجديدة مختلفة عن القديمة
-    const isSamePassword = await bcrypt.compare(newPassword, user.password);
-
-    if (isSamePassword) {
-      return res.status(400).json({
-        success: false,
-        message: "كلمة المرور الجديدة يجب أن تكون مختلفة عن القديمة"
-      });
-    }
-
-    // تحديث كلمة المرور (سيتم تشفيرها تلقائياً في User model middleware)
-    user.password = newPassword;
+    // تحديث كلمة المرور - نص عادي فقط
+    user.password = newPassword; // نص عادي - سيشفر في الـmodel
     user.firstLogin = false;
     user.passwordChangedAt = new Date();
     
     await user.save();
 
-    // إنشاء توكن جديد بعد تغيير كلمة المرور
+    // إنشاء توكن جديد
     const newToken = jwt.sign(
       { 
         id: user._id,
@@ -583,8 +483,8 @@ router.post("/change-password", auth, async (req, res) => {
       });
     }
 
-    // التحقق من كلمة المرور الحالية
-    const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.password);
+    // التحقق من كلمة المرور الحالية باستخدام دالة النموذج
+    const isCurrentPasswordValid = await user.comparePassword(currentPassword);
 
     if (!isCurrentPasswordValid) {
       return res.status(401).json({
@@ -593,18 +493,8 @@ router.post("/change-password", auth, async (req, res) => {
       });
     }
 
-    // التحقق من أن كلمة المرور الجديدة مختلفة عن القديمة
-    const isSamePassword = await bcrypt.compare(newPassword, user.password);
-
-    if (isSamePassword) {
-      return res.status(400).json({
-        success: false,
-        message: "كلمة المرور الجديدة يجب أن تكون مختلفة عن القديمة"
-      });
-    }
-
-    // تحديث كلمة المرور (سيتم تشفيرها تلقائياً في User model middleware)
-    user.password = newPassword;
+    // تحديث كلمة المرور - نص عادي فقط
+    user.password = newPassword; // نص عادي - سيشفر في الـmodel
     user.firstLogin = false;
     user.passwordChangedAt = new Date();
     
