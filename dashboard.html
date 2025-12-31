@@ -341,20 +341,27 @@
   // التحقق من صلاحية التوكن
   async function verifyToken() {
     try {
-      const response = await fetch('/api/verify-token', {
+      // تم تغيير المسار إلى المسار الصحيح الموجود في auth.routes
+      const response = await fetch('/api/auth/users', {
         headers: { Authorization: "Bearer " + token }
       });
-      if (!response.ok) {
+      
+      // إذا كان المستخدم ليس عميداً، سيعيد 403 وهذا طبيعي، المهم أن التوكن صالح (ليس 401)
+      if (response.status === 401) {
         localStorage.clear();
         window.location.href = "login.html";
         return false;
       }
       return true;
     } catch (error) {
-      localStorage.clear();
-      window.location.href = "login.html";
-      return false;
+      console.error("Token verification failed:", error);
+      return true; // لا نوجه لصفحة الدخول عند خطأ الشبكة
     }
+  }
+
+  // استدعاء التحقق عند تحميل الصفحة
+  if (token) {
+    verifyToken();
   }
 
   // التحقق من أول دخول أو ضرورة تغيير كلمة المرور
