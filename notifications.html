@@ -1,305 +1,366 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>التنبيهات | كلية تقنية المعلومات</title>
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap');
+  
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
 
+  <style>
     :root {
-      --primary: #0d3b66;
-      --secondary: #1e6091;
-      --accent-blue: #1e90ff;
-      --accent-red: #d9534f;
-      --bg-light: #f4f7f9;
-      --card-bg: #ffffff;
-      --text-main: #2d3436;
-      --text-muted: #636e72;
+      /* Palette - Modern Blue & Clean Grays */
+      --primary: #2563eb;
+      --primary-dark: #1e40af;
+      --bg-body: #f8fafc;
+      --bg-card: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      
+      /* Accents */
+      --accent-danger: #ef4444;
+      --accent-danger-bg: #fef2f2;
+      --accent-success: #10b981;
+      
+      /* Effects */
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -2px rgba(0,0,0,0.025);
+      --radius-lg: 16px;
+      --radius-md: 12px;
     }
 
-    * {
-      box-sizing: border-box;
-      font-family: 'Cairo', sans-serif;
-      transition: all 0.3s ease;
-    }
-
-    body {
-      margin: 0;
-      background: var(--bg-light);
-      color: var(--text-main);
-      min-height: 100vh;
-      line-height: 1.6;
-    }
-
-    /* ===== Dark Mode ===== */
+    /* ===== Dark Mode Variables ===== */
     body.dark {
-      --bg-light: #0f172a;
-      --card-bg: #1e293b;
+      --primary: #60a5fa;
+      --primary-dark: #3b82f6;
+      --bg-body: #0f172a;
+      --bg-card: #1e293b;
       --text-main: #f1f5f9;
       --text-muted: #94a3b8;
-      --primary: #60a5fa; /* تحسين اللون في الوضع الليلي ليكون أوضح */
+      --border-color: #334155;
+      --accent-danger-bg: rgba(239, 68, 68, 0.1);
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.3);
     }
 
-    /* ===== Header Modern Design ===== */
+    * { box-sizing: border-box; transition: background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s; }
+    
+    body {
+      margin: 0;
+      font-family: 'Cairo', sans-serif;
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ===== Header ===== */
     .main-header {
-      background: #0d3b66; /* لون ثابت لضمان الهوية البصرية */
-      backdrop-filter: blur(15px);
-      -webkit-backdrop-filter: blur(15px);
-      color: white;
-      padding: 12px 5%;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.75rem 0;
+    }
+    
+    body.dark .main-header {
+      background: rgba(30, 41, 59, 0.85);
+    }
+
+    .header-content {
+      max-width: 800px; /* جعل المحتوى مركزي */
+      margin: 0 auto;
+      padding: 0 1.5rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      position: sticky;
-      top: 0;
-      z-index: 2000;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    .header-left {
+    .brand {
       display: flex;
       align-items: center;
-      gap: 15px;
+      gap: 12px;
     }
 
     .logo {
-      width: 50px;
-      height: 50px;
+      width: 42px;
+      height: 42px;
       object-fit: contain;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+      border-radius: 8px;
     }
 
-    .header-title strong { 
-      font-size: 17px; 
-      display: block; 
+    .brand-text h1 {
+      font-size: 1rem;
       font-weight: 700;
+      margin: 0;
       line-height: 1.2;
+      color: var(--text-main);
     }
-    .header-title small { 
-      font-size: 12px; 
-      opacity: 0.85; 
-      font-weight: 300;
+    
+    .brand-text span {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 400;
     }
 
-    .header-actions { display: flex; gap: 10px; align-items: center; }
-
-    .btn-header {
-      background: rgba(255,255,255,0.1);
-      color: white;
-      border: 1px solid rgba(255,255,255,0.2);
-      padding: 8px 16px;
-      border-radius: 12px;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 600;
+    .header-actions {
       display: flex;
-      align-items: center;
       gap: 8px;
     }
 
-    .btn-header:hover { 
-      background: white; 
-      color: #0d3b66; 
+    .icon-btn {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+
+    .icon-btn:hover {
+      background-color: var(--primary);
+      border-color: var(--primary);
+      color: white;
       transform: translateY(-2px);
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     }
 
-    /* ===== Content Container ===== */
+    /* ===== Main Layout ===== */
     .container {
-      padding: 40px 5%;
-      max-width: 1200px; /* تم زيادته ليتناسب مع لوحة التحكم والمواد */
-      margin: auto;
+      max-width: 800px; /* عرض مثالي للقراءة */
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      width: 100%;
+      flex: 1;
     }
 
-    .page-header {
+    .page-head {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      margin-bottom: 30px;
-      border-bottom: 2px solid rgba(0,0,0,0.05);
-      padding-bottom: 15px;
+      align-items: flex-end;
+      margin-bottom: 2rem;
     }
 
-    body.dark .page-header { border-color: rgba(255,255,255,0.05); }
-
     .page-title {
-      font-size: 24px;
-      font-weight: 700;
-      color: var(--primary);
+      font-size: 1.75rem;
+      font-weight: 800;
+      margin: 0;
       display: flex;
       align-items: center;
       gap: 10px;
+      color: var(--text-main);
     }
+    
+    .page-title i { color: var(--primary); }
 
-    .btn-read-all {
-      background: var(--accent-blue);
-      color: white;
+    .btn-text {
+      background: none;
       border: none;
-      padding: 8px 18px;
-      border-radius: 10px;
-      font-size: 13px;
+      color: var(--primary);
       font-weight: 600;
+      font-size: 0.9rem;
       cursor: pointer;
-      box-shadow: 0 4px 10px rgba(30, 144, 255, 0.2);
+      padding: 5px 10px;
+      border-radius: 8px;
+    }
+    
+    .btn-text:hover { background: rgba(37, 99, 235, 0.1); }
+
+    /* ===== Notification Cards ===== */
+    #notes {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
     }
 
-    .btn-read-all:hover {
-      filter: brightness(1.1);
-      transform: translateY(-2px);
-    }
-
-    /* ===== Notification & Material Cards ===== */
-    .note, .card {
-      background: var(--card-bg);
-      padding: 22px;
-      margin-bottom: 18px;
-      border-radius: 20px; /* زوايا أكثر نعومة */
-      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-      border: 1px solid rgba(0,0,0,0.03);
+    .note-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
       position: relative;
-      cursor: pointer;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+      cursor: default;
       overflow: hidden;
-      text-decoration: none;
+      animation: fadeIn 0.4s ease-out;
+    }
+    
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .note-card.interactive { cursor: pointer; }
+    .note-card.interactive:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+      border-color: var(--primary);
     }
 
-    .note:hover, .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 15px 30px rgba(0,0,0,0.1);
-      border-color: var(--accent-blue);
-    }
-
-    /* مؤشر الحالة للتنبيهات */
-    .note.unread::before {
-      content: '';
+    /* Unread Indicator */
+    .unread-indicator {
       position: absolute;
-      top: 22px;
-      right: 12px;
+      top: 1.25rem;
+      left: 1.25rem; /* وضع النقطة في اليسار */
       width: 10px;
       height: 10px;
-      background: var(--accent-blue);
+      background-color: var(--primary);
       border-radius: 50%;
-      box-shadow: 0 0 10px var(--accent-blue);
+      box-shadow: 0 0 0 4px var(--bg-card);
+    }
+    
+    .note-card.emergency .unread-indicator { background-color: var(--accent-danger); }
+
+    /* Header inside card */
+    .note-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
     }
 
-    .note.emergency.unread::before {
-      background: var(--accent-red);
-      box-shadow: 0 0 10px var(--accent-red);
-    }
-
-    .note-title, .card-title {
+    .note-title {
+      font-size: 1.1rem;
       font-weight: 700;
-      margin-bottom: 10px;
-      color: var(--primary);
-      font-size: 18px;
-      padding-right: 18px;
+      color: var(--text-main);
+      margin: 0;
+      padding-left: 15px; /* مساحة للنقطة الحمراء */
     }
 
-    .note-message, .card-message {
-      font-size: 15px;
-      color: var(--text-muted);
-      margin-bottom: 15px;
-    }
-
-    .note-date {
-      font-size: 12px;
-      color: var(--text-muted);
+    .note-meta {
       display: flex;
       align-items: center;
-      gap: 5px;
-      font-weight: 600;
+      gap: 6px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+    
+    .note-body {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
     }
 
-    /* ===== Emergency Style ===== */
-    .note.emergency {
-      border-right: 6px solid var(--accent-red);
-      background: linear-gradient(to left, rgba(217, 83, 79, 0.03), var(--card-bg));
+    /* Emergency Style */
+    .note-card.emergency {
+      background-color: var(--accent-danger-bg);
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+    
+    .note-card.emergency .note-title {
+      color: var(--accent-danger);
     }
 
-    .note.emergency.unread {
-      background: rgba(217, 83, 79, 0.05);
-      animation: softPulse 2s infinite;
+    .emergency-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--accent-danger);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      margin-bottom: 5px;
     }
 
-    @keyframes softPulse {
-      0% { box-shadow: 0 0 0 0 rgba(217, 83, 79, 0.2); }
-      70% { box-shadow: 0 0 0 10px rgba(217, 83, 79, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(217, 83, 79, 0); }
-    }
-
+    /* Empty State */
     .empty-state {
       text-align: center;
-      padding: 80px 20px;
+      padding: 4rem 1rem;
       color: var(--text-muted);
     }
-    .empty-state-icon { font-size: 60px; margin-bottom: 15px; opacity: 0.3; }
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.2;
+      display: block;
+    }
 
     /* ===== Footer ===== */
     .main-footer {
-      padding: 30px;
       text-align: center;
-      font-size: 13px;
+      padding: 2rem;
+      font-size: 0.85rem;
       color: var(--text-muted);
-      border-top: 1px solid rgba(0,0,0,0.05);
-      margin-top: auto;
+      border-top: 1px solid var(--border-color);
+      background: var(--bg-card);
     }
 
-    /* ===== Mobile Responsive ===== */
-    @media (max-width: 768px) {
-      .container { padding: 25px 15px; }
-      .page-title { font-size: 20px; }
-      .note, .card { padding: 18px; }
-      .main-header { padding: 10px 15px; }
-      .header-title strong { font-size: 15px; }
-      .btn-header span { display: none; } /* إخفاء النص في الأزرار للجوال لبقاء الأيقونة */
+    /* Mobile Tweaks */
+    @media (max-width: 600px) {
+      .container { padding: 1.5rem 1rem; }
+      .page-title { font-size: 1.5rem; }
+      .note-card { padding: 1rem; }
+      .header-content { padding: 0 1rem; }
+      .brand-text h1 { font-size: 0.9rem; }
+      .brand-text span { display: none; } /* تبسيط الشعار في الموبايل */
     }
   </style>
 </head>
 
 <body>
 
-<!-- ===== Header ===== -->
 <header class="main-header">
-  <div class="header-left">
-    <img src="assets/logo.png" class="logo">
-    <div class="header-title">
-      <strong>كلية تقنية المعلومات</strong><br>
-      <small>جامعة النصر التقنية</small>
+  <div class="header-content">
+    <div class="brand">
+      <img src="assets/logo.png" class="logo" alt="Logo">
+      <div class="brand-text">
+        <h1>كلية تقنية المعلومات</h1>
+        <span>جامعة النصر التقنية</span>
+      </div>
     </div>
-  </div>
 
-  <div class="header-actions">
-    <button class="btn" onclick="history.back()">⬅ رجوع</button>
-    <button class="btn" onclick="toggleDark()">🌙</button>
+    <div class="header-actions">
+      <button class="icon-btn" onclick="toggleDark()" title="الوضع الليلي">
+        <i class="ri-moon-line" id="themeIcon"></i>
+      </button>
+      <button class="icon-btn" onclick="history.back()" title="رجوع">
+        <i class="ri-arrow-left-line"></i>
+      </button>
+    </div>
   </div>
 </header>
 
-<!-- ===== Content ===== -->
 <div class="container">
-  <div class="page-header">
-    <h2 class="page-title">🔔 التنبيهات</h2>
-    <button class="btn" id="readAllBtn" onclick="markAllAsRead()" style="display:none; font-size: 12px;">تحديد الكل كمقروء</button>
+  <div class="page-head">
+    <h2 class="page-title"><i class="ri-notification-3-fill"></i> التنبيهات</h2>
+    <button class="btn-text" id="readAllBtn" onclick="markAllAsRead()" style="display:none;">
+      <i class="ri-check-double-line"></i> تحديد الكل كمقروء
+    </button>
   </div>
   
-  <div id="notes"></div>
+  <div id="notes">
+    </div>
 </div>
 
 <footer class="main-footer">
-  إنشاء: <strong>ضياء الدين إبراهيم</strong> —  
-  حقوق النشر © <span id="year"></span> جامعة النصر التقنية
+  <div>حقوق النشر © <span id="year"></span> جامعة النصر التقنية</div>
+  <div style="margin-top: 5px; opacity: 0.6; font-size: 0.75rem;">تطوير: ضياء الدين إبراهيم</div>
 </footer>
 
 <script>
+  // تحديث السنة
   document.getElementById("year").innerText = new Date().getFullYear();
 
   const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
+  // التحقق من تسجيل الدخول
   if (!token) {
     window.location.href = "login.html";
   }
 
+  // دالة جلب التنبيهات (Backend Logic لم يتم المساس به)
   async function loadNotifications() {
     try {
       const res = await fetch("/api/notifications", {
@@ -311,39 +372,62 @@
       const readAllBtn = document.getElementById("readAllBtn");
 
       if (data.length === 0) {
-        container.innerHTML = '<div class="empty-state"><p>لا توجد تنبيهات حالياً</p></div>';
+        container.innerHTML = `
+          <div class="empty-state">
+            <i class="ri-notification-off-line"></i>
+            <p>لا توجد تنبيهات جديدة حالياً</p>
+          </div>`;
         readAllBtn.style.display = "none";
         return;
       }
 
       const unreadExists = data.some(n => !n.readBy || !n.readBy.includes(user._id));
-      readAllBtn.style.display = unreadExists ? "block" : "none";
+      readAllBtn.style.display = unreadExists ? "inline-flex" : "none";
 
+      // توليد HTML الحديث للبطاقات
       container.innerHTML = data.map(n => {
         const isUnread = !n.readBy || !n.readBy.includes(user._id);
+        const isEmergency = n.type === "emergency";
+        
+        // تنسيق التاريخ ليكون أكثر احترافية
+        const dateObj = new Date(n.createdAt);
+        const dateStr = dateObj.toLocaleDateString('ar-EG', { day: 'numeric', month: 'short' });
+        const timeStr = dateObj.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+
         return `
-          <div class="note ${n.type === "emergency" ? "emergency" : ""} ${isUnread ? "unread" : ""}" 
+          <div class="note-card ${isEmergency ? 'emergency' : ''} ${isUnread ? 'interactive' : ''}" 
                id="note-${n._id}" 
                onclick="${isUnread ? `markAsRead('${n._id}')` : ''}">
-            <div class="note-title">
-              ${n.type === "emergency" ? "🚨 " : ""}${n.title}
-            </div>
-            <div class="note-message">${n.message}</div>
-            <div class="note-date">
-              <span>${new Date(n.createdAt).toLocaleString('ar-EG')}</span>
-              ${isUnread ? '<span class="unread-tag">جديد</span>' : ''}
+            
+            ${isUnread ? '<div class="unread-indicator"></div>' : ''}
+            
+            <div class="note-content">
+              ${isEmergency ? '<div class="emergency-badge"><i class="ri-alarm-warning-fill"></i> هام وعاجل</div>' : ''}
+              
+              <h3 class="note-title">${n.title}</h3>
+              
+              <div class="note-meta">
+                <i class="ri-time-line"></i>
+                <span>${dateStr} • ${timeStr}</span>
+              </div>
+              
+              <div class="note-body" style="margin-top: 10px;">
+                ${n.message}
+              </div>
             </div>
           </div>
         `;
       }).join("");
 
-      // تحديث عداد الفحص الأخير
       localStorage.setItem("lastNotifCheck", Date.now());
     } catch (err) {
       console.error("Error loading notifications:", err);
+      // Fallback in case of error
+      document.getElementById("notes").innerHTML = `<div class="empty-state">حدث خطأ في تحميل التنبيهات</div>`;
     }
   }
 
+  // دالة تحديد كـ مقروء (Backend Logic لم يتم المساس به)
   async function markAsRead(id) {
     try {
       const res = await fetch(`/api/notifications/read/${id}`, {
@@ -353,14 +437,16 @@
       
       if (res.ok) {
         const noteEl = document.getElementById(`note-${id}`);
-        noteEl.classList.remove("unread");
-        const tag = noteEl.querySelector(".unread-tag");
-        if (tag) tag.remove();
+        // إزالة مؤشر غير المقروء وتحديث الستايل
+        const indicator = noteEl.querySelector(".unread-indicator");
+        if(indicator) indicator.remove();
+        
+        noteEl.classList.remove("interactive");
         noteEl.onclick = null;
         
-        // التحقق إذا كان لا يزال هناك غير مقروء
-        const unreadNotes = document.querySelectorAll(".note.unread");
-        if (unreadNotes.length === 0) {
+        // التحقق مما إذا بقي أي تنبيه غير مقروء لإخفاء زر "الكل"
+        const remainingUnread = document.querySelectorAll(".unread-indicator");
+        if (remainingUnread.length === 0) {
           document.getElementById("readAllBtn").style.display = "none";
         }
       }
@@ -369,6 +455,7 @@
     }
   }
 
+  // دالة تحديد الكل كمقروء (Backend Logic لم يتم المساس به)
   async function markAllAsRead() {
     try {
       const res = await fetch("/api/notifications/read-all", {
@@ -386,14 +473,27 @@
 
   loadNotifications();
 
-  /* ===== Dark Mode ===== */
+  /* ===== Dark Mode Logic ===== */
   function toggleDark() {
     document.body.classList.toggle("dark");
-    localStorage.setItem("darkMode", document.body.classList.contains("dark"));
+    const isDark = document.body.classList.contains("dark");
+    localStorage.setItem("darkMode", isDark);
+    updateThemeIcon(isDark);
   }
 
+  function updateThemeIcon(isDark) {
+    const icon = document.getElementById("themeIcon");
+    if(isDark) {
+      icon.className = "ri-sun-line";
+    } else {
+      icon.className = "ri-moon-line";
+    }
+  }
+
+  // Initialize Theme
   if (localStorage.getItem("darkMode") === "true") {
     document.body.classList.add("dark");
+    updateThemeIcon(true);
   }
 </script>
 
