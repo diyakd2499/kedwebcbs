@@ -10,6 +10,8 @@
 
   <style>
     :root {
+      /* تم تعديل الألوان لتطابق الصورة المرفقة */
+      --brand-bg: #0f1525; /* لون الخلفية الكحلي الداكن من الصورة */
       --primary: #2563eb;
       --primary-dark: #1e40af;
       --text-main: #0f172a;
@@ -39,9 +41,10 @@
     .login-wrapper {
       width: 100%;
       display: flex;
+      flex-direction: row; /* ترتيب العناصر */
     }
 
-    /* Right Side (Form) */
+    /* Right Side (Form) - المكان الذي يدخل فيه المستخدم بياناته */
     .form-side {
       flex: 1;
       display: flex;
@@ -52,12 +55,14 @@
       position: relative;
       max-width: 600px;
       margin: 0 auto;
+      z-index: 2;
     }
 
-    /* Left Side (Brand) */
+    /* Left Side (Brand) - تم التعديل ليطابق الصورة */
     .brand-side {
       flex: 1.2;
-      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+      /* الخلفية الكحلية الداكنة */
+      background-color: var(--brand-bg);
       position: relative;
       display: flex;
       flex-direction: column;
@@ -66,39 +71,67 @@
       color: white;
       text-align: center;
       padding: 40px;
-      /* Pattern Overlay */
-      background-image: radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px);
-      background-size: 30px 30px;
     }
 
-    /* ===== Brand Elements ===== */
-    .brand-logo {
-      width: 120px;
-      height: 120px;
-      object-fit: contain;
-      margin-bottom: 25px;
-      filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2));
+    /* محاكاة تصميم الصورة */
+    .login-left-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+
+    /* ===== Brand Elements (مطابقة للصورة) ===== */
+    .brand-logo-container {
       background: white;
       border-radius: 50%;
-      padding: 10px;
+      width: 140px;
+      height: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      box-shadow: 0 0 30px rgba(255, 255, 255, 0.05);
+    }
+
+    .brand-logo {
+      width: 110px;
+      height: 110px;
+      object-fit: contain;
     }
 
     .brand-title {
-      font-size: 2.5rem;
+      font-size: 2.8rem; /* خط كبير وعريض كما في الصورة */
       font-weight: 800;
       margin: 0;
       line-height: 1.2;
+      letter-spacing: -1px;
     }
 
     .brand-subtitle {
-      font-size: 1.1rem;
-      opacity: 0.9;
-      margin-top: 15px;
-      font-weight: 300;
-      max-width: 400px;
+      font-size: 1.4rem;
+      color: #cbd5e1; /* لون رمادي فاتح للنص الفرعي */
+      margin-top: 5px;
+      font-weight: 400;
+    }
+
+    .brand-desc {
+        margin-top: 15px;
+        font-size: 0.95rem;
+        opacity: 0.7;
+        max-width: 400px;
+        line-height: 1.6;
     }
 
     /* ===== Form Elements ===== */
+    /* شعار يظهر فقط في الموبايل */
+    .mobile-logo {
+        display: none;
+        width: 80px;
+        margin-bottom: 20px;
+        align-self: center;
+    }
+
     .header-text h2 {
       font-size: 2rem;
       color: var(--text-main);
@@ -141,7 +174,7 @@
 
     .form-control {
       width: 100%;
-      padding: 14px 45px 14px 15px; /* مساحة للأيقونة يمين */
+      padding: 14px 45px 14px 15px;
       border: 2px solid var(--border);
       border-radius: 12px;
       font-size: 1rem;
@@ -156,7 +189,6 @@
       box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
     }
 
-    /* زر الدخول */
     .btn-login {
       width: 100%;
       padding: 15px;
@@ -186,10 +218,9 @@
       transform: none;
     }
 
-    /* Links */
     .forgot-pass {
       display: block;
-      text-align: left; /* تغيير الاتجاه لليسار */
+      text-align: left;
       margin-top: 15px;
       color: var(--text-muted);
       text-decoration: none;
@@ -216,7 +247,6 @@
     .alert-success { background: #ecfdf5; color: var(--success); border: 1px solid #a7f3d0; }
     .alert-warning { background: #fffbeb; color: var(--warning); border: 1px solid #fde68a; }
 
-    /* Loading Spinner */
     .spinner {
       width: 20px;
       height: 20px;
@@ -228,7 +258,6 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* Footer inside Form */
     .form-footer {
       margin-top: auto;
       padding-top: 30px;
@@ -237,11 +266,21 @@
       color: var(--text-muted);
     }
 
-    /* Responsive */
+    /* ===== Responsive Design ===== */
     @media (max-width: 900px) {
-      .brand-side { display: none; }
-      .form-side { padding: 40px 20px; max-width: 100%; }
-      body { background: white; }
+      .brand-side { 
+          display: none; /* إخفاء الجانب الملون في الشاشات الصغيرة */
+      }
+      .form-side { 
+          padding: 40px 20px; 
+          max-width: 100%; 
+          flex: 1;
+      }
+      .mobile-logo {
+          display: block; /* إظهار الشعار في أعلى الفورم للموبايل */
+      }
+      body { background: white; overflow: auto; height: auto; }
+      .login-wrapper { height: 100vh; }
     }
   </style>
 </head>
@@ -251,6 +290,8 @@
 <div class="login-wrapper">
   
   <div class="form-side">
+    <img src="assets/logo.png" class="mobile-logo" alt="Logo">
+
     <div class="header-text">
       <h2>تسجيل الدخول 👋</h2>
       <p>أهلاً بك مجدداً، الرجاء إدخال بيانات حسابك.</p>
@@ -291,12 +332,20 @@
     <div class="form-footer">
       حقوق النشر © <span id="year"></span> جامعة النصر التقنية
     </div>
+    
   </div>
 
   <div class="brand-side">
-    <img src="assets/logo.png" class="brand-logo" alt="Logo">
-    <h1 class="brand-title">كلية تقنية المعلومات</h1>
-    <p class="brand-subtitle">نظام إدارة المحاضرات والعملية التعليمية<br>بوابة أعضاء هيئة التدريس والطلاب</p>
+    <div class="login-left-content">
+        <div class="brand-logo-container">
+            <img src="assets/logo.png" class="brand-logo" alt="Logo">
+        </div>
+        
+        <h1 class="brand-title">كلية تقنية المعلومات</h1>
+        <h2 class="brand-subtitle">جامعة النصر التقنية</h2>
+        
+        <p class="brand-desc">نظام إدارة المحاضرات والعملية التعليمية<br>بوابة أعضاء هيئة التدريس والطلاب</p>
+    </div>
   </div>
 
 </div>
@@ -304,7 +353,6 @@
 <script>
   document.getElementById("year").innerText = new Date().getFullYear();
 
-  // ميزة إظهار/إخفاء كلمة المرور
   function togglePasswordVisibility() {
     const passInput = document.getElementById("password");
     const icon = document.getElementById("togglePass");
@@ -318,7 +366,6 @@
     }
   }
 
-  // التحقق من التوكن السابق
   const token = localStorage.getItem('token');
   if (token) {
     window.location.href = 'dashboard.html';
@@ -331,7 +378,6 @@
     const loginText = document.getElementById("loginText");
     const loginLoading = document.getElementById("loginLoading");
     
-    // إخفاء التنبيهات السابقة
     hideAlerts();
     
     if (!email || !password) {
@@ -339,7 +385,6 @@
       return;
     }
     
-    // حالة التحميل
     loginBtn.disabled = true;
     loginText.textContent = "جاري التحقق...";
     loginLoading.style.display = "block";
@@ -353,7 +398,6 @@
 
       const data = await res.json();
       
-      // إعادة الزر لوضعه الطبيعي
       loginBtn.disabled = false;
       loginText.textContent = "دخول";
       loginLoading.style.display = "none";
@@ -371,7 +415,6 @@
         return;
       }
 
-      // نجاح الدخول
       showAlert("success", "تم تسجيل الدخول بنجاح! جاري التوجيه...");
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
@@ -380,9 +423,8 @@
       
       setTimeout(() => {
         if (user.firstLogin) {
-          window.location.href = "force-change-password.html"; // تأكد من وجود هذه الصفحة بنفس التصميم
+          window.location.href = "force-change-password.html";
         } else {
-          // توجيه حسب الصلاحية
           if (user.roles.includes("dean")) {
             window.location.href = "admin_dashboard.html";
           } else {
@@ -418,7 +460,6 @@
     if (el) {
       el.innerHTML = icon + message;
       el.style.display = "flex";
-      // هزة خفيفة للحقل في حالة الخطأ
       if(type === 'error') {
          document.querySelector('.form-side').animate([
            { transform: 'translateX(0)' }, 
