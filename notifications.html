@@ -4,10 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>التنبيهات | كلية تقنية المعلومات</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap');
 
-  <style>
     :root {
       --primary: #0d3b66;
+      --secondary: #1e6091;
       --accent-blue: #1e90ff;
       --accent-red: #d9534f;
       --bg-light: #f4f7f9;
@@ -27,6 +29,7 @@
       background: var(--bg-light);
       color: var(--text-main);
       min-height: 100vh;
+      line-height: 1.6;
     }
 
     /* ===== Dark Mode ===== */
@@ -35,56 +38,78 @@
       --card-bg: #1e293b;
       --text-main: #f1f5f9;
       --text-muted: #94a3b8;
+      --primary: #60a5fa; /* تحسين اللون في الوضع الليلي ليكون أوضح */
     }
 
-    /* ===== Header ===== */
+    /* ===== Header Modern Design ===== */
     .main-header {
-      background: var(--primary);
+      background: #0d3b66; /* لون ثابت لضمان الهوية البصرية */
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
       color: white;
-      padding: 15px 5%;
+      padding: 12px 5%;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       position: sticky;
       top: 0;
-      z-index: 1000;
+      z-index: 2000;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .header-left {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 15px;
     }
 
     .logo {
-      width: 45px;
-      height: 45px;
+      width: 50px;
+      height: 50px;
+      object-fit: contain;
       filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
     }
 
-    .header-title strong { font-size: 16px; display: block; }
-    .header-title small { font-size: 12px; opacity: 0.8; }
+    .header-title strong { 
+      font-size: 17px; 
+      display: block; 
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    .header-title small { 
+      font-size: 12px; 
+      opacity: 0.85; 
+      font-weight: 300;
+    }
 
-    .header-actions { display: flex; gap: 10px; }
+    .header-actions { display: flex; gap: 10px; align-items: center; }
 
     .btn-header {
-      background: rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.1);
       color: white;
       border: 1px solid rgba(255,255,255,0.2);
-      padding: 8px 15px;
-      border-radius: 10px;
+      padding: 8px 16px;
+      border-radius: 12px;
       cursor: pointer;
       font-size: 14px;
       font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    .btn-header:hover { background: rgba(255,255,255,0.25); transform: translateY(-2px); }
+    .btn-header:hover { 
+      background: white; 
+      color: #0d3b66; 
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
 
     /* ===== Content Container ===== */
     .container {
       padding: 40px 5%;
-      max-width: 900px;
+      max-width: 1200px; /* تم زيادته ليتناسب مع لوحة التحكم والمواد */
       margin: auto;
     }
 
@@ -107,46 +132,52 @@
       align-items: center;
       gap: 10px;
     }
-    body.dark .page-title { color: #60a5fa; }
 
     .btn-read-all {
       background: var(--accent-blue);
       color: white;
       border: none;
-      padding: 6px 15px;
-      border-radius: 8px;
+      padding: 8px 18px;
+      border-radius: 10px;
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
       box-shadow: 0 4px 10px rgba(30, 144, 255, 0.2);
     }
 
-    /* ===== Notification Cards ===== */
-    .note {
+    .btn-read-all:hover {
+      filter: brightness(1.1);
+      transform: translateY(-2px);
+    }
+
+    /* ===== Notification & Material Cards ===== */
+    .note, .card {
       background: var(--card-bg);
       padding: 22px;
       margin-bottom: 18px;
-      border-radius: 18px;
+      border-radius: 20px; /* زوايا أكثر نعومة */
       box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
       border: 1px solid rgba(0,0,0,0.03);
       position: relative;
       cursor: pointer;
       overflow: hidden;
+      text-decoration: none;
     }
 
-    .note:hover {
-      transform: scale(1.01);
-      box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+    .note:hover, .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+      border-color: var(--accent-blue);
     }
 
-    /* مؤشر الحالة (جديد) */
+    /* مؤشر الحالة للتنبيهات */
     .note.unread::before {
       content: '';
       position: absolute;
       top: 22px;
-      right: 10px;
-      width: 8px;
-      height: 8px;
+      right: 12px;
+      width: 10px;
+      height: 10px;
       background: var(--accent-blue);
       border-radius: 50%;
       box-shadow: 0 0 10px var(--accent-blue);
@@ -157,18 +188,16 @@
       box-shadow: 0 0 10px var(--accent-red);
     }
 
-    .note-title {
+    .note-title, .card-title {
       font-weight: 700;
       margin-bottom: 10px;
       color: var(--primary);
-      font-size: 17px;
-      padding-right: 15px;
+      font-size: 18px;
+      padding-right: 18px;
     }
-    body.dark .note-title { color: #e2e8f0; }
 
-    .note-message {
+    .note-message, .card-message {
       font-size: 15px;
-      line-height: 1.7;
       color: var(--text-muted);
       margin-bottom: 15px;
     }
@@ -184,8 +213,8 @@
 
     /* ===== Emergency Style ===== */
     .note.emergency {
-      border-right: 5px solid var(--accent-red);
-      background: linear-gradient(to left, rgba(217, 83, 79, 0.02), var(--card-bg));
+      border-right: 6px solid var(--accent-red);
+      background: linear-gradient(to left, rgba(217, 83, 79, 0.03), var(--card-bg));
     }
 
     .note.emergency.unread {
@@ -194,7 +223,7 @@
     }
 
     @keyframes softPulse {
-      0% { box-shadow: 0 0 0 0 rgba(217, 83, 79, 0.1); }
+      0% { box-shadow: 0 0 0 0 rgba(217, 83, 79, 0.2); }
       70% { box-shadow: 0 0 0 10px rgba(217, 83, 79, 0); }
       100% { box-shadow: 0 0 0 0 rgba(217, 83, 79, 0); }
     }
@@ -213,12 +242,17 @@
       font-size: 13px;
       color: var(--text-muted);
       border-top: 1px solid rgba(0,0,0,0.05);
+      margin-top: auto;
     }
 
-    @media (max-width: 600px) {
-      .container { padding: 20px 15px; }
+    /* ===== Mobile Responsive ===== */
+    @media (max-width: 768px) {
+      .container { padding: 25px 15px; }
       .page-title { font-size: 20px; }
-      .note { padding: 18px; }
+      .note, .card { padding: 18px; }
+      .main-header { padding: 10px 15px; }
+      .header-title strong { font-size: 15px; }
+      .btn-header span { display: none; } /* إخفاء النص في الأزرار للجوال لبقاء الأيقونة */
     }
   </style>
 </head>
