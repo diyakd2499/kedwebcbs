@@ -70,14 +70,13 @@ const NotificationSchema = new mongoose.Schema(
 );
 
 // Middleware قبل الحفظ لتنظيف البيانات
-NotificationSchema.pre('save', function(next) {
+NotificationSchema.pre('save', function() {
   if (this.title) {
     this.title = this.title.trim();
   }
   if (this.message) {
     this.message = this.message.trim();
   }
-  next();
 });
 
 // دالة ستاتيكية لعد الإشعارات غير المقروءة لمستخدم معين
