@@ -1,90 +1,88 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>المواد | كلية تقنية المعلومات</title>
+  <title>المواد الدراسية | كلية تقنية المعلومات</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
 
- <style>
+  <style>
     :root {
-      --primary: #0d3b66;
-      --secondary: #1e6091;
-      --accent: #3a86ff;
-      --bg-light: #f8fafc;
-      --card-bg: #ffffff;
-      --text-main: #334155;
+      --primary: #2563eb;
+      --accent: #06b6d4;
+      --bg-body: #f1f5f9;
+      --bg-card: #ffffff;
+      --text-main: #0f172a;
       --text-muted: #64748b;
+      --border: rgba(0,0,0,0.05);
+      --shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
+      --radius: 18px;
+    }
+
+    body.dark {
+      --bg-body: #0f172a;
+      --bg-card: #1e293b;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: rgba(255,255,255,0.05);
+      --shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
     }
 
     * {
       box-sizing: border-box;
       font-family: 'Cairo', sans-serif;
-      transition: all 0.3s ease;
+      transition: background 0.3s, color 0.3s, transform 0.2s, box-shadow 0.2s;
     }
 
     body {
       margin: 0;
-      background: var(--bg-light);
+      background: var(--bg-body);
       color: var(--text-main);
       min-height: 100vh;
-    }
-
-    /* ===== Dark Mode ===== */
-    body.dark {
-      --bg-light: #0f172a;
-      --card-bg: #1e293b;
-      --text-main: #f1f5f9;
-      --text-muted: #94a3b8;
-      --primary: #60a5fa;
+      background-image: radial-gradient(var(--text-muted) 0.5px, transparent 0.5px);
+      background-size: 24px 24px;
     }
 
     /* ===== Header ===== */
     .main-header {
-      background: #0d3b66;
-      color: white;
-      padding: 15px 5%;
+      background: var(--bg-card);
+      backdrop-filter: blur(10px);
+      padding: 12px 5%;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
       position: sticky;
       top: 0;
       z-index: 1000;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      border-bottom: 1px solid var(--border);
     }
 
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-
-    .logo {
-      width: 45px;
-      height: 45px;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-    }
-
-    .header-title strong { font-size: 16px; display: block; }
-    .header-title small { font-size: 12px; opacity: 0.8; }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .logo { width: 40px; height: 40px; }
+    .header-title strong { font-size: 1rem; display: block; color: var(--primary); }
+    .header-title small { font-size: 0.8rem; color: var(--text-muted); }
 
     .header-actions { display: flex; gap: 10px; }
 
-    .btn-action {
-      background: rgba(255,255,255,0.1);
-      color: white;
-      border: 1px solid rgba(255,255,255,0.2);
-      padding: 8px 16px;
+    .btn-icon {
+      background: var(--bg-body);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      width: 40px;
+      height: 40px;
       border-radius: 10px;
       cursor: pointer;
-      font-weight: 600;
       display: flex;
       align-items: center;
-      gap: 8px;
+      justify-content: center;
     }
 
-    .btn-action:hover {
-      background: white;
-      color: #0d3b66;
+    .btn-icon:hover {
+      background: var(--primary);
+      color: white;
       transform: translateY(-2px);
     }
 
@@ -95,237 +93,283 @@
       margin: auto;
     }
 
-    .page-title {
-      font-size: 26px;
-      font-weight: 700;
-      color: var(--primary);
-      margin-bottom: 35px;
+    .page-header {
+      margin-bottom: 30px;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 15px;
     }
 
-    /* ===== Subjects Grid ===== */
+    .page-header i {
+      font-size: 2rem;
+      color: var(--primary);
+      background: rgba(37, 99, 235, 0.1);
+      padding: 10px;
+      border-radius: 12px;
+    }
+
+    .page-title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin: 0;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* ===== Grid ===== */
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
       gap: 25px;
     }
 
-    /* ===== Modern Subject Card ===== */
+    /* ===== Subject Card ===== */
     .card {
-      background: var(--card-bg);
+      background: var(--bg-card);
       padding: 25px;
-      border-radius: 20px;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-      border: 1px solid rgba(0,0,0,0.02);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
       position: relative;
       cursor: pointer;
-      overflow: hidden;
       display: flex;
       flex-direction: column;
+      overflow: hidden;
     }
 
-    /* شريط جانبي ملون */
-    .card::before {
+    .card::after {
       content: '';
       position: absolute;
-      top: 0;
-      right: 0;
-      width: 6px;
-      height: 100%;
-      background: var(--accent);
+      top: 0; right: 0;
+      width: 5px; height: 100%;
+      background: var(--primary);
+      opacity: 0.7;
     }
 
     .card:hover {
       transform: translateY(-8px);
       box-shadow: 0 20px 30px rgba(0,0,0,0.1);
-      border-color: var(--accent);
+      border-color: var(--primary);
     }
 
-    .card h4 {
+    .card-content h4 {
       margin: 0 0 10px 0;
-      color: var(--text-main);
-      font-size: 20px;
+      font-size: 1.3rem;
       font-weight: 700;
+      color: var(--text-main);
     }
 
-    .level-tag {
-      display: inline-block;
-      background: rgba(58, 134, 255, 0.1);
-      color: var(--accent);
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(37, 99, 235, 0.08);
+      color: var(--primary);
       padding: 4px 12px;
       border-radius: 8px;
-      font-size: 13px;
+      font-size: 0.85rem;
       font-weight: 600;
-      margin-bottom: 15px;
-      width: fit-content;
+      margin-bottom: 20px;
     }
 
-    .doctor-info {
+    .doctor-box {
       display: flex;
       align-items: center;
-      gap: 8px;
-      font-size: 14px;
-      color: var(--text-muted);
-      border-top: 1px solid rgba(0,0,0,0.05);
+      gap: 10px;
       padding-top: 15px;
+      border-top: 1px dashed var(--border);
       margin-top: auto;
+      color: var(--text-muted);
+      font-size: 0.95rem;
     }
-    body.dark .doctor-info { border-color: rgba(255,255,255,0.05); }
 
-    .arrow-icon {
+    .doctor-box i { color: var(--accent); }
+
+    .arrow-btn {
       position: absolute;
       bottom: 20px;
       left: 20px;
-      width: 32px;
-      height: 32px;
-      background: var(--bg-light);
+      width: 35px;
+      height: 35px;
+      background: var(--bg-body);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--accent);
-      font-weight: bold;
+      color: var(--primary);
     }
 
-    .card:hover .arrow-icon {
-      background: var(--accent);
+    .card:hover .arrow-btn {
+      background: var(--primary);
       color: white;
-      transform: rotate(-45deg);
+      transform: translateX(-5px);
     }
 
-    /* Error Message */
+    /* ===== States ===== */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 60px;
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      color: var(--text-muted);
+    }
+
+    .empty-state i { font-size: 4rem; display: block; margin-bottom: 15px; opacity: 0.5; }
+
     #errorMessage {
       background: #fee2e2;
       color: #dc2626;
-      padding: 15px;
+      padding: 15px 25px;
       border-radius: 12px;
-      margin-bottom: 20px;
-      border: 1px solid #fecaca;
-      font-weight: 600;
-      text-align: center;
+      margin-bottom: 25px;
+      border-right: 5px solid #dc2626;
+      display: none;
+      align-items: center;
+      gap: 10px;
     }
 
     .main-footer {
-      margin-top: 50px;
-      padding: 30px;
+      margin-top: auto;
+      padding: 40px;
       text-align: center;
-      font-size: 14px;
+      font-size: 0.9rem;
       color: var(--text-muted);
-      background: rgba(0,0,0,0.02);
+      border-top: 1px solid var(--border);
     }
 
-    @media (max-width: 600px) {
-      .container { padding: 25px 15px; }
+    @media (max-width: 768px) {
       .grid { grid-template-columns: 1fr; }
-      .page-title { font-size: 22px; }
+      .page-title { font-size: 1.5rem; }
     }
   </style>
 </head>
 
 <body>
 
-<!-- ===== Header ===== -->
 <header class="main-header">
   <div class="header-left">
-    <img src="assets/logo.png" class="logo">
+    <img src="assets/logo.png" class="logo" alt="Logo">
     <div class="header-title">
-      <strong>كلية تقنية المعلومات</strong><br>
+      <strong>كلية تقنية المعلومات</strong>
       <small>جامعة النصر التقنية</small>
     </div>
   </div>
 
-  <button class="back-btn" onclick="history.back()">⬅ رجوع</button>
-    <button class="btn" onclick="toggleDark()">🌙</button>
+  <div class="header-actions">
+    <button class="btn-icon" onclick="toggleDark()" title="تبديل الوضع">
+      <i class="ri-moon-line" id="themeIcon"></i>
+    </button>
+    <button class="btn-icon" onclick="history.back()" title="رجوع">
+      <i class="ri-arrow-left-line"></i>
+    </button>
+  </div>
 </header>
 
-<!-- ===== Content ===== -->
 <div class="container">
-  <div class="page-title">📚 المواد الدراسية</div>
-  <div id="errorMessage" style="display:none; color:red; margin-bottom:20px; padding:10px; background:#fee; border-radius:8px;"></div>
-  <div class="grid" id="subjects"></div>
+  <div class="page-header">
+    <i class="ri-book-open-line"></i>
+    <h2 class="page-title">المواد الدراسية</h2>
+  </div>
+
+  <div id="errorMessage">
+    <i class="ri-error-warning-line"></i>
+    <span id="errorText"></span>
+  </div>
+
+  <div class="grid" id="subjects">
+    </div>
 </div>
 
+<footer class="main-footer">
+  <div>حقوق النشر © <span id="year"></span> جامعة النصر التقنية</div>
+  <div style="margin-top:5px; opacity: 0.8;">تطوير: ضياء الدين إبراهيم</div>
+</footer>
+
 <script>
+  document.getElementById("year").innerText = new Date().getFullYear();
   const token = localStorage.getItem("token");
+  
   if (!token) location.href = "login.html";
 
-  // إعداد عنوان الخادم الأساسي
-  //const API_BASE_URL = "http://localhost:5000";
-
   async function loadSubjects() {
+    const container = document.getElementById("subjects");
+    container.innerHTML = `
+      <div class="empty-state">
+        <i class="ri-loader-4-line ri-spin"></i>
+        <p>جاري تحميل المواد...</p>
+      </div>
+    `;
+
     try {
       const res = await fetch(`/api/subjects`, {
-        headers: {
-          Authorization: "Bearer " + token
-        }
+        headers: { Authorization: "Bearer " + token }
       });
 
       if (!res.ok) throw new Error("فشل في جلب المواد من الخادم");
 
       const data = await res.json();
-      const container = document.getElementById("subjects");
 
       if (!Array.isArray(data) || data.length === 0) {
-        container.innerHTML = "<p class='empty'>لا توجد مواد متاحة حالياً</p>";
+        container.innerHTML = `
+          <div class="empty-state">
+            <i class="ri-inbox-line"></i>
+            <p>لا توجد مواد متاحة حالياً</p>
+          </div>
+        `;
         return;
       }
 
       container.innerHTML = "";
       data.forEach(sub => {
-        // نستخدم _id أو id لضمان الحصول على المعرف الصحيح من MongoDB
         const subjectId = sub._id || sub.id;
-        
         container.innerHTML += `
           <div class="card" onclick="openSubject('${subjectId}')">
-            <h4>${sub.name}</h4>
-            <p>${sub.level}</p>
-            <div class="doctor">👨‍🏫 ${sub.doctor?.name || "غير محدد"}</div>
-            <div class="arrow">➜</div>
+            <div class="tag">
+              <i class="ri-卒業生-line"></i> ${sub.level}
+            </div>
+            <div class="card-content">
+              <h4>${sub.name}</h4>
+            </div>
+            <div class="doctor-box">
+              <i class="ri-user-voice-line"></i>
+              <span>أ. ${sub.doctor?.name || "غير محدد"}</span>
+            </div>
+            <div class="arrow-btn">
+              <i class="ri-arrow-left-s-line"></i>
+            </div>
           </div>
         `;
       });
     } catch (err) {
-      console.error("Error loading subjects:", err);
+      console.error(err);
       const errorEl = document.getElementById("errorMessage");
-      errorEl.innerText = "خطأ في الاتصال بالخادم. تأكد من تشغيل الـ Backend.";
-      errorEl.style.display = "block";
+      document.getElementById("errorText").innerText = "خطأ في الاتصال بالخادم. يرجى المحاولة لاحقاً.";
+      errorEl.style.display = "flex";
+      container.innerHTML = "";
     }
   }
 
   function openSubject(id) {
-    if (!id || id === "undefined" || id === "null") {
-      alert("خطأ: معرف المادة غير صالح. يرجى تحديث الصفحة.");
-      return;
-    }
+    if (!id || id === "undefined") return;
     window.location.href = "subject.html?id=" + id;
   }
-  
 
-  loadSubjects();
-  
-   /* ===== Dark Mode ===== */
+  /* ===== Dark Mode ===== */
   function toggleDark() {
     document.body.classList.toggle("dark");
-    localStorage.setItem(
-      "darkMode",
-      document.body.classList.contains("dark")
-    );
+    const isDark = document.body.classList.contains("dark");
+    localStorage.setItem("darkMode", isDark);
+    document.getElementById("themeIcon").className = isDark ? "ri-sun-line" : "ri-moon-line";
   }
 
   if (localStorage.getItem("darkMode") === "true") {
     document.body.classList.add("dark");
+    document.getElementById("themeIcon").className = "ri-sun-line";
   }
-</script>
 
-<footer class="main-footer">
-  إنشاء: <strong>ضياء الدين إبراهيم</strong> —  
-  حقوق النشر © <span id="year"></span> جامعة النصر التقنية
-</footer>
-
-<script>
-  document.getElementById("year").innerText = new Date().getFullYear();
+  loadSubjects();
 </script>
 
 </body>
