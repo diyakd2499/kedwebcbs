@@ -1,58 +1,84 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>لوحة التحكم | كلية تقنية المعلومات</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
 
   <style>
     :root {
-      --primary: #0d3b66;
-      --secondary: #1e6091;
-      --accent: #d9534f;
-      --bg-light: #f8fafc;
-      --card-light: #ffffff;
-      --text-light: #334155;
+      /* Palette */
+      --primary: #2563eb;
+      --primary-dark: #1e40af;
+      --secondary: #64748b;
+      --accent: #06b6d4;
+      --danger: #ef4444;
       
-      /* Dark Mode Colors */
-      --bg-dark: #0f172a;
-      --card-dark: #1e293b;
-      --text-dark: #f1f5f9;
+      /* Backgrounds */
+      --bg-body: #f1f5f9;
+      --bg-card: #ffffff;
+      --bg-header: rgba(255, 255, 255, 0.9);
+      
+      /* Text */
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+
+      /* Effects */
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+      --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.05), 0 10px 10px -5px rgba(0,0,0,0.02);
+      --radius: 16px;
+    }
+
+    /* ===== Dark Mode ===== */
+    body.dark {
+      --primary: #60a5fa;
+      --primary-dark: #3b82f6;
+      --bg-body: #0f172a;
+      --bg-card: #1e293b;
+      --bg-header: rgba(15, 23, 42, 0.9);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.3);
+      --shadow-lg: 0 10px 15px rgba(0,0,0,0.3);
     }
 
     * {
       box-sizing: border-box;
       font-family: 'Cairo', sans-serif;
-      transition: background-color 0.3s, color 0.3s, transform 0.2s;
+      transition: all 0.25s ease;
     }
 
     body {
       margin: 0;
-      background: var(--bg-light);
-      color: var(--text-light);
+      background-color: var(--bg-body);
+      color: var(--text-main);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      /* خلفية بنمط نقطي خفيف */
+      background-image: radial-gradient(var(--text-muted) 0.5px, transparent 0.5px);
+      background-size: 24px 24px;
+      background-attachment: fixed;
     }
 
-    body.dark {
-      background: var(--bg-dark);
-      color: var(--text-dark);
-    }
-
-    /* ===== Header Modern Design ===== */
+    /* ===== Header ===== */
     .main-header {
-      background: var(--primary);
-      color: white;
-      padding: 12px 5%;
+      background: var(--bg-header);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 1rem 5%;
       display: flex;
       justify-content: space-between;
       align-items: center;
       position: sticky;
       top: 0;
       z-index: 1000;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      border-bottom: 1px solid rgba(0,0,0,0.05);
     }
 
     .header-left {
@@ -62,241 +88,304 @@
     }
 
     .logo {
-      width: 50px;
-      height: 50px;
-      filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));
+      width: 45px;
+      height: 45px;
+      object-fit: contain;
     }
 
     .header-title strong {
-      font-size: 18px;
+      font-size: 1.1rem;
       display: block;
-      line-height: 1.2;
+      color: var(--text-main);
     }
 
     .header-title small {
-      font-size: 13px;
-      opacity: 0.8;
-      font-weight: 300;
+      font-size: 0.85rem;
+      color: var(--text-muted);
     }
 
     .header-actions {
       display: flex;
-      gap: 12px;
+      gap: 10px;
     }
 
-    .btn {
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      padding: 8px 16px;
+    .icon-btn {
+      background: transparent;
+      border: 1px solid var(--text-muted);
+      color: var(--text-main);
+      width: 40px;
+      height: 40px;
       border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
+      font-size: 1.2rem;
+      opacity: 0.7;
+    }
+
+    .icon-btn:hover {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+      opacity: 1;
+      transform: translateY(-2px);
+    }
+
+    .btn-logout {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--danger);
+      border: 1px solid transparent;
+      padding: 0 20px;
+      border-radius: 12px;
       font-weight: 600;
+      cursor: pointer;
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
-    .btn:hover {
-      background: rgba(255, 255, 255, 0.2);
-      transform: translateY(-2px);
+    .btn-logout:hover {
+      background: var(--danger);
+      color: white;
     }
 
     /* ===== Main Layout ===== */
     .container {
       padding: 40px 5%;
-      max-width: 1400px;
+      max-width: 1200px;
       margin: 0 auto;
       width: 100%;
+      flex: 1;
     }
 
-    .welcome {
-      font-size: 26px;
-      margin-bottom: 30px;
-      color: var(--primary);
-      font-weight: 700;
-      border-right: 5px solid var(--accent);
-      padding-right: 15px;
+    .welcome-section {
+      margin-bottom: 40px;
     }
 
-    body.dark .welcome {
-      color: #90caf9;
+    .welcome-title {
+      font-size: 2rem;
+      font-weight: 800;
+      margin: 0 0 10px 0;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .welcome-subtitle {
+      color: var(--text-muted);
+      font-size: 1.1rem;
     }
 
-    /* ===== Dashboard Grid ===== */
+    /* ===== Grid System ===== */
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 25px;
     }
 
-    /* ===== Professional Cards ===== */
+    /* ===== Cards ===== */
     .card {
-      background: var(--card-light);
+      background: var(--bg-card);
       padding: 30px;
-      border-radius: 24px;
+      border-radius: var(--radius);
       cursor: pointer;
-      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
-      border: 1px solid rgba(0,0,0,0.05);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid rgba(0,0,0,0.03);
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
-      gap: 15px;
       position: relative;
       overflow: hidden;
+      text-decoration: none;
     }
 
-    body.dark .card {
-      background: var(--card-dark);
-      border-color: rgba(255,255,255,0.05);
-      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
-    }
-
-    /* إضافة تأثير توهج خلف الأيقونة */
     .card::before {
       content: '';
       position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(13,59,102,0.03) 0%, transparent 70%);
-      pointer-events: none;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: var(--primary);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+      transform-origin: right;
     }
 
     .card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-      border-color: var(--primary);
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-lg);
     }
 
-    .icon {
-      font-size: 50px;
-      margin-bottom: 10px;
-      filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1));
+    .card:hover::before {
+      transform: scaleX(1);
     }
+
+    .card-icon-wrapper {
+      width: 70px;
+      height: 70px;
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      color: var(--primary);
+      font-size: 32px;
+    }
+
+    .card.admin .card-icon-wrapper {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--danger);
+    }
+    .card.admin::before { background: var(--danger); }
 
     .card-title {
-      font-size: 18px;
+      font-size: 1.1rem;
       font-weight: 700;
-      color: var(--primary);
+      color: var(--text-main);
+      margin: 0;
+    }
+    
+    .card-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-top: 8px;
     }
 
-    body.dark .card-title {
-      color: #cbd5e1;
-    }
-
-    .admin {
-      border-bottom: 5px solid var(--accent);
-    }
-
-    /* ===== Notification Badge ===== */
+    /* Notification Badge */
     .badge {
       position: absolute;
-      top: 20px;
-      left: 20px;
-      background: var(--accent);
+      top: 15px;
+      left: 15px;
+      background: var(--danger);
       color: white;
-      font-size: 12px;
-      padding: 4px 10px;
-      border-radius: 50px;
+      font-size: 0.75rem;
+      min-width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
       font-weight: bold;
-      box-shadow: 0 4px 10px rgba(217, 83, 79, 0.4);
+      box-shadow: 0 4px 6px rgba(239, 68, 68, 0.3);
+      border: 2px solid var(--bg-card);
     }
 
     /* ===== Toasts ===== */
     #toast-container {
       position: fixed;
-      bottom: 30px;
-      left: 30px;
+      bottom: 20px;
+      left: 20px; /* في العربية ستظهر يسار الشاشة */
+      z-index: 2000;
       display: flex;
       flex-direction: column;
-      gap: 15px;
+      gap: 10px;
     }
 
     .toast {
-      background: rgba(255, 255, 255, 0.9);
-      backdrop-filter: blur(15px);
-      padding: 20px;
-      border-radius: 18px;
-      box-shadow: 0 15px 30px rgba(0,0,0,0.15);
-      border-right: 6px solid var(--primary);
-      width: 350px;
-      animation: slideIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      background: var(--bg-card);
+      padding: 15px 20px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      border-right: 4px solid var(--primary);
+      width: 320px;
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+      cursor: pointer;
+      animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    body.dark .toast {
-      background: rgba(30, 41, 59, 0.9);
-      color: white;
-    }
+    .toast.emergency { border-right-color: var(--danger); }
+    
+    .toast-icon { font-size: 1.5rem; color: var(--primary); }
+    .toast.emergency .toast-icon { color: var(--danger); }
+
+    .toast-content { flex: 1; }
+    .toast-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
+    .toast-message { font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; }
+    .toast-meta { font-size: 0.75rem; color: var(--text-muted); margin-top: 8px; opacity: 0.8; }
 
     @keyframes slideIn {
-      from { transform: translateX(-120%); opacity: 0; }
+      from { transform: translateX(-100%); opacity: 0; }
       to { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes fadeOut {
+      to { transform: translateX(-100%); opacity: 0; }
     }
 
     /* ===== Footer ===== */
     .main-footer {
-      margin-top: auto;
       padding: 30px;
       text-align: center;
-      font-size: 14px;
-      background: rgba(0,0,0,0.02);
+      font-size: 0.9rem;
+      color: var(--text-muted);
       border-top: 1px solid rgba(0,0,0,0.05);
+      background: var(--bg-card);
     }
 
-    body.dark .main-footer {
-      background: rgba(255,255,255,0.02);
-      border-top: 1px solid rgba(255,255,255,0.05);
-    }
-
-    /* ===== Mobile Responsive ===== */
+    /* ===== Mobile ===== */
     @media (max-width: 768px) {
-      .container { padding: 20px; }
-      .welcome { font-size: 20px; }
-      .main-header { padding: 10px 15px; }
-      .header-title strong { font-size: 14px; }
+      .container { padding: 25px 20px; }
+      .welcome-title { font-size: 1.5rem; }
+      .header-title strong { font-size: 1rem; }
+      .header-title small { font-size: 0.7rem; }
       .grid { grid-template-columns: 1fr; }
-      .card { flex-direction: row; text-align: right; padding: 20px; }
-      .icon { font-size: 35px; margin: 0; }
+      .card { flex-direction: row; padding: 20px; text-align: right; align-items: center; }
+      .card-icon-wrapper { margin-bottom: 0; margin-left: 20px; width: 50px; height: 50px; font-size: 24px; flex-shrink: 0; }
+      .card::before { height: 100%; width: 4px; top: 0; right: 0; left: auto; transform: scaleY(0); transform-origin: top; }
+      .card:hover::before { transform: scaleY(1); }
+      #toast-container { left: 50%; transform: translateX(-50%); width: 90%; bottom: 10px; }
+      .toast { width: 100%; }
     }
   </style>
+</head>
 <body>
 
-<!-- ===== Header ===== -->
 <header class="main-header">
   <div class="header-left">
-    <img src="assets/logo.png" class="logo">
+    <img src="assets/logo.png" class="logo" alt="Logo">
     <div class="header-title">
-      <strong>كلية تقنية المعلومات</strong><br>
+      <strong>كلية تقنية المعلومات</strong>
       <small>جامعة النصر التقنية</small>
     </div>
   </div>
 
   <div class="header-actions">
-    <button class="btn" onclick="toggleDark()">🌙</button>
-    <button class="btn" onclick="logout()">خروج</button>
+    <button class="icon-btn" onclick="toggleDark()" title="تبديل الوضع">
+      <i class="ri-moon-line" id="themeIcon"></i>
+    </button>
+    <button class="btn-logout" onclick="logout()">
+      <i class="ri-logout-box-r-line"></i>
+      <span style="display: none;" class="d-md-inline">خروج</span> </button>
   </div>
 </header>
 
-<!-- ===== Content ===== -->
 <div class="container">
 
-  <div class="welcome" id="welcome"></div>
+  <div class="welcome-section">
+    <h1 class="welcome-title" id="welcome">مرحبًا 👋</h1>
+    <div class="welcome-subtitle">لوحة التحكم الخاصة بك</div>
+  </div>
 
   <div class="grid" id="dashboard">
-    <!-- المواد -->
     <div class="card" onclick="go('subjects.html')">
-      <div class="icon">📚</div>
-      <div class="card-title">المواد الدراسية</div>
+      <div class="card-icon-wrapper"><i class="ri-book-3-line"></i></div>
+      <div>
+        <div class="card-title">المواد الدراسية</div>
+        <div class="card-desc">تصفح المقررات والمحتوى</div>
+      </div>
     </div>
 
-    <!-- التنبيهات -->
     <div class="card" onclick="go('notifications.html')">
-      <div class="icon">🔔</div>
-      <div class="card-title">التنبيهات</div>
-      <span class="badge" id="notifBadge">0</span>
+      <div class="card-icon-wrapper"><i class="ri-notification-3-line"></i></div>
+      <div>
+        <div class="card-title">التنبيهات</div>
+        <div class="card-desc">آخر الإعلانات والأخبار</div>
+      </div>
+      <span class="badge" id="notifBadge" style="display:none;">0</span>
     </div>
   </div>
 
@@ -305,8 +394,8 @@
 <div id="toast-container"></div>
 
 <footer class="main-footer">
-  إنشاء: <strong>ضياء الدين إبراهيم</strong> —  
-  حقوق النشر © <span id="year"></span> جامعة النصر التقنية
+  <div>حقوق النشر © <span id="year"></span> جامعة النصر التقنية</div>
+  <div style="font-size: 0.8rem; margin-top: 5px; opacity: 0.7;">تطوير: ضياء الدين إبراهيم</div>
 </footer>
 
 <script>
@@ -323,12 +412,10 @@
   // التحقق من صلاحية التوكن
   async function verifyToken() {
     try {
-      // تم تغيير المسار إلى المسار الصحيح الموجود في auth.routes
       const response = await fetch('/api/auth/users', {
         headers: { Authorization: "Bearer " + token }
       });
       
-      // إذا كان المستخدم ليس عميداً، سيعيد 403 وهذا طبيعي، المهم أن التوكن صالح (ليس 401)
       if (response.status === 401) {
         localStorage.clear();
         window.location.href = "login.html";
@@ -337,46 +424,50 @@
       return true;
     } catch (error) {
       console.error("Token verification failed:", error);
-      return true; // لا نوجه لصفحة الدخول عند خطأ الشبكة
+      return true;
     }
   }
 
-  // استدعاء التحقق عند تحميل الصفحة
   if (token) {
     verifyToken();
   }
 
-  // التحقق من أول دخول أو ضرورة تغيير كلمة المرور
   if (user.firstLogin === true || user.mustChangePassword === true) {
     window.location.href = "change-password.html?firstLogin=true";
   }
 
-  // إذا لم يكن هناك تحويل، نتابع تحميل الصفحة
   document.getElementById("welcome").innerText = "مرحبًا، " + user.name + " 👋";
 
   const dash = document.getElementById("dashboard");
 
-  // إضافة خيارات إضافية بناءً على الدور
+  // إضافة البطاقات بناءً على الدور (تحديث الأيقونات والنصوص هنا)
   if (user.roles && (user.roles.includes("leader") || user.roles.includes("doctor"))) {
     dash.innerHTML += `
       <div class="card" onclick="go('manage-lectures.html')">
-        <div class="icon">🎓</div>
-        <div class="card-title">إدارة المحاضرات</div>
+        <div class="card-icon-wrapper"><i class="ri-presentation-line"></i></div>
+        <div>
+          <div class="card-title">إدارة المحاضرات</div>
+          <div class="card-desc">إضافة وتعديل الجداول</div>
+        </div>
       </div>
       
-      <!-- إضافة بطاقة إدارة التنبيهات للدكتور والليدر -->
       <div class="card" onclick="go('manage-notifications.html')">
-        <div class="icon">📋</div>
-        <div class="card-title">إدارة التنبيهات</div>
+        <div class="card-icon-wrapper"><i class="ri-megaphone-line"></i></div>
+        <div>
+          <div class="card-title">إدارة التنبيهات</div>
+          <div class="card-desc">إرسال إعلانات للطلاب</div>
+        </div>
       </div>
     `;
     
-    // تسجيل الحضور متاح للدكتور والعميد فقط كما طلب المستخدم
     if (user.roles.includes("doctor") || user.roles.includes("dean")) {
       dash.innerHTML += `
         <div class="card" onclick="go('manage-attendance.html')">
-          <div class="icon">📝</div>
-          <div class="card-title">تسجيل حضور الطلاب</div>
+          <div class="card-icon-wrapper"><i class="ri-calendar-check-line"></i></div>
+          <div>
+            <div class="card-title">حضور الطلاب</div>
+            <div class="card-desc">تسجيل ومتابعة الغياب</div>
+          </div>
         </div>
       `;
     }
@@ -385,8 +476,11 @@
   if (user.roles && user.roles.includes("dean")) {
     dash.innerHTML += `
       <div class="card admin" onclick="go('admin_dashboard.html')">
-        <div class="icon">🛠️</div>
-        <div class="card-title">لوحة تحكم الإدارة</div>
+        <div class="card-icon-wrapper"><i class="ri-settings-4-line"></i></div>
+        <div>
+          <div class="card-title">لوحة الإدارة</div>
+          <div class="card-desc">الإعدادات المتقدمة</div>
+        </div>
       </div>
     `;
   }
@@ -402,12 +496,11 @@
     }
   }
 
-  /* ===== حل مشكلة تكرار الإشعارات الطارئة ===== */
+  /* ===== Notification Logic Preserved ===== */
   let notificationCheckInterval;
 
   async function checkNotifications() {
     try {
-      // تحديث عدد الإشعارات غير المقروءة
       const unreadCountRes = await fetch("/api/notifications/unread-count", {
         headers: { Authorization: "Bearer " + token }
       });
@@ -417,13 +510,12 @@
         const badge = document.getElementById("notifBadge");
         if (count > 0) {
           badge.innerText = count > 9 ? "9+" : count;
-          badge.style.display = "block";
+          badge.style.display = "flex";
         } else {
           badge.style.display = "none";
         }
       }
 
-      // التحقق من الإشعارات الطارئة الجديدة فقط (بدون تكرار)
       await checkEmergencyNotifications();
     } catch (err) {
       console.error("Error checking notifications:", err);
@@ -432,7 +524,6 @@
 
   async function checkEmergencyNotifications() {
     try {
-      // استخدام النقطة الجديدة لمنع التكرار
       const lastCheckTime = parseInt(localStorage.getItem("lastEmergencyCheck") || "0");
       const res = await fetch(`/api/notifications/emergency/new?lastCheck=${lastCheckTime}`, {
         headers: { Authorization: "Bearer " + token }
@@ -440,11 +531,8 @@
       
       if (res.ok) {
         const emergencies = await res.json();
-        
-        // الحصول على معرفات الإشعارات المعروضة مسبقاً
         const shownIds = JSON.parse(localStorage.getItem("shownEmergencyIds") || "[]");
         
-        // عرض الإشعارات الطارئة الجديدة فقط
         for (const emergency of emergencies) {
           if (!shownIds.includes(emergency._id)) {
             showToast(emergency);
@@ -452,13 +540,9 @@
           }
         }
         
-        // حفظ معرفات الإشعارات المعروضة
         localStorage.setItem("shownEmergencyIds", JSON.stringify(shownIds));
-        
-        // تحديث وقت آخر فحص
         localStorage.setItem("lastEmergencyCheck", Date.now());
         
-        // تنظيف القائمة القديمة (تحتفظ بآخر 50 إشعار فقط)
         if (shownIds.length > 50) {
           localStorage.setItem("shownEmergencyIds", JSON.stringify(shownIds.slice(-50)));
         }
@@ -471,52 +555,49 @@
   function showToast(notification) {
     const container = document.getElementById("toast-container");
     
-    // التحقق من عدم وجود toast بنفس المعرف
     if (document.querySelector(`[data-notif-id="${notification._id}"]`)) {
       return;
     }
     
-    // معلومات المرسل
     const senderName = notification.createdBy?.name || "النظام";
     const roleName = notification.createdBy?.roleName || 
-                    (notification.createdBy?.roles?.[0] === "dean" ? "العميد" :
-                     notification.createdBy?.roles?.[0] === "doctor" ? "الدكتور" :
-                     notification.createdBy?.roles?.[0] === "leader" ? "الليدر" : "النظام");
+                     (notification.createdBy?.roles?.[0] === "dean" ? "العميد" :
+                      notification.createdBy?.roles?.[0] === "doctor" ? "الدكتور" :
+                      notification.createdBy?.roles?.[0] === "leader" ? "الليدر" : "النظام");
+    
+    const isEmergency = notification.type === "emergency";
     
     const toast = document.createElement("div");
-    toast.className = `toast ${notification.type === "emergency" ? "emergency" : ""}`;
+    toast.className = `toast ${isEmergency ? "emergency" : ""}`;
     toast.setAttribute("data-notif-id", notification._id);
     
     toast.innerHTML = `
-      <div class="icon">${notification.type === "emergency" ? "🚨" : "🔔"}</div>
+      <div class="toast-icon">
+        <i class="${isEmergency ? 'ri-alarm-warning-fill' : 'ri-notification-3-fill'}"></i>
+      </div>
       <div class="toast-content">
         <div class="toast-title">${notification.title}</div>
         <div class="toast-message">${notification.message.substring(0, 60)}${notification.message.length > 60 ? '...' : ''}</div>
-        <div class="toast-sender">
+        <div class="toast-meta">
           ${roleName} ${senderName} • ${new Date(notification.createdAt).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })}
         </div>
       </div>
     `;
     
     toast.onclick = () => {
-      // تسجيل الإشعار كمقروء عند النقر عليه
       markNotificationAsRead(notification._id);
       window.location.href = "notifications.html";
     };
     
     container.appendChild(toast);
 
-    // إزالة الـ toast بعد 8 ثواني
     setTimeout(() => {
-      toast.style.animation = "fadeOut 0.5s";
+      toast.style.animation = "fadeOut 0.5s forwards";
       setTimeout(() => {
-        if (toast.parentNode) {
-          toast.remove();
-        }
+        if (toast.parentNode) toast.remove();
       }, 500);
     }, 8000);
     
-    // الحد الأقصى 3 توست في نفس الوقت
     const toasts = container.querySelectorAll('.toast');
     if (toasts.length > 3) {
       toasts[0].remove();
@@ -534,32 +615,42 @@
     }
   }
 
-  // فحص صلاحية التوكن أولاً
   verifyToken().then(isValid => {
     if (isValid) {
-      // فحص التنبيهات عند التحميل
       checkNotifications();
-      
-      // بدء الفحص الدوري كل دقيقة
       notificationCheckInterval = setInterval(checkNotifications, 60000);
     }
   });
   
-  // تنظيف الفاصل الزمني عند مغادرة الصفحة
   window.addEventListener('beforeunload', () => {
     if (notificationCheckInterval) {
       clearInterval(notificationCheckInterval);
     }
   });
 
-  /* ===== Dark Mode ===== */
+  /* ===== Dark Mode Logic ===== */
   function toggleDark() {
     document.body.classList.toggle("dark");
-    localStorage.setItem("darkMode", document.body.classList.contains("dark"));
+    const isDark = document.body.classList.contains("dark");
+    localStorage.setItem("darkMode", isDark);
+    updateThemeIcon(isDark);
   }
 
+  function updateThemeIcon(isDark) {
+    const icon = document.getElementById("themeIcon");
+    if(isDark) {
+      icon.className = "ri-sun-line";
+    } else {
+      icon.className = "ri-moon-line";
+    }
+  }
+
+  // Initialize Theme
   if (localStorage.getItem("darkMode") === "true") {
     document.body.classList.add("dark");
+    updateThemeIcon(true);
+  } else {
+    updateThemeIcon(false);
   }
 </script>
 
