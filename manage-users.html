@@ -488,7 +488,8 @@
 
   async function loadUsers() {
     try {
-      const res = await fetch("/api/auth", {
+      // تم تصحيح المسار من /api/auth إلى /api/auth/users
+      const res = await fetch("/api/auth/users", {
         headers: { Authorization: "Bearer " + token }
       });
 
@@ -498,8 +499,9 @@
       }
 
       const data = await res.json();
-      allUsers = data;
-      renderUsers(data);
+      // البيانات تعود في شكل { success: true, users: [...] }
+      allUsers = data.users || [];
+      renderUsers(allUsers);
     } catch (err) {
       showError("خطأ في الاتصال بالخادم");
     }
@@ -571,7 +573,7 @@
     try {
       const method = currentEditingUserId ? "PUT" : "POST";
       const url = currentEditingUserId 
-        ? `/api/auth/${currentEditingUserId}`
+        ? `/api/auth/users/${currentEditingUserId}`
         : "/api/auth/register";
 
       const body = {
@@ -613,7 +615,7 @@
     if (!confirm("هل أنت متأكد من حذف هذا المستخدم؟")) return;
 
     try {
-      const res = await fetch(`/api/auth/${id}`, {
+      const res = await fetch(`/api/auth/users/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: "Bearer " + token
