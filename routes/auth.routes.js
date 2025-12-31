@@ -110,15 +110,10 @@ router.post("/login", async (req, res) => {
     const ok = await bcrypt.compare(password, user.password);
 
     if (!ok) {
-      // زيادة عدد المحاولات الفاشلة
-      await user.incrementFailedAttempts();
-      
-      const remainingAttempts = 5 - user.failedLoginAttempts;
-      
+      // تم إيقاف زيادة المحاولات والقفل بناءً على طلب المستخدم
       return res.status(401).json({
         success: false,
-        message: `بيانات الدخول غير صحيحة. لديك ${remainingAttempts} محاولات متبقية`,
-        remainingAttempts
+        message: "بيانات الدخول غير صحيحة"
       });
     }
 
