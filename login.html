@@ -1,248 +1,326 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>تسجيل الدخول | كلية تقنية المعلومات</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
 
   <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1e40af;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --bg-light: #f8fafc;
+      --border: #e2e8f0;
+      --danger: #ef4444;
+      --success: #10b981;
+      --warning: #f59e0b;
+    }
+
     * {
       box-sizing: border-box;
-      font-family: "Segoe UI", Tahoma, sans-serif;
+      font-family: 'Cairo', sans-serif;
+      transition: all 0.2s ease;
     }
 
     body {
       margin: 0;
       height: 100vh;
-      background: linear-gradient(135deg, #0d3b66, #1e6091);
       display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .login-container {
-      background: white;
-      width: 900px;
-      height: 500px;
-      display: flex;
-      border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+      background: white;
     }
 
-    .login-left {
+    /* ===== Layout ===== */
+    .login-wrapper {
+      width: 100%;
+      display: flex;
+    }
+
+    /* Right Side (Form) */
+    .form-side {
       flex: 1;
-      background: #0d3b66;
-      color: white;
-      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0 8%;
+      background: white;
+      position: relative;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Left Side (Brand) */
+    .brand-side {
+      flex: 1.2;
+      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+      position: relative;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      color: white;
       text-align: center;
+      padding: 40px;
+      /* Pattern Overlay */
+      background-image: radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px);
+      background-size: 30px 30px;
     }
 
-    .login-left img {
+    /* ===== Brand Elements ===== */
+    .brand-logo {
       width: 120px;
-      margin-bottom: 20px;
+      height: 120px;
+      object-fit: contain;
+      margin-bottom: 25px;
+      filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2));
+      background: white;
+      border-radius: 50%;
+      padding: 10px;
     }
 
-    .login-left h2 {
+    .brand-title {
+      font-size: 2.5rem;
+      font-weight: 800;
       margin: 0;
+      line-height: 1.2;
     }
 
-    .login-left p {
+    .brand-subtitle {
+      font-size: 1.1rem;
       opacity: 0.9;
-      margin-top: 10px;
-      font-size: 14px;
+      margin-top: 15px;
+      font-weight: 300;
+      max-width: 400px;
     }
 
-    .login-right {
-      flex: 1;
-      padding: 50px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
+    /* ===== Form Elements ===== */
+    .header-text h2 {
+      font-size: 2rem;
+      color: var(--text-main);
+      margin: 0 0 10px 0;
+      font-weight: 700;
+    }
+
+    .header-text p {
+      color: var(--text-muted);
+      margin: 0 0 30px 0;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
       position: relative;
     }
 
-    .login-right h3 {
-      margin-bottom: 20px;
-      color: #0d3b66;
+    .input-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--text-main);
+      font-weight: 600;
+      font-size: 0.9rem;
     }
 
-    .login-right input {
-      padding: 12px;
-      margin-bottom: 15px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 14px;
+    .input-wrapper {
+      position: relative;
     }
 
-    .login-right button {
-      padding: 12px;
-      background: #0d3b66;
+    .input-wrapper i {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 1.2rem;
+    }
+
+    .icon-start { right: 15px; }
+    .icon-end { left: 15px; cursor: pointer; }
+
+    .form-control {
+      width: 100%;
+      padding: 14px 45px 14px 15px; /* مساحة للأيقونة يمين */
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      font-size: 1rem;
+      color: var(--text-main);
+      background: var(--bg-light);
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: white;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    }
+
+    /* زر الدخول */
+    .btn-login {
+      width: 100%;
+      padding: 15px;
+      background: var(--primary);
       color: white;
       border: none;
-      border-radius: 6px;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 700;
       cursor: pointer;
-      font-size: 15px;
-      font-weight: 500;
-      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 10px;
     }
 
-    .login-right button:hover {
-      background: #092b4c;
+    .btn-login:hover {
+      background: var(--primary-dark);
       transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
     }
 
-    .login-right button:disabled {
-      background: #ccc;
+    .btn-login:disabled {
+      background: var(--text-muted);
       cursor: not-allowed;
       transform: none;
     }
 
-    .error {
-      margin-top: 10px;
-      color: #d9534f;
-      font-size: 14px;
-      padding: 10px;
-      background: #fff1f1;
-      border-radius: 6px;
-      border-right: 4px solid #d9534f;
-      display: none;
-    }
-
-    .success {
-      margin-top: 10px;
-      color: #28a745;
-      font-size: 14px;
-      padding: 10px;
-      background: #f0fff4;
-      border-radius: 6px;
-      border-right: 4px solid #28a745;
-      display: none;
-    }
-
-    .lock-warning {
-      margin-top: 10px;
-      color: #f57c00;
-      font-size: 14px;
-      padding: 10px;
-      background: #fff8e1;
-      border-radius: 6px;
-      border-right: 4px solid #f57c00;
-      display: none;
-    }
-
-    .forgot-password-link {
-      text-align: center;
+    /* Links */
+    .forgot-pass {
+      display: block;
+      text-align: left; /* تغيير الاتجاه لليسار */
       margin-top: 15px;
-    }
-
-    .forgot-password-link a {
-      color: #0d3b66;
+      color: var(--text-muted);
       text-decoration: none;
-      font-size: 14px;
-      transition: all 0.3s;
+      font-size: 0.9rem;
     }
 
-    .forgot-password-link a:hover {
-      color: #1e6091;
+    .forgot-pass:hover {
+      color: var(--primary);
       text-decoration: underline;
     }
 
-    .remaining-attempts {
-      font-size: 12px;
-      color: #d9534f;
-      margin-top: 5px;
+    /* Alerts */
+    .alert {
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+      display: none;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .alert-danger { background: #fef2f2; color: var(--danger); border: 1px solid #fecaca; }
+    .alert-success { background: #ecfdf5; color: var(--success); border: 1px solid #a7f3d0; }
+    .alert-warning { background: #fffbeb; color: var(--warning); border: 1px solid #fde68a; }
+
+    /* Loading Spinner */
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
       display: none;
     }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-    .loading {
-      display: inline-block;
-      width: 16px;
-      height: 16px;
-      border: 2px solid rgba(255,255,255,.3);
-      border-radius: 50%;
-      border-top-color: white;
-      animation: spin 1s ease-in-out infinite;
-      margin-right: 8px;
-      vertical-align: middle;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    .main-footer {
-      margin-top: 25px;
-      font-size: 13px;
-      color: #e0e0e0;
+    /* Footer inside Form */
+    .form-footer {
+      margin-top: auto;
+      padding-top: 30px;
       text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
     }
 
+    /* Responsive */
     @media (max-width: 900px) {
-      .login-container {
-        flex-direction: column;
-        width: 90%;
-        height: auto;
-      }
-      
-      .login-left, .login-right {
-        padding: 30px;
-      }
+      .brand-side { display: none; }
+      .form-side { padding: 40px 20px; max-width: 100%; }
+      body { background: white; }
     }
   </style>
 </head>
 
 <body>
 
-<div class="login-container">
+<div class="login-wrapper">
+  
+  <div class="form-side">
+    <div class="header-text">
+      <h2>تسجيل الدخول 👋</h2>
+      <p>أهلاً بك مجدداً، الرجاء إدخال بيانات حسابك.</p>
+    </div>
 
-  <div class="login-left">
-    <img src="assets/logo.png">
-    <h2>كلية تقنية المعلومات</h2>
-    <p>جامعة النصر التقنية<br>نظام إدارة المحاضرات والمواد</p>
+    <div class="alert alert-danger" id="error"></div>
+    <div class="alert alert-success" id="success"></div>
+    <div class="alert alert-warning" id="lockWarning"></div>
+
+    <form onsubmit="event.preventDefault(); login();">
+      
+      <div class="input-group">
+        <label>البريد الإلكتروني</label>
+        <div class="input-wrapper">
+          <i class="ri-mail-line icon-start"></i>
+          <input type="email" id="email" class="form-control" placeholder="example@nun.edu.sd" required>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>كلمة المرور</label>
+        <div class="input-wrapper">
+          <i class="ri-lock-password-line icon-start"></i>
+          <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+          <i class="ri-eye-off-line icon-end" id="togglePass" onclick="togglePasswordVisibility()"></i>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-login" id="loginBtn">
+        <span class="spinner" id="loginLoading"></span>
+        <span id="loginText">دخول</span>
+      </button>
+
+      <a href="forgot-password.html" class="forgot-pass">نسيت كلمة المرور؟</a>
+
+    </form>
+
+    <div class="form-footer">
+      حقوق النشر © <span id="year"></span> جامعة النصر التقنية
+    </div>
   </div>
 
-  <div class="login-right">
-    <h3>تسجيل الدخول</h3>
-
-    <input type="email" id="email" placeholder="البريد الإلكتروني">
-    <input type="password" id="password" placeholder="كلمة المرور">
-    
-    <div class="remaining-attempts" id="remainingAttempts"></div>
-    
-    <div class="error" id="error"></div>
-    <div class="success" id="success"></div>
-    <div class="lock-warning" id="lockWarning"></div>
-    
-    <button onclick="login()" id="loginBtn">
-      <span id="loginText">دخول</span>
-      <span class="loading" id="loginLoading" style="display: none;"></span>
-    </button>
-    
-    <div class="forgot-password-link">
-      <a href="forgot-password.html">نسيت كلمة المرور؟</a>
-    </div>
+  <div class="brand-side">
+    <img src="assets/logo.png" class="brand-logo" alt="Logo">
+    <h1 class="brand-title">كلية تقنية المعلومات</h1>
+    <p class="brand-subtitle">نظام إدارة المحاضرات والعملية التعليمية<br>بوابة أعضاء هيئة التدريس والطلاب</p>
   </div>
 
 </div>
 
-<footer class="main-footer">
-  إنشاء: <strong>ضياء الدين إبراهيم</strong> —  
-  حقوق النشر © <span id="year"></span> جامعة النصر التقنية
-</footer>
-
 <script>
   document.getElementById("year").innerText = new Date().getFullYear();
 
-  // التحقق من وجود توكن سابق
+  // ميزة إظهار/إخفاء كلمة المرور
+  function togglePasswordVisibility() {
+    const passInput = document.getElementById("password");
+    const icon = document.getElementById("togglePass");
+    
+    if (passInput.type === "password") {
+      passInput.type = "text";
+      icon.classList.replace("ri-eye-off-line", "ri-eye-line");
+    } else {
+      passInput.type = "password";
+      icon.classList.replace("ri-eye-line", "ri-eye-off-line");
+    }
+  }
+
+  // التحقق من التوكن السابق
   const token = localStorage.getItem('token');
   if (token) {
-    // توجيه مباشر إلى dashboard
     window.location.href = 'dashboard.html';
   }
 
@@ -253,22 +331,18 @@
     const loginText = document.getElementById("loginText");
     const loginLoading = document.getElementById("loginLoading");
     
-    // إخفاء جميع الرسائل
-    document.getElementById("error").style.display = "none";
-    document.getElementById("success").style.display = "none";
-    document.getElementById("lockWarning").style.display = "none";
-    document.getElementById("remainingAttempts").style.display = "none";
+    // إخفاء التنبيهات السابقة
+    hideAlerts();
     
-    // التحقق من البيانات
     if (!email || !password) {
-      showError("الرجاء إدخال البريد الإلكتروني وكلمة المرور");
+      showAlert("error", "يرجى ملء جميع الحقول المطلوبة");
       return;
     }
     
-    // عرض حالة التحميل
+    // حالة التحميل
     loginBtn.disabled = true;
-    loginText.textContent = "جاري تسجيل الدخول...";
-    loginLoading.style.display = "inline-block";
+    loginText.textContent = "جاري التحقق...";
+    loginLoading.style.display = "block";
     
     try {
       const res = await fetch("/api/auth/login", {
@@ -279,97 +353,88 @@
 
       const data = await res.json();
       
-      // إعادة تعيين زر الدخول
+      // إعادة الزر لوضعه الطبيعي
       loginBtn.disabled = false;
       loginText.textContent = "دخول";
       loginLoading.style.display = "none";
       
       if (!res.ok) {
-        // حالة الحساب مقفل
         if (res.status === 423) {
-          showLockWarning(data.message || "الحساب مقفل مؤقتاً بسبب عدة محاولات فاشلة");
-          return;
+          showAlert("lock", data.message || "الحساب مقفل مؤقتاً بسبب تكرار المحاولات");
+        } else {
+          let msg = data.message || "حدث خطأ غير معروف";
+          if (data.remainingAttempts !== undefined) {
+             msg += ` (المحاولات المتبقية: ${data.remainingAttempts})`;
+          }
+          showAlert("error", msg);
         }
-        
-        // خطأ في تسجيل الدخول
-        let errorMessage = data.message || data;
-        
-        // عرض عدد المحاولات المتبقية
-        if (data.remainingAttempts !== undefined) {
-          document.getElementById("remainingAttempts").textContent = 
-            `المحاولات المتبقية: ${data.remainingAttempts}`;
-          document.getElementById("remainingAttempts").style.display = "block";
-        }
-        
-        showError(errorMessage);
         return;
       }
 
-      // تسجيل الدخول ناجح
-      showSuccess("تم تسجيل الدخول بنجاح، جاري التوجيه...");
-      
+      // نجاح الدخول
+      showAlert("success", "تم تسجيل الدخول بنجاح! جاري التوجيه...");
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
       const user = data.user;
       
-      // التحقق من أول دخول
-      if (user.firstLogin) {
-        // توجيه إلى صفحة تغيير كلمة المرور الإجباري
-        setTimeout(() => {
-          window.location.href = "force-change-password.html";
-        }, 1500);
-      } else {
-        // توجيه حسب الدور
-        setTimeout(() => {
+      setTimeout(() => {
+        if (user.firstLogin) {
+          window.location.href = "force-change-password.html"; // تأكد من وجود هذه الصفحة بنفس التصميم
+        } else {
+          // توجيه حسب الصلاحية
           if (user.roles.includes("dean")) {
             window.location.href = "admin_dashboard.html";
           } else {
             window.location.href = "dashboard.html";
           }
-        }, 1500);
-      }
+        }
+      }, 1500);
       
     } catch (err) {
       console.error("Login error:", err);
-      
-      // إعادة تعيين زر الدخول
       loginBtn.disabled = false;
       loginText.textContent = "دخول";
       loginLoading.style.display = "none";
-      
-      showError("حدث خطأ في الاتصال بالخادم");
+      showAlert("error", "فشل الاتصال بالخادم، يرجى التحقق من الإنترنت");
     }
   }
 
-  // دالة لعرض رسالة الخطأ
-  function showError(message) {
-    const errorEl = document.getElementById("error");
-    errorEl.textContent = message;
-    errorEl.style.display = "block";
-  }
-
-  // دالة لعرض رسالة النجاح
-  function showSuccess(message) {
-    const successEl = document.getElementById("success");
-    successEl.textContent = message;
-    successEl.style.display = "block";
-  }
-
-  // دالة لعرض تحذير القفل
-  function showLockWarning(message) {
-    const lockEl = document.getElementById("lockWarning");
-    lockEl.textContent = message;
-    lockEl.style.display = "block";
-  }
-
-  // السماح بالضغط على Enter لتسجيل الدخول
-  document.getElementById("password").addEventListener("keypress", function(event) {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      login();
+  function showAlert(type, message) {
+    let el;
+    let icon = "";
+    
+    if (type === "error") {
+      el = document.getElementById("error");
+      icon = '<i class="ri-error-warning-fill"></i> ';
+    } else if (type === "success") {
+      el = document.getElementById("success");
+      icon = '<i class="ri-checkbox-circle-fill"></i> ';
+    } else if (type === "lock") {
+      el = document.getElementById("lockWarning");
+      icon = '<i class="ri-lock-2-fill"></i> ';
     }
-  });
+    
+    if (el) {
+      el.innerHTML = icon + message;
+      el.style.display = "flex";
+      // هزة خفيفة للحقل في حالة الخطأ
+      if(type === 'error') {
+         document.querySelector('.form-side').animate([
+           { transform: 'translateX(0)' }, 
+           { transform: 'translateX(-5px)' }, 
+           { transform: 'translateX(5px)' }, 
+           { transform: 'translateX(0)' }
+         ], { duration: 300 });
+      }
+    }
+  }
+
+  function hideAlerts() {
+    document.getElementById("error").style.display = "none";
+    document.getElementById("success").style.display = "none";
+    document.getElementById("lockWarning").style.display = "none";
+  }
 </script>
 
 </body>
