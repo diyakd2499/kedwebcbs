@@ -6,91 +6,85 @@
   <title>التنبيهات | كلية تقنية المعلومات</title>
 
   <style>
+    :root {
+      --primary: #0d3b66;
+      --accent-blue: #1e90ff;
+      --accent-red: #d9534f;
+      --bg-light: #f4f7f9;
+      --card-bg: #ffffff;
+      --text-main: #2d3436;
+      --text-muted: #636e72;
+    }
+
     * {
       box-sizing: border-box;
-      font-family: "Segoe UI", Tahoma, sans-serif;
+      font-family: 'Cairo', sans-serif;
+      transition: all 0.3s ease;
     }
 
     body {
       margin: 0;
-      background: #f4f6f8;
+      background: var(--bg-light);
+      color: var(--text-main);
       min-height: 100vh;
-      transition: 0.3s;
     }
 
     /* ===== Dark Mode ===== */
     body.dark {
-      background: #121212;
-      color: #e0e0e0;
-    }
-
-    body.dark .note {
-      background: #1e1e1e;
-    }
-
-    body.dark .note-title {
-      color: #90caf9;
-    }
-
-    body.dark .main-header {
-      background: #0a2540;
+      --bg-light: #0f172a;
+      --card-bg: #1e293b;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
     }
 
     /* ===== Header ===== */
     .main-header {
-      background: #0d3b66;
+      background: var(--primary);
       color: white;
-      padding: 15px 30px;
+      padding: 15px 5%;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
     }
 
     .header-left {
       display: flex;
       align-items: center;
-      gap: 15px;
+      gap: 12px;
     }
 
     .logo {
-      width: 50px;
-      height: 50px;
+      width: 45px;
+      height: 45px;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
     }
 
-    .header-title strong {
-      font-size: 16px;
-    }
+    .header-title strong { font-size: 16px; display: block; }
+    .header-title small { font-size: 12px; opacity: 0.8; }
 
-    .header-title small {
-      font-size: 13px;
-      opacity: 0.85;
-    }
+    .header-actions { display: flex; gap: 10px; }
 
-    .header-actions {
-      display: flex;
-      gap: 10px;
-    }
-
-    .btn {
-      background: white;
-      color: #0d3b66;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 6px;
+    .btn-header {
+      background: rgba(255,255,255,0.15);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.2);
+      padding: 8px 15px;
+      border-radius: 10px;
       cursor: pointer;
-      font-weight: 500;
-      transition: 0.2s;
+      font-size: 14px;
+      font-weight: 600;
     }
 
-    .btn:hover {
-      background: #f0f0f0;
-    }
+    .btn-header:hover { background: rgba(255,255,255,0.25); transform: translateY(-2px); }
 
-    /* ===== Content ===== */
+    /* ===== Content Container ===== */
     .container {
-      padding: 30px;
-      max-width: 1200px;
+      padding: 40px 5%;
+      max-width: 900px;
       margin: auto;
     }
 
@@ -98,115 +92,133 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 25px;
+      margin-bottom: 30px;
+      border-bottom: 2px solid rgba(0,0,0,0.05);
+      padding-bottom: 15px;
     }
+
+    body.dark .page-header { border-color: rgba(255,255,255,0.05); }
 
     .page-title {
-      font-size: 20px;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    body.dark .page-title { color: #60a5fa; }
+
+    .btn-read-all {
+      background: var(--accent-blue);
+      color: white;
+      border: none;
+      padding: 6px 15px;
+      border-radius: 8px;
+      font-size: 13px;
       font-weight: 600;
-      color: #0d3b66;
-      margin: 0;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(30, 144, 255, 0.2);
     }
 
-    body.dark .page-title {
-      color: #90caf9;
-    }
-
-    /* ===== Notification Card ===== */
+    /* ===== Notification Cards ===== */
     .note {
-      background: white;
-      padding: 20px;
-      margin-bottom: 15px;
-      border-radius: 10px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-      border-right: 6px solid #1e90ff;
-      transition: 0.3s;
+      background: var(--card-bg);
+      padding: 22px;
+      margin-bottom: 18px;
+      border-radius: 18px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+      border: 1px solid rgba(0,0,0,0.03);
       position: relative;
+      cursor: pointer;
+      overflow: hidden;
     }
 
     .note:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+      transform: scale(1.01);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.08);
     }
 
-    .note.unread {
-      background: #f0f7ff;
+    /* مؤشر الحالة (جديد) */
+    .note.unread::before {
+      content: '';
+      position: absolute;
+      top: 22px;
+      right: 10px;
+      width: 8px;
+      height: 8px;
+      background: var(--accent-blue);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--accent-blue);
     }
 
-    body.dark .note.unread {
-      background: #1a2635;
+    .note.emergency.unread::before {
+      background: var(--accent-red);
+      box-shadow: 0 0 10px var(--accent-red);
     }
 
     .note-title {
-      font-weight: 600;
-      margin-bottom: 8px;
-      color: #0d3b66;
-      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--primary);
+      font-size: 17px;
+      padding-right: 15px;
     }
+    body.dark .note-title { color: #e2e8f0; }
 
     .note-message {
-      font-size: 14px;
-      line-height: 1.6;
-      color: #444;
-    }
-
-    body.dark .note-message {
-      color: #ccc;
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--text-muted);
+      margin-bottom: 15px;
     }
 
     .note-date {
       font-size: 12px;
-      color: gray;
-      margin-top: 12px;
+      color: var(--text-muted);
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      gap: 5px;
+      font-weight: 600;
     }
 
-    .unread-tag {
-      background: #d9534f;
-      color: white;
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-size: 10px;
-      font-weight: bold;
-    }
-
-    /* ===== Emergency ===== */
-    .emergency {
-      border-right-color: #d9534f;
+    /* ===== Emergency Style ===== */
+    .note.emergency {
+      border-right: 5px solid var(--accent-red);
+      background: linear-gradient(to left, rgba(217, 83, 79, 0.02), var(--card-bg));
     }
 
     .note.emergency.unread {
-      background: #fff1f1;
-      animation: blink 1.5s infinite;
+      background: rgba(217, 83, 79, 0.05);
+      animation: softPulse 2s infinite;
     }
 
-    @keyframes blink {
-      0% { background: #fff1f1; }
-      50% { background: #ffe5e5; }
-      100% { background: #fff1f1; }
+    @keyframes softPulse {
+      0% { box-shadow: 0 0 0 0 rgba(217, 83, 79, 0.1); }
+      70% { box-shadow: 0 0 0 10px rgba(217, 83, 79, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(217, 83, 79, 0); }
     }
 
     .empty-state {
       text-align: center;
-      padding: 50px;
-      color: #999;
+      padding: 80px 20px;
+      color: var(--text-muted);
     }
+    .empty-state-icon { font-size: 60px; margin-bottom: 15px; opacity: 0.3; }
 
     /* ===== Footer ===== */
     .main-footer {
-      margin-top: 40px;
-      padding: 15px;
+      padding: 30px;
       text-align: center;
       font-size: 13px;
-      color: #666;
+      color: var(--text-muted);
+      border-top: 1px solid rgba(0,0,0,0.05);
     }
 
-    @media (max-width: 768px) {
-      .container {
-        padding: 20px;
-      }
+    @media (max-width: 600px) {
+      .container { padding: 20px 15px; }
+      .page-title { font-size: 20px; }
+      .note { padding: 18px; }
     }
   </style>
 </head>
