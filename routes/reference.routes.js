@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const router = require("express").Router();
 const Reference = require("../models/Reference");
 const auth = require("../middleware/auth.middleware");
@@ -53,25 +54,6 @@ router.get("/", auth, async (req, res) => {
   res.json(refs);
 });
 
-// جلب مراجع مادة معيّنة
-router.get("/by-subject/:subjectId", auth, async (req, res) => {
-  try {
-    const { subjectId } = req.params;
-    
-    // التحقق مما إذا كان المعرف صالحاً أو قيمته "null"
-    if (!subjectId || subjectId === "null" || subjectId === "undefined") {
-      return res.status(400).json({ message: "معرف المادة غير صالح" });
-    }
 
-    const refs = await Reference.find({
-      subject: subjectId
-    }).sort({ createdAt: -1 });
-
-    res.json(refs);
-  } catch (error) {
-    console.error("Error fetching references:", error);
-    res.status(500).json({ message: "خطأ في السيرفر" });
-  }
-});
 
 module.exports = router;
