@@ -219,13 +219,9 @@ userSchema.methods.changePasswordFirstLogin = async function(newPassword) {
 
 // زيادة عدد محاولات الدخول الفاشلة
 userSchema.methods.incrementFailedAttempts = async function() {
-  this.failedLoginAttempts += 1;
-  
-  // تم إيقاف ميزة قفل الحساب بناءً على طلب المستخدم
-  // if (this.failedLoginAttempts >= 5) {
-  //   this.lockUntil = new Date(Date.now() + 15 * 60 * 1000);
-  // }
-  
+  // تم إيقاف عداد المحاولات بناءً على طلب المستخدم
+  this.failedLoginAttempts = 0;
+  this.lockUntil = null;
   await this.save();
   return this;
 };
@@ -310,3 +306,4 @@ userSchema.statics.cleanupExpiredCodes = async function() {
 };
 
 module.exports = mongoose.model("User", userSchema);
+
