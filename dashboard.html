@@ -6,280 +6,262 @@
   <title>لوحة التحكم | كلية تقنية المعلومات</title>
 
   <style>
+    :root {
+      --primary: #0d3b66;
+      --secondary: #1e6091;
+      --accent: #d9534f;
+      --bg-light: #f8fafc;
+      --card-light: #ffffff;
+      --text-light: #334155;
+      
+      /* Dark Mode Colors */
+      --bg-dark: #0f172a;
+      --card-dark: #1e293b;
+      --text-dark: #f1f5f9;
+    }
+
     * {
       box-sizing: border-box;
-      font-family: "Segoe UI", Tahoma, sans-serif;
+      font-family: 'Cairo', sans-serif;
+      transition: background-color 0.3s, color 0.3s, transform 0.2s;
     }
 
     body {
       margin: 0;
-      background: #f4f6f8;
+      background: var(--bg-light);
+      color: var(--text-light);
       min-height: 100vh;
-      transition: 0.3s;
+      display: flex;
+      flex-direction: column;
     }
 
-    /* ===== Dark Mode ===== */
     body.dark {
-      background: #121212;
-      color: #e0e0e0;
+      background: var(--bg-dark);
+      color: var(--text-dark);
     }
 
-    body.dark .card {
-      background: #1e1e1e;
-    }
-
-    body.dark .card-title {
-      color: #90caf9;
-    }
-
-    body.dark .main-header {
-      background: #0a2540;
-    }
-
-    /* ===== Header ===== */
+    /* ===== Header Modern Design ===== */
     .main-header {
-      background: #0d3b66;
+      background: var(--primary);
       color: white;
-      padding: 15px 25px;
+      padding: 12px 5%;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
     }
 
     .header-left {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 15px;
     }
 
     .logo {
-      width: 45px;
-      height: 45px;
+      width: 50px;
+      height: 50px;
+      filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));
     }
 
     .header-title strong {
-      font-size: 15px;
+      font-size: 18px;
+      display: block;
+      line-height: 1.2;
     }
 
     .header-title small {
-      font-size: 12px;
-      opacity: 0.85;
+      font-size: 13px;
+      opacity: 0.8;
+      font-weight: 300;
     }
 
     .header-actions {
       display: flex;
-      gap: 8px;
+      gap: 12px;
     }
 
     .btn {
-      background: white;
-      color: #0d3b66;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 8px 16px;
+      border-radius: 12px;
       cursor: pointer;
-      font-weight: 500;
-      min-height: 44px;
-      transition: 0.2s;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .btn:hover {
-      background: #f0f0f0;
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
     }
 
-    /* ===== Layout ===== */
+    /* ===== Main Layout ===== */
     .container {
-      padding: 25px;
-      max-width: 1200px;
-      margin: auto;
+      padding: 40px 5%;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
     }
 
     .welcome {
-      font-size: 18px;
-      margin-bottom: 20px;
-      color: #0d3b66;
-      font-weight: 500;
+      font-size: 26px;
+      margin-bottom: 30px;
+      color: var(--primary);
+      font-weight: 700;
+      border-right: 5px solid var(--accent);
+      padding-right: 15px;
     }
 
     body.dark .welcome {
       color: #90caf9;
     }
 
+    /* ===== Dashboard Grid ===== */
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 25px;
     }
 
-    /* ===== Cards ===== */
+    /* ===== Professional Cards ===== */
     .card {
-      background: white;
-      padding: 22px;
-      border-radius: 12px;
+      background: var(--card-light);
+      padding: 30px;
+      border-radius: 24px;
       cursor: pointer;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-      transition: 0.3s;
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
+      border: 1px solid rgba(0,0,0,0.05);
       display: flex;
+      flex-direction: column;
       align-items: center;
+      text-align: center;
       gap: 15px;
       position: relative;
+      overflow: hidden;
+    }
+
+    body.dark .card {
+      background: var(--card-dark);
+      border-color: rgba(255,255,255,0.05);
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
+    }
+
+    /* إضافة تأثير توهج خلف الأيقونة */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(13,59,102,0.03) 0%, transparent 70%);
+      pointer-events: none;
     }
 
     .card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+      transform: translateY(-10px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      border-color: var(--primary);
     }
 
     .icon {
-      font-size: 34px;
+      font-size: 50px;
+      margin-bottom: 10px;
+      filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1));
     }
 
     .card-title {
-      font-size: 16px;
-      font-weight: 600;
-      color: #0d3b66;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    body.dark .card-title {
+      color: #cbd5e1;
     }
 
     .admin {
-      border-left: 6px solid #d9534f;
+      border-bottom: 5px solid var(--accent);
     }
 
     /* ===== Notification Badge ===== */
     .badge {
       position: absolute;
-      top: 12px;
-      right: 15px;
-      background: #d9534f;
+      top: 20px;
+      left: 20px;
+      background: var(--accent);
       color: white;
-      font-size: 11px;
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 50px;
       font-weight: bold;
-      padding: 2px 6px;
-      border-radius: 10px;
-      display: none;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      box-shadow: 0 4px 10px rgba(217, 83, 79, 0.4);
     }
 
-    /* ===== Toast Notification ===== */
+    /* ===== Toasts ===== */
     #toast-container {
       position: fixed;
-      bottom: 20px;
-      left: 20px;
-      z-index: 9999;
+      bottom: 30px;
+      left: 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
     }
 
     .toast {
-      background: white;
-      color: #333;
-      padding: 15px 20px;
-      border-radius: 8px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-      margin-top: 10px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      min-width: 300px;
-      max-width: 400px;
-      border-right: 5px solid #0d3b66;
-      animation: slideInLeft 0.5s;
-      cursor: pointer;
-    }
-
-    .toast.emergency {
-      border-right-color: #d9534f;
-      background: #fff1f1;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(15px);
+      padding: 20px;
+      border-radius: 18px;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+      border-right: 6px solid var(--primary);
+      width: 350px;
+      animation: slideIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
     body.dark .toast {
-      background: #1e1e1e;
-      color: #e0e0e0;
+      background: rgba(30, 41, 59, 0.9);
+      color: white;
     }
 
-    body.dark .toast.emergency {
-      background: #3a1f1f;
-      border-right-color: #d9534f;
-    }
-
-    @keyframes slideInLeft {
-      from { transform: translateX(-100%); opacity: 0; }
+    @keyframes slideIn {
+      from { transform: translateX(-120%); opacity: 0; }
       to { transform: translateX(0); opacity: 1; }
-    }
-
-    @keyframes fadeOut {
-      from { opacity: 1; }
-      to { opacity: 0; }
-    }
-
-    .toast-content {
-      flex: 1;
-    }
-
-    .toast-title {
-      font-weight: bold;
-      font-size: 14px;
-      margin-bottom: 3px;
-    }
-
-    .toast-message {
-      font-size: 13px;
-      color: #666;
-    }
-
-    body.dark .toast-message {
-      color: #aaa;
-    }
-
-    .toast-sender {
-      font-size: 11px;
-      color: #888;
-      margin-top: 3px;
-    }
-
-    body.dark .toast-sender {
-      color: #888;
     }
 
     /* ===== Footer ===== */
     .main-footer {
-      margin-top: 40px;
-      padding: 15px;
+      margin-top: auto;
+      padding: 30px;
       text-align: center;
-      font-size: 13px;
-      color: #666;
+      font-size: 14px;
+      background: rgba(0,0,0,0.02);
+      border-top: 1px solid rgba(0,0,0,0.05);
     }
 
     body.dark .main-footer {
-      color: #aaa;
+      background: rgba(255,255,255,0.02);
+      border-top: 1px solid rgba(255,255,255,0.05);
     }
 
-    /* ===== Mobile ===== */
-    @media (max-width: 600px) {
-      .container {
-        padding: 15px;
-      }
-
-      .grid {
-        grid-template-columns: 1fr;
-      }
-
-      .card {
-        padding: 18px;
-      }
-
-      .welcome {
-        font-size: 16px;
-      }
-
-      .toast {
-        min-width: 280px;
-        max-width: 90%;
-      }
+    /* ===== Mobile Responsive ===== */
+    @media (max-width: 768px) {
+      .container { padding: 20px; }
+      .welcome { font-size: 20px; }
+      .main-header { padding: 10px 15px; }
+      .header-title strong { font-size: 14px; }
+      .grid { grid-template-columns: 1fr; }
+      .card { flex-direction: row; text-align: right; padding: 20px; }
+      .icon { font-size: 35px; margin: 0; }
     }
   </style>
-</head>
-
 <body>
 
 <!-- ===== Header ===== -->
