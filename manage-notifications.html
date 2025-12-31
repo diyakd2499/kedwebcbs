@@ -619,9 +619,10 @@
         body: JSON.stringify({ title, message, type })
       });
 
+      const data = await res.json();
+
       if (!res.ok) {
-        const error = await res.json();
-        showError(error.message || error.error || "حدث خطأ");
+        showError(data.message || data.error || "حدث خطأ");
         return;
       }
 
@@ -629,8 +630,9 @@
       setTimeout(() => {
         closeModal();
         loadNotifications();
-      }, 1500);
+      }, 1000);
     } catch (err) {
+      console.error("Add error:", err);
       showError("خطأ في الاتصال بالخادم");
     }
   }
@@ -646,15 +648,19 @@
         }
       });
 
+      const data = await res.json();
+
       if (!res.ok) {
-        const error = await res.json();
-        showError(error.message || error.error || "فشل في حذف التنبيه");
+        showError(data.message || data.error || "فشل في حذف التنبيه");
         return;
       }
 
       showSuccess("تم حذف التنبيه بنجاح");
-      setTimeout(() => loadNotifications(), 1500);
+      // تحديث القائمة فوراً بدلاً من الانتظار
+      allNotifications = allNotifications.filter(n => n._id !== id);
+      renderNotifications(allNotifications);
     } catch (err) {
+      console.error("Delete error:", err);
       showError("خطأ في الاتصال بالخادم");
     }
   }
