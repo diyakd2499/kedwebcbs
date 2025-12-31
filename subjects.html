@@ -5,55 +5,51 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>المواد | كلية تقنية المعلومات</title>
 
-  <style>
+ <style>
+    :root {
+      --primary: #0d3b66;
+      --secondary: #1e6091;
+      --accent: #3a86ff;
+      --bg-light: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #334155;
+      --text-muted: #64748b;
+    }
+
     * {
       box-sizing: border-box;
-      font-family: "Segoe UI", Tahoma, sans-serif;
+      font-family: 'Cairo', sans-serif;
+      transition: all 0.3s ease;
     }
 
     body {
       margin: 0;
-      background: #f4f6f8;
+      background: var(--bg-light);
+      color: var(--text-main);
       min-height: 100vh;
-      transition: 0.3s;
     }
 
     /* ===== Dark Mode ===== */
     body.dark {
-      background: #121212;
-      color: #e0e0e0;
-    }
-
-    body.dark .card {
-      background: #1e1e1e;
-    }
-
-    body.dark .card-title {
-      color: #90caf9;
-    }
-
-    body.dark .main-header {
-      background: #0a2540;
-    }
-    .btn {
-      background: white;
-      color: #0d3b66;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 500;
-      min-height: 44px;
+      --bg-light: #0f172a;
+      --card-bg: #1e293b;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --primary: #60a5fa;
     }
 
     /* ===== Header ===== */
     .main-header {
       background: #0d3b66;
       color: white;
-      padding: 15px 30px;
+      padding: 15px 5%;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
     }
 
     .header-left {
@@ -63,115 +59,167 @@
     }
 
     .logo {
-      width: 50px;
-      height: 50px;
+      width: 45px;
+      height: 45px;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
     }
 
-    .header-title strong {
-      font-size: 16px;
+    .header-title strong { font-size: 16px; display: block; }
+    .header-title small { font-size: 12px; opacity: 0.8; }
+
+    .header-actions { display: flex; gap: 10px; }
+
+    .btn-action {
+      background: rgba(255,255,255,0.1);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.2);
+      padding: 8px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    .header-title small {
-      font-size: 13px;
-      opacity: 0.85;
-    }
-
-    .back-btn {
+    .btn-action:hover {
       background: white;
       color: #0d3b66;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 500;
+      transform: translateY(-2px);
     }
 
     /* ===== Content ===== */
     .container {
-      padding: 30px;
+      padding: 40px 5%;
       max-width: 1200px;
       margin: auto;
     }
 
     .page-title {
-      font-size: 20px;
-      font-weight: 600;
-      color: #0d3b66;
-      margin-bottom: 25px;
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 35px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
-    /* ===== Grid ===== */
+    /* ===== Subjects Grid ===== */
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       gap: 25px;
     }
 
-    /* ===== Card ===== */
+    /* ===== Modern Subject Card ===== */
     .card {
-      background: white;
+      background: var(--card-bg);
       padding: 25px;
-      border-radius: 14px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-      transition: 0.3s;
-      cursor: pointer;
+      border-radius: 20px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+      border: 1px solid rgba(0,0,0,0.02);
       position: relative;
+      cursor: pointer;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* شريط جانبي ملون */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 6px;
+      height: 100%;
+      background: var(--accent);
     }
 
     .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+      transform: translateY(-8px);
+      box-shadow: 0 20px 30px rgba(0,0,0,0.1);
+      border-color: var(--accent);
     }
 
     .card h4 {
-      margin: 0;
-      margin-bottom: 8px;
-      color: #0d3b66;
-      font-size: 17px;
+      margin: 0 0 10px 0;
+      color: var(--text-main);
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .level-tag {
+      display: inline-block;
+      background: rgba(58, 134, 255, 0.1);
+      color: var(--accent);
+      padding: 4px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      width: fit-content;
+    }
+
+    .doctor-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--text-muted);
+      border-top: 1px solid rgba(0,0,0,0.05);
+      padding-top: 15px;
+      margin-top: auto;
+    }
+    body.dark .doctor-info { border-color: rgba(255,255,255,0.05); }
+
+    .arrow-icon {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      width: 32px;
+      height: 32px;
+      background: var(--bg-light);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    .card:hover .arrow-icon {
+      background: var(--accent);
+      color: white;
+      transform: rotate(-45deg);
+    }
+
+    /* Error Message */
+    #errorMessage {
+      background: #fee2e2;
+      color: #dc2626;
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      border: 1px solid #fecaca;
+      font-weight: 600;
+      text-align: center;
     }
 
     .main-footer {
-      margin-top: 40px;
-      padding: 15px;
+      margin-top: 50px;
+      padding: 30px;
       text-align: center;
-      font-size: 13px;
-      color: #666;
-    }
-
-    body.dark .main-footer {
-      color: #aaa;
-    }
-
-
-    .card p {
-      margin: 0;
-      margin-bottom: 12px;
-      color: #555;
       font-size: 14px;
+      color: var(--text-muted);
+      background: rgba(0,0,0,0.02);
     }
 
-    .doctor {
-      font-size: 13px;
-      color: #777;
-    }
-
-    .arrow {
-      position: absolute;
-      bottom: 20px;
-      right: 20px;
-      font-size: 20px;
-      color: #0d3b66;
-    }
-
-    .empty {
-      color: gray;
-      font-size: 15px;
-    }
-
-    @media (max-width: 768px) {
-      .container {
-        padding: 20px;
-      }
+    @media (max-width: 600px) {
+      .container { padding: 25px 15px; }
+      .grid { grid-template-columns: 1fr; }
+      .page-title { font-size: 22px; }
     }
   </style>
 </head>
