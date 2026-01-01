@@ -13,7 +13,7 @@ destination: (req, file, cb) => {
   filename: (req, file, cb) => {
     const uniqueName =
       Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(nulll,uniqueName + path.extname(file.originalname));
+    cb(null,uniqueName + path.extname(file.originalname));
   }
 });
 
