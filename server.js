@@ -18,6 +18,9 @@ app.use(express.static(path.join(__dirname, ".")));
 
 // تعريف مسارات الـ API
 app.use("/api/auth", require("./routes/auth.routes.js"));
+app.get("/api/verify-token", require("./middleware/auth.middleware"), (req, res) => {
+  res.json({ success: true, user: req.user });
+});
 app.use("/api/subjects", require("./routes/subject.routes.js"));
 app.use("/api/lectures", require("./routes/lecture.routes.js"));
 app.use("/api/notifications", require("./routes/notification.routes.js"));
