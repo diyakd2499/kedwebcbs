@@ -19,6 +19,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(express.static(path.join(__dirname, "."))); 
 
 // تعريف مسارات الـ API
+const submissionRoutes = require("./routes/submission.routes.js");
 app.use("/api/auth", require("./routes/auth.routes.js"));
 app.get("/api/verify-token", require("./middleware/auth.middleware"), (req, res) => {
   res.json({ success: true, user: req.user });
@@ -28,6 +29,7 @@ app.use("/api/lectures", require("./routes/lecture.routes.js"));
 app.use("/api/notifications", require("./routes/notification.routes.js"));
 app.use("/api/references", require("./routes/reference.routes.js"));
 app.use("/api/assignments", require("./routes/assignment.routes.js"));
+app.use("/api/submissions", require("./routes/submission.routes.js"));
 app.use("/api/attendance", require("./routes/attendance.routes"));
 
 // تعديل المسار الرئيسي لفتح ملف index.html
