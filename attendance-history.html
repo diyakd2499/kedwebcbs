@@ -4,7 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>سجلات الحضور السابقة | كلية تقنية المعلومات</title>
+  
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
   <style>
     * { box-sizing: border-box; font-family: "Segoe UI", Tahoma, sans-serif; }
     body { margin: 0; background: #f4f6f8; min-height: 100vh; transition: 0.3s; }
@@ -45,6 +48,12 @@
     .status-badge { padding: 2px 10px; border-radius: 10px; font-size: 12px; font-weight: bold; }
     .status-present { background: #d4edda; color: #155724; }
     .status-absent { background: #f8d7da; color: #721c24; }
+
+    /* تنسيق أزرار المودال الجديدة */
+    .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+    .btn-action { flex: 1; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+    .btn-close { background: #d9534f; color: white; }
+    .btn-download { background: #28a745; color: white; }
   </style>
 </head>
 <body>
@@ -63,22 +72,27 @@
 <div class="container">
   <h2 class="page-title">📜 سجلات الحضور التاريخية</h2>
   <div id="historyGrid" class="history-grid">
-    <!-- سيتم تحميل السجلات هنا -->
-  </div>
+    </div>
 </div>
 
-<!-- Modal -->
 <div id="detailsModal" class="modal">
   <div class="modal-content">
     <h3 id="modalTitle" style="margin-top:0; color:#0d3b66;">تفاصيل الحضور</h3>
     <div id="studentList"></div>
-    <button onclick="closeModal()" style="width:100%; margin-top:20px; padding:12px; background:#0d3b66; color:white; border:none; border-radius:8px; cursor:pointer;">إغلاق</button>
+    
+    <div class="modal-actions">
+        <button onclick="downloadPDF()" class="btn-action btn-download">📄 تحميل PDF</button>
+        <button onclick="closeModal()" class="btn-action btn-close">إغلاق</button>
+    </div>
   </div>
 </div>
 
 <script>
   const token = localStorage.getItem("token");
   if (!token) location.href = "login.html";
+
+  // متغير لتخزين بيانات السجل الحالي للطباعة
+  let currentAttendanceData = null;
 
   async function loadHistory() {
     try {
@@ -113,6 +127,8 @@
       });
       const data = await res.json();
       
+      currentAttendanceData = data; // حفظ البيانات للطباعة
+
       document.getElementById("modalTitle").innerText = `حضور مادة: ${data.subject.name} (${data.date})`;
       const list = document.getElementById("studentList");
       list.innerHTML = data.students.map(s => `
@@ -126,6 +142,46 @@
       
       document.getElementById("detailsModal").style.display = "block";
     } catch (err) { console.error(err); }
+  }
+
+  // --- دالة تحميل PDF الجديدة ---
+  function downloadPDF() {
+    if (!currentAttendanceData) return;
+
+    // إنشاء محتوى مخصص للطباعة
+    const printContent = document.createElement('div');
+    printContent.style.direction = 'rtl';
+    printContent.style.fontFamily = 'Segoe UI, Tahoma, sans-serif';
+    printContent.style.padding = '20px';
+    
+    // تصميم المحتوى: التاريخ كبير جداً، واسم المادة، والقائمة
+    printContent.innerHTML = `
+        <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #0d3b66; padding-bottom: 20px;">
+            <h1 style="font-size: 50px; color: #0d3b66; margin: 0; font-weight: bold;">${currentAttendanceData.date}</h1>
+            <h2 style="font-size: 24px; color: #555; margin: 10px 0;">سجل حضور: ${currentAttendanceData.subject.name}</h2>
+            <p>كلية تقنية المعلومات - جامعة النصر التقنية</p>
+        </div>
+        <div style="font-size: 16px;">
+            ${document.getElementById("studentList").innerHTML}
+        </div>
+        <div style="margin-top: 30px; text-align: left; font-size: 12px; color: #888;">
+           تم الاستخراج بواسطة النظام الأكاديمي
+        </div>
+    `;
+
+    // إعدادات الملف
+    const opt = {
+      margin:       10,
+      filename:     `Attendance_${currentAttendanceData.date}.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true },
+      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    // التحويل والحفظ
+    html2pdf().set(opt).from(printContent).save().then(() => {
+        Swal.fire('تم التحميل', 'تم حفظ ملف الحضور بنجاح', 'success');
+    });
   }
 
   function closeModal() { document.getElementById("detailsModal").style.display = "none"; }
