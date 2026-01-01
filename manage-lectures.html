@@ -533,7 +533,7 @@
         <p><strong>المادة:</strong> ${lecture.subject && typeof lecture.subject === 'object' ? lecture.subject.name : (lecture.subject || "غير محددة")}</p>
         <div class="card-links">
           ${lecture.videoUrl ? `<a href="${lecture.videoUrl}" target="_blank">🎥 مشاهدة الفيديو</a>` : ""}
-          ${lecture.file ? `<a href="/uploads/lectures/${lecture.file}" target="_blank">📂 تحميل الملف</a>` : ""}
+          ${lecture.file ? `<a href="/uploads/${lecture.file}" target="_blank">📂 تحميل الملف</a>` : ""}
         </div>
         <div class="card-actions">
           <button class="btn-delete" onclick="deleteLecture('${lecture._id}')">حذف</button>
