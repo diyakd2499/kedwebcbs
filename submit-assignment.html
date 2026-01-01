@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تسليم الواجبات | كلية تقنية المعلومات</title>
+  <style>
+    * { box-sizing: border-box; font-family: "Segoe UI", Tahoma, sans-serif; }
+    body { margin: 0; background: #f4f6f8; min-height: 100vh; transition: 0.3s; }
+    body.dark { background: #121212; color: #e0e0e0; }
+    
+    .main-header { 
+      background: #0d3b66; 
+      color: white; 
+      padding: 15px 25px; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+    }
+    
+    .container { padding: 25px; max-width: 1200px; margin: auto; }
+    
+    .tabs { 
+      display: flex; 
+      gap: 10px; 
+      margin-bottom: 20px; 
+      border-bottom: 2px solid #ddd; 
+      padding-bottom: 10px; 
+      flex-wrap: wrap;
+    }
+    
+    .tab { 
+      padding: 10px 20px; 
+      cursor: pointer; 
+      border-radius: 8px; 
+      font-weight: bold; 
+      transition: 0.3s; 
+    }
+    
+    .tab.active { 
+      background: #0d3b66; 
+      color: white; 
+    }
+    
+    body.dark .tab.active { 
+      background: #90caf9; 
+      color: #0d3b66; 
+    }
+    
+    .card { 
+      background: white; 
+      padding: 20px; 
+      border-radius: 12px; 
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
+      margin-bottom: 15px; 
+    }
+    
+    body.dark .card { 
+      background: #1e1e1e; 
+    }
+    
+    .btn { 
+      padding: 10px 15px; 
+      border: none; 
+      border-radius: 6px; 
+      cursor: pointer; 
+      font-weight: 500; 
+      transition: 0.2s; 
+    }
+    
+    .btn-primary { 
+      background: #0d3b66; 
+      color: white; 
+    }
+    
+    .btn-primary:hover { 
+      background: #0a2c4f; 
+    }
+    
+    .btn-danger { 
+      background: #d9534f; 
+      color: white; 
+    }
+    
+    .btn-success { 
+      background: #5cb85c; 
+      color: white; 
+    }
+    
+    .form-group { 
+      margin-bottom: 15px; 
+    }
+    
+    label { 
+      display: block; 
+      margin-bottom: 5px; 
+      font-weight: bold; 
+    }
+    
+    input, select, textarea { 
+      width: 100%; 
+      padding: 10px; 
+      border: 1px solid #ddd; 
+      border-radius: 6px; 
+      font-family: inherit;
+    }
+    
+    body.dark input, 
+    body.dark select, 
+    body.dark textarea { 
+      background: #2c2c2c; 
+      color: white; 
+      border-color: #444; 
+    }
+    
+    .assignment-card {
+      border-left: 4px solid #0d3b66;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+    
+    .assignment-card.late {
+      border-left-color: #d9534f;
+    }
+    
+    .assignment-card.submitted {
+      border-left-color: #5cb85c;
+    }
+    
+    .assignment-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 10px;
+    }
+    
+    .assignment-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin: 0;
+    }
+    
+    .badge {
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-right: 10px;
+    }
+    
+    .badge-exercise { background: #d1ecf1; color: #0c5460; }
+    .badge-research { background: #d4edda; color: #155724; }
+    .badge-project { background: #fff3cd; color: #856404; }
+    .badge-submitted { background: #d4edda; color: #155724; }
+    .badge-late { background: #f8d7da; color: #721c24; }
+    .badge-pending { background: #fff3cd; color: #856404; }
+    
+    .assignment-info {
+      margin: 10px 0;
+      font-size: 14px;
+    }
+    
+    .assignment-info p {
+      margin: 5px 0;
+    }
+    
+    .time-info {
+      background: #f0f0f0;
+      padding: 10px;
+      border-radius: 6px;
+      margin: 10px 0;
+      font-size: 14px;
+    }
+    
+    body.dark .time-info {
+      background: #2c2c2c;
+    }
+    
+    .time-info.warning {
+      background: #fff3cd;
+      color: #856404;
+    }
+    
+    .time-info.danger {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    
+    .submission-form {
+      background: #f9f9f9;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 15px;
+    }
+    
+    body.dark .submission-form {
+      background: #2c2c2c;
+    }
+    
+    .file-input-wrapper {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+    }
+    
+    .file-input-wrapper input[type=file] {
+      position: absolute;
+      left: -9999px;
+    }
+    
+    .file-input-label {
+      display: inline-block;
+      padding: 10px 15px;
+      background: #0d3b66;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    
+    .file-input-label:hover {
+      background: #0a2c4f;
+    }
+    
+    .file-name {
+      display: inline-block;
+      margin-left: 10px;
+      color: #666;
+    }
+    
+    body.dark .file-name {
+      color: #aaa;
+    }
+    
+    .submission-status {
+      padding: 10px;
+      border-radius: 6px;
+      margin: 10px 0;
+      font-weight: bold;
+    }
+    
+    .status-success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    
+    .status-error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    
+    .status-warning {
+      background: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeeba;
+    }
+    
+    .countdown {
+      font-size: 16px;
+      font-weight: bold;
+      color: #d9534f;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #999;
+    }
+    
+    .dark-toggle {
+      background: #fff;
+      color: #0d3b66;
+      border: 1px solid #ddd;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    
+    body.dark .dark-toggle {
+      background: #333;
+      color: #fff;
+      border-color: #555;
+    }
+    
+    .submission-item {
+      background: #f9f9f9;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 10px 0;
+      border-left: 4px solid #0d3b66;
+    }
+    
+    body.dark .submission-item {
+      background: #2c2c2c;
+    }
+    
+    .submission-item.graded {
+      border-left-color: #5cb85c;
+    }
+    
+    .submission-item.reviewed {
+      border-left-color: #5bc0de;
+    }
+    
+    .grade-display {
+      font-size: 24px;
+      font-weight: bold;
+      color: #0d3b66;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+
+<header class="main-header">
+  <div style="display:flex; align-items:center; gap:10px;">
+    <button class="btn" onclick="history.back()">⬅️</button>
+    <h2 style="margin:0;">تسليم الواجبات والتكاليف</h2>
+  </div>
+  <button class="dark-toggle" onclick="toggleDarkMode()">🌙</button>
+</header>
+
+<div class="container">
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('pending', this)">الواجبات المتاحة</div>
+    <div class="tab" onclick="switchTab('submitted', this)">واجباتي المسلمة</div>
+  </div>
+
+  <!-- قسم الواجبات المتاحة -->
+  <div id="pendingSection" style="display: block;">
+    <div id="pendingList">
+      <p style="text-align:center;">جاري التحميل...</p>
+    </div>
+  </div>
+
+  <!-- قسم الواجبات المسلمة -->
+  <div id="submittedSection" style="display: none;">
+    <div id="submittedList">
+      <p style="text-align:center;">جاري التحميل...</p>
+    </div>
+  </div>
+</div>
+
+<!-- Modal لتسليم الواجب -->
+<div id="submissionModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; overflow:auto;">
+  <div style="background:white; margin:50px auto; padding:30px; border-radius:12px; max-width:600px; width:90%;">
+    <button onclick="closeModal()" style="float:left; background:none; border:none; font-size:24px; cursor:pointer;">✕</button>
+    <h2 id="modalTitle" style="margin-top:0;">تسليم الواجب</h2>
+    
+    <div id="assignmentDetails" style="background:#f9f9f9; padding:15px; border-radius:8px; margin-bottom:20px;">
+      <!-- سيتم ملء هذا من JavaScript -->
+    </div>
+
+    <form id="submissionForm" style="display:none;">
+      <div class="form-group">
+        <label>نوع التكليف</label>
+        <select id="submissionType" required>
+          <option value="">اختر النوع...</option>
+          <option value="exercise">تمرين</option>
+          <option value="research">بحث</option>
+          <option value="project">مشروع</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>الملف (PDF أو صورة واضحة)</label>
+        <div class="file-input-wrapper">
+          <label class="file-input-label">
+            اختر الملف
+            <input type="file" id="submissionFile" accept=".pdf,image/*" required>
+          </label>
+          <span class="file-name" id="fileName">لم يتم اختيار ملف</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>ملاحظات (اختياري)</label>
+        <textarea id="submissionNotes" rows="3" placeholder="أضف أي ملاحظات تود إضافتها..."></textarea>
+      </div>
+
+      <div id="submissionMessage"></div>
+
+      <div style="display:flex; gap:10px;">
+        <button type="submit" class="btn btn-success" style="flex:1;">تسليم الواجب</button>
+        <button type="button" class="btn" onclick="closeModal()" style="flex:1;">إلغاء</button>
+      </div>
+    </form>
+
+    <div id="alreadySubmittedMessage" style="display:none; text-align:center;">
+      <p style="color:#155724; font-size:16px;">✓ لقد قمت بتسليم هذا الواجب مسبقاً</p>
+      <button class="btn btn-primary" onclick="closeModal()">حسناً</button>
+    </div>
+
+    <div id="lateMessage" style="display:none; text-align:center;">
+      <p style="color:#721c24; font-size:16px;">✕ انتهى موعد التسليم</p>
+      <p style="color:#721c24; font-size:14px;">لا يمكن تسليم الواجب بعد الموعد المحدد</p>
+      <button class="btn btn-primary" onclick="closeModal()">حسناً</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  let currentTab = 'pending';
+  let currentAssignmentId = null;
+  let submittedAssignments = new Set();
+
+  if (!token) window.location.href = "login.html";
+
+  // التحقق من أن المستخدم طالب
+  if (!user.roles || !user.roles.includes("student")) {
+    document.body.innerHTML = '<div style="text-align:center; padding:50px;"><h2>هذه الصفحة مخصصة للطلاب فقط</h2><button class="btn btn-primary" onclick="history.back()">العودة</button></div>';
+  }
+
+  // تفعيل الوضع الليلي
+  function toggleDarkMode() {
+    document.body.classList.toggle("dark");
+    localStorage.setItem("darkMode", document.body.classList.contains("dark") ? "enabled" : "disabled");
+  }
+
+  if (localStorage.getItem("darkMode") === "enabled") {
+    document.body.classList.add("dark");
+  }
+
+  // تبديل الأقسام
+  function switchTab(tab, el) {
+    currentTab = tab;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    
+    document.getElementById('pendingSection').style.display = tab === 'pending' ? 'block' : 'none';
+    document.getElementById('submittedSection').style.display = tab === 'submitted' ? 'block' : 'none';
+    
+    if (tab === 'pending') {
+      loadPendingAssignments();
+    } else {
+      loadSubmittedAssignments();
+    }
+  }
+
+  // تحميل الواجبات المتاحة
+  async function loadPendingAssignments() {
+    const list = document.getElementById("pendingList");
+    list.innerHTML = '<p style="text-align:center;">جاري التحميل...</p>';
+    
+    try {
+      // جلب جميع الواجبات
+      const typesResponse = await Promise.all([
+        fetch("/api/assignments/type/exercise", { headers: { Authorization: "Bearer " + token } }),
+        fetch("/api/assignments/type/research", { headers: { Authorization: "Bearer " + token } }),
+        fetch("/api/assignments/type/project", { headers: { Authorization: "Bearer " + token } })
+      ]);
+
+      const allAssignments = [];
+      for (const res of typesResponse) {
+        const data = await res.json();
+        allAssignments.push(...data);
+      }
+
+      // جلب التسليمات الحالية للطالب
+      const submissionsRes = await fetch("/api/submissions/my-submissions", {
+        headers: { Authorization: "Bearer " + token }
+      });
+      const submissions = await submissionsRes.json();
+      submittedAssignments = new Set(submissions.map(s => s.assignment._id));
+
+      if (allAssignments.length === 0) {
+        list.innerHTML = '<div class="empty-state"><p>لا توجد واجبات متاحة حالياً</p></div>';
+        return;
+      }
+
+      list.innerHTML = '';
+      allAssignments.forEach(assignment => {
+        const isSubmitted = submittedAssignments.has(assignment._id);
+        const dueDateTime = new Date(assignment.dueDate);
+        const [hours, minutes] = (assignment.dueTime || "23:59").split(":").map(Number);
+        dueDateTime.setHours(hours, minutes, 0, 0);
+        
+        const now = new Date();
+        const isLate = now > dueDateTime;
+        const timeRemaining = dueDateTime - now;
+        const daysRemaining = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+        const hoursRemaining = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutesRemaining = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+
+        const card = document.createElement("div");
+        card.className = `card assignment-card ${isSubmitted ? 'submitted' : (isLate ? 'late' : '')}`;
+        
+        const typeArabic = assignment.type === 'exercise' ? 'تمرين' : 
+                          assignment.type === 'research' ? 'بحث' : 'مشروع';
+        const badgeClass = `badge badge-${assignment.type}`;
+
+        let statusBadge = '';
+        if (isSubmitted) {
+          statusBadge = '<span class="badge badge-submitted">✓ مسلم</span>';
+        } else if (isLate) {
+          statusBadge = '<span class="badge badge-late">✕ انتهى الموعد</span>';
+        }
+
+        let timeDisplay = '';
+        if (!isLate) {
+          timeDisplay = `<div class="time-info">
+            <strong>الوقت المتبقي:</strong> ${daysRemaining} يوم، ${hoursRemaining} ساعة، ${minutesRemaining} دقيقة
+            <br><strong>آخر موعد:</strong> ${dueDateTime.toLocaleString('ar-EG')}
+          </div>`;
+        } else {
+          timeDisplay = `<div class="time-info danger">
+            <strong>✕ انتهى موعد التسليم في:</strong> ${dueDateTime.toLocaleString('ar-EG')}
+          </div>`;
+        }
+
+        card.innerHTML = `
+          <div class="assignment-header">
+            <div>
+              <h3 class="assignment-title">${assignment.title}</h3>
+              <span class="${badgeClass}">${typeArabic}</span>
+              ${statusBadge}
+            </div>
+          </div>
+          <div class="assignment-info">
+            <p><strong>المادة:</strong> ${assignment.subject?.name || 'غير معروف'}</p>
+            <p><strong>من قبل:</strong> ${assignment.addedBy?.name || 'النظام'}</p>
+            ${assignment.description ? `<p><strong>الوصف:</strong> ${assignment.description}</p>` : ''}
+          </div>
+          ${timeDisplay}
+          <div style="display:flex; gap:10px; margin-top:15px;">
+            <a href="/uploads/${assignment.file}" target="_blank" class="btn btn-primary" style="text-decoration:none;">📥 تحميل الملف</a>
+            ${!isSubmitted && !isLate ? `<button class="btn btn-success" onclick="openSubmissionModal('${assignment._id}', '${assignment.title}', '${assignment.type}')">📤 تسليم الواجب</button>` : ''}
+          </div>
+        `;
+        list.appendChild(card);
+      });
+    } catch (err) {
+      console.error(err);
+      list.innerHTML = '<p style="text-align:center; color:red;">فشل تحميل البيانات.</p>';
+    }
+  }
+
+  // تحميل الواجبات المسلمة
+  async function loadSubmittedAssignments() {
+    const list = document.getElementById("submittedList");
+    list.innerHTML = '<p style="text-align:center;">جاري التحميل...</p>';
+    
+    try {
+      const res = await fetch("/api/submissions/my-submissions", {
+        headers: { Authorization: "Bearer " + token }
+      });
+      const submissions = await res.json();
+
+      if (submissions.length === 0) {
+        list.innerHTML = '<div class="empty-state"><p>لم تسلم أي واجبات حتى الآن</p></div>';
+        return;
+      }
+
+      list.innerHTML = '';
+      submissions.forEach(submission => {
+        const submissionDate = new Date(submission.submissionDate).toLocaleString('ar-EG');
+        const statusText = submission.status === 'graded' ? 'مقيم' : 
+                          submission.status === 'reviewed' ? 'تم مراجعته' : 'قيد الانتظار';
+        
+        let statusClass = submission.status === 'graded' ? 'graded' : 
+                         submission.status === 'reviewed' ? 'reviewed' : '';
+
+        const item = document.createElement("div");
+        item.className = `card submission-item ${statusClass}`;
+        
+        const typeArabic = submission.submissionType === 'exercise' ? 'تمرين' : 
+                          submission.submissionType === 'research' ? 'بحث' : 'مشروع';
+
+        let gradeDisplay = '';
+        if (submission.grade !== undefined && submission.grade !== null) {
+          gradeDisplay = `<div class="grade-display">الدرجة: ${submission.grade}/100</div>`;
+        }
+
+        let feedbackDisplay = '';
+        if (submission.feedback) {
+          feedbackDisplay = `<div style="background:#f0f0f0; padding:10px; border-radius:6px; margin:10px 0;">
+            <strong>تعليقات المقيم:</strong>
+            <p>${submission.feedback}</p>
+          </div>`;
+        }
+
+        item.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:start;">
+            <div>
+              <h3 style="margin:0 0 10px 0;">${submission.assignment.title}</h3>
+              <span class="badge badge-${submission.submissionType}">${typeArabic}</span>
+              <span class="badge badge-${submission.status === 'graded' ? 'submitted' : 'pending'}">${statusText}</span>
+            </div>
+          </div>
+          <div style="margin:15px 0;">
+            <p><strong>تاريخ التسليم:</strong> ${submissionDate}</p>
+            <p><strong>حالة التسليم:</strong> ${submission.isLate ? '⚠️ متأخر' : '✓ في الموعد'}</p>
+          </div>
+          ${gradeDisplay}
+          ${feedbackDisplay}
+          <div style="margin-top:15px;">
+            <a href="/uploads/${submission.file}" target="_blank" class="btn btn-primary" style="text-decoration:none;">📥 تحميل التسليم</a>
+          </div>
+        `;
+        list.appendChild(item);
+      });
+    } catch (err) {
+      console.error(err);
+      list.innerHTML = '<p style="text-align:center; color:red;">فشل تحميل البيانات.</p>';
+    }
+  }
+
+  // فتح نافذة التسليم
+  function openSubmissionModal(assignmentId, title, type) {
+    currentAssignmentId = assignmentId;
+    
+    // التحقق من التسليم السابق
+    if (submittedAssignments.has(assignmentId)) {
+      document.getElementById('submissionForm').style.display = 'none';
+      document.getElementById('alreadySubmittedMessage').style.display = 'block';
+      document.getElementById('lateMessage').style.display = 'none';
+    } else {
+      document.getElementById('submissionForm').style.display = 'block';
+      document.getElementById('alreadySubmittedMessage').style.display = 'none';
+      document.getElementById('lateMessage').style.display = 'none';
+      document.getElementById('submissionType').value = type;
+    }
+
+    document.getElementById('modalTitle').textContent = `تسليم: ${title}`;
+    document.getElementById('assignmentDetails').innerHTML = `
+      <p><strong>العنوان:</strong> ${title}</p>
+      <p><strong>النوع:</strong> ${type === 'exercise' ? 'تمرين' : type === 'research' ? 'بحث' : 'مشروع'}</p>
+    `;
+    document.getElementById('submissionModal').style.display = 'block';
+  }
+
+  // إغلاق النافذة
+  function closeModal() {
+    document.getElementById('submissionModal').style.display = 'none';
+    document.getElementById('submissionForm').reset();
+    document.getElementById('fileName').textContent = 'لم يتم اختيار ملف';
+    document.getElementById('submissionMessage').innerHTML = '';
+  }
+
+  // تحديث اسم الملف
+  document.getElementById('submissionFile').addEventListener('change', function(e) {
+    const fileName = e.target.files[0]?.name || 'لم يتم اختيار ملف';
+    document.getElementById('fileName').textContent = fileName;
+  });
+
+  // تسليم الواجب
+  document.getElementById('submissionForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const formData = new FormData();
+    formData.append('assignmentId', currentAssignmentId);
+    formData.append('submissionType', document.getElementById('submissionType').value);
+    formData.append('notes', document.getElementById('submissionNotes').value);
+    formData.append('file', document.getElementById('submissionFile').files[0]);
+
+    const messageDiv = document.getElementById('submissionMessage');
+    messageDiv.innerHTML = '<p style="text-align:center;">جاري الرفع...</p>';
+
+    try {
+      const res = await fetch('/api/submissions/submit', {
+        method: 'POST',
+        headers: { Authorization: 'Bearer ' + token },
+        body: formData
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        messageDiv.innerHTML = '<div class="submission-status status-success">✓ تم تسليم الواجب بنجاح!</div>';
+        setTimeout(() => {
+          closeModal();
+          loadPendingAssignments();
+        }, 2000);
+      } else {
+        messageDiv.innerHTML = `<div class="submission-status status-error">✕ ${data.message}</div>`;
+      }
+    } catch (err) {
+      messageDiv.innerHTML = '<div class="submission-status status-error">✕ خطأ في الاتصال بالسيرفر</div>';
+    }
+  });
+
+  // التحميل الأولي
+  loadPendingAssignments();
+
+  // إغلاق النافذة عند النقر خارجها
+  window.onclick = function(event) {
+    const modal = document.getElementById('submissionModal');
+    if (event.target === modal) {
+      closeModal();
+    }
+  }
+</script>
+
+</body>
+</html>

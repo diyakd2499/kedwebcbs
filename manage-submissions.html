@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إدارة التسليمات | كلية تقنية المعلومات</title>
+  <style>
+    * { box-sizing: border-box; font-family: "Segoe UI", Tahoma, sans-serif; }
+    body { margin: 0; background: #f4f6f8; min-height: 100vh; transition: 0.3s; }
+    body.dark { background: #121212; color: #e0e0e0; }
+    
+    .main-header { 
+      background: #0d3b66; 
+      color: white; 
+      padding: 15px 25px; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+    }
+    
+    .container { padding: 25px; max-width: 1400px; margin: auto; }
+    
+    .filters {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    
+    body.dark .filters {
+      background: #1e1e1e;
+    }
+    
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    
+    .filter-group label {
+      font-weight: bold;
+      font-size: 14px;
+    }
+    
+    .filter-group select {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      min-width: 200px;
+    }
+    
+    body.dark .filter-group select {
+      background: #2c2c2c;
+      color: white;
+      border-color: #444;
+    }
+    
+    .card { 
+      background: white; 
+      padding: 20px; 
+      border-radius: 12px; 
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
+      margin-bottom: 15px; 
+    }
+    
+    body.dark .card { 
+      background: #1e1e1e; 
+    }
+    
+    .btn { 
+      padding: 10px 15px; 
+      border: none; 
+      border-radius: 6px; 
+      cursor: pointer; 
+      font-weight: 500; 
+      transition: 0.2s; 
+    }
+    
+    .btn-primary { background: #0d3b66; color: white; }
+    .btn-success { background: #5cb85c; color: white; }
+    .btn-warning { background: #f0ad4e; color: white; }
+    .btn-danger { background: #d9534f; color: white; }
+    .btn-info { background: #5bc0de; color: white; }
+    
+    .btn:hover { opacity: 0.9; }
+    
+    .table-responsive {
+      overflow-x: auto;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    
+    th {
+      background: #0d3b66;
+      color: white;
+      padding: 12px;
+      text-align: right;
+      font-weight: bold;
+    }
+    
+    body.dark th {
+      background: #1a3a52;
+    }
+    
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    body.dark td {
+      border-bottom-color: #333;
+    }
+    
+    tr:hover {
+      background: #f9f9f9;
+    }
+    
+    body.dark tr:hover {
+      background: #2c2c2c;
+    }
+    
+    .badge {
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: bold;
+      display: inline-block;
+    }
+    
+    .badge-submitted { background: #d4edda; color: #155724; }
+    .badge-pending { background: #fff3cd; color: #856404; }
+    .badge-reviewed { background: #d1ecf1; color: #0c5460; }
+    .badge-graded { background: #cce5ff; color: #004085; }
+    .badge-late { background: #f8d7da; color: #721c24; }
+    
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .stat-card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      text-align: center;
+    }
+    
+    body.dark .stat-card {
+      background: #1e1e1e;
+    }
+    
+    .stat-number {
+      font-size: 32px;
+      font-weight: bold;
+      color: #0d3b66;
+      margin: 10px 0;
+    }
+    
+    .stat-label {
+      font-size: 14px;
+      color: #666;
+    }
+    
+    body.dark .stat-label {
+      color: #aaa;
+    }
+    
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      overflow: auto;
+    }
+    
+    .modal-content {
+      background: white;
+      margin: 50px auto;
+      padding: 30px;
+      border-radius: 12px;
+      max-width: 600px;
+      width: 90%;
+    }
+    
+    body.dark .modal-content {
+      background: #1e1e1e;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-family: inherit;
+    }
+    
+    body.dark input,
+    body.dark select,
+    body.dark textarea {
+      background: #2c2c2c;
+      color: white;
+      border-color: #444;
+    }
+    
+    .submission-details {
+      background: #f9f9f9;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    
+    body.dark .submission-details {
+      background: #2c2c2c;
+    }
+    
+    .not-submitted-list {
+      background: #f9f9f9;
+      padding: 15px;
+      border-radius: 8px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    
+    body.dark .not-submitted-list {
+      background: #2c2c2c;
+    }
+    
+    .student-item {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    body.dark .student-item {
+      border-bottom-color: #444;
+    }
+    
+    .student-item:last-child {
+      border-bottom: none;
+    }
+    
+    .dark-toggle {
+      background: #fff;
+      color: #0d3b66;
+      border: 1px solid #ddd;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    
+    body.dark .dark-toggle {
+      background: #333;
+      color: #fff;
+      border-color: #555;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #999;
+    }
+    
+    .close {
+      float: left;
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<header class="main-header">
+  <div style="display:flex; align-items:center; gap:10px;">
+    <button class="btn" onclick="history.back()">⬅️</button>
+    <h2 style="margin:0;">إدارة التسليمات</h2>
+  </div>
+  <button class="dark-toggle" onclick="toggleDarkMode()">🌙</button>
+</header>
+
+<div class="container">
+  <!-- الإحصائيات -->
+  <div class="stats" id="statsContainer">
+    <!-- سيتم ملء هذا من JavaScript -->
+  </div>
+
+  <!-- الفلاتر -->
+  <div class="filters">
+    <div class="filter-group">
+      <label>اختر الواجب</label>
+      <select id="assignmentFilter" onchange="loadSubmissions()">
+        <option value="">جميع الواجبات</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>الحالة</label>
+      <select id="statusFilter" onchange="loadSubmissions()">
+        <option value="">جميع الحالات</option>
+        <option value="pending">قيد الانتظار</option>
+        <option value="reviewed">تم مراجعته</option>
+        <option value="graded">مقيم</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>النوع</label>
+      <select id="typeFilter" onchange="loadSubmissions()">
+        <option value="">جميع الأنواع</option>
+        <option value="exercise">تمرين</option>
+        <option value="research">بحث</option>
+        <option value="project">مشروع</option>
+      </select>
+    </div>
+    <button class="btn btn-primary" onclick="loadSubmissions()" style="margin-top:23px;">🔄 تحديث</button>
+  </div>
+
+  <!-- قائمة التسليمات -->
+  <div class="card">
+    <h2 style="margin-top:0;">التسليمات</h2>
+    <div class="table-responsive">
+      <table id="submissionsTable">
+        <thead>
+          <tr>
+            <th>اسم الطالب</th>
+            <th>الواجب</th>
+            <th>النوع</th>
+            <th>تاريخ التسليم</th>
+            <th>الحالة</th>
+            <th>متأخر؟</th>
+            <th>الدرجة</th>
+            <th>الإجراءات</th>
+          </tr>
+        </thead>
+        <tbody id="submissionsBody">
+          <tr><td colspan="8" style="text-align:center;">جاري التحميل...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- الطلاب الذين لم يسلموا -->
+  <div class="card" id="notSubmittedCard" style="display:none;">
+    <h2 style="margin-top:0;">الطلاب الذين لم يسلموا الواجب</h2>
+    <div id="notSubmittedList" class="not-submitted-list">
+      <!-- سيتم ملء هذا من JavaScript -->
+    </div>
+  </div>
+</div>
+
+<!-- Modal لتقييم التسليم -->
+<div id="gradeModal" class="modal">
+  <div class="modal-content">
+    <button class="close" onclick="closeGradeModal()">✕</button>
+    <h2 id="gradeModalTitle" style="margin-top:0;">تقييم التسليم</h2>
+    
+    <div id="submissionInfo" class="submission-details">
+      <!-- سيتم ملء هذا من JavaScript -->
+    </div>
+
+    <form id="gradeForm">
+      <div class="form-group">
+        <label>الدرجة (0-100)</label>
+        <input type="number" id="gradeInput" min="0" max="100" required>
+      </div>
+
+      <div class="form-group">
+        <label>التعليقات</label>
+        <textarea id="feedbackInput" rows="4" placeholder="أضف تعليقاتك على التسليم..."></textarea>
+      </div>
+
+      <div style="display:flex; gap:10px;">
+        <button type="submit" class="btn btn-success" style="flex:1;">حفظ التقييم</button>
+        <button type="button" class="btn btn-danger" onclick="closeGradeModal()" style="flex:1;">إلغاء</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal لعرض الطلاب الذين لم يسلموا -->
+<div id="notSubmittedModal" class="modal">
+  <div class="modal-content">
+    <button class="close" onclick="closeNotSubmittedModal()">✕</button>
+    <h2 style="margin-top:0;">الطلاب الذين لم يسلموا</h2>
+    
+    <div id="notSubmittedModalList" class="not-submitted-list">
+      <!-- سيتم ملء هذا من JavaScript -->
+    </div>
+  </div>
+</div>
+
+<script>
+  const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  let allAssignments = [];
+  let allSubmissions = [];
+  let currentSubmissionId = null;
+
+  if (!token) window.location.href = "login.html";
+
+  // التحقق من الصلاحيات
+  if (!user.roles || (!user.roles.includes("dean") && !user.roles.includes("doctor") && !user.roles.includes("leader"))) {
+    document.body.innerHTML = '<div style="text-align:center; padding:50px;"><h2>هذه الصفحة مخصصة للدكاترة والعمداء فقط</h2><button class="btn btn-primary" onclick="history.back()">العودة</button></div>';
+  }
+
+  // تفعيل الوضع الليلي
+  function toggleDarkMode() {
+    document.body.classList.toggle("dark");
+    localStorage.setItem("darkMode", document.body.classList.contains("dark") ? "enabled" : "disabled");
+  }
+
+  if (localStorage.getItem("darkMode") === "enabled") {
+    document.body.classList.add("dark");
+  }
+
+  // تحميل الواجبات
+  async function loadAssignments() {
+    try {
+      const typesResponse = await Promise.all([
+        fetch("/api/assignments/type/exercise", { headers: { Authorization: "Bearer " + token } }),
+        fetch("/api/assignments/type/research", { headers: { Authorization: "Bearer " + token } }),
+        fetch("/api/assignments/type/project", { headers: { Authorization: "Bearer " + token } })
+      ]);
+
+      allAssignments = [];
+      for (const res of typesResponse) {
+        const data = await res.json();
+        allAssignments.push(...data);
+      }
+
+      // ملء قائمة الواجبات
+      const select = document.getElementById('assignmentFilter');
+      select.innerHTML = '<option value="">جميع الواجبات</option>';
+      allAssignments.forEach(assignment => {
+        const opt = document.createElement('option');
+        opt.value = assignment._id;
+        opt.textContent = assignment.title;
+        select.appendChild(opt);
+      });
+
+      loadSubmissions();
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  // تحميل التسليمات
+  async function loadSubmissions() {
+    const assignmentId = document.getElementById('assignmentFilter').value;
+    const statusFilter = document.getElementById('statusFilter').value;
+    const typeFilter = document.getElementById('typeFilter').value;
+
+    const tbody = document.getElementById('submissionsBody');
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">جاري التحميل...</td></tr>';
+
+    try {
+      if (!assignmentId) {
+        // جلب جميع التسليمات لجميع الواجبات
+        allSubmissions = [];
+        for (const assignment of allAssignments) {
+          const res = await fetch(`/api/submissions/assignment/${assignment._id}/submissions`, {
+            headers: { Authorization: "Bearer " + token }
+          });
+          const data = await res.json();
+          allSubmissions.push(...data);
+        }
+      } else {
+        // جلب التسليمات لواجب محدد
+        const res = await fetch(`/api/submissions/assignment/${assignmentId}/submissions`, {
+          headers: { Authorization: "Bearer " + token }
+        });
+        allSubmissions = await res.json();
+      }
+
+      // تطبيق الفلاتر
+      let filtered = allSubmissions;
+      if (statusFilter) {
+        filtered = filtered.filter(s => s.status === statusFilter);
+      }
+      if (typeFilter) {
+        filtered = filtered.filter(s => s.submissionType === typeFilter);
+      }
+
+      // عرض الإحصائيات
+      updateStats(filtered);
+
+      // عرض التسليمات
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">لا توجد تسليمات</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = '';
+      filtered.forEach(submission => {
+        const submissionDate = new Date(submission.submissionDate).toLocaleString('ar-EG');
+        const typeArabic = submission.submissionType === 'exercise' ? 'تمرين' : 
+                          submission.submissionType === 'research' ? 'بحث' : 'مشروع';
+        const statusArabic = submission.status === 'graded' ? 'مقيم' : 
+                            submission.status === 'reviewed' ? 'تم مراجعته' : 'قيد الانتظار';
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${submission.student?.name || 'غير معروف'}</td>
+          <td>${submission.assignment?.title || 'غير معروف'}</td>
+          <td><span class="badge badge-${submission.submissionType}">${typeArabic}</span></td>
+          <td>${submissionDate}</td>
+          <td><span class="badge badge-${submission.status}">${statusArabic}</span></td>
+          <td>${submission.isLate ? '<span class="badge badge-late">✓ متأخر</span>' : '✓'}</td>
+          <td>${submission.grade !== undefined && submission.grade !== null ? submission.grade + '/100' : '-'}</td>
+          <td>
+            <button class="btn btn-info" onclick="openGradeModal('${submission._id}', '${submission.student?.name}')">📝 تقييم</button>
+            <a href="/uploads/${submission.file}" target="_blank" class="btn btn-primary" style="text-decoration:none;">📥</a>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      // عرض الطلاب الذين لم يسلموا
+      if (assignmentId) {
+        loadNotSubmitted(assignmentId);
+      }
+    } catch (err) {
+      console.error(err);
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:red;">فشل تحميل البيانات</td></tr>';
+    }
+  }
+
+  // تحديث الإحصائيات
+  function updateStats(submissions) {
+    const total = submissions.length;
+    const pending = submissions.filter(s => s.status === 'pending').length;
+    const reviewed = submissions.filter(s => s.status === 'reviewed').length;
+    const graded = submissions.filter(s => s.status === 'graded').length;
+    const late = submissions.filter(s => s.isLate).length;
+
+    document.getElementById('statsContainer').innerHTML = `
+      <div class="stat-card">
+        <div class="stat-label">إجمالي التسليمات</div>
+        <div class="stat-number">${total}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">قيد الانتظار</div>
+        <div class="stat-number">${pending}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">تم مراجعته</div>
+        <div class="stat-number">${reviewed}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">مقيم</div>
+        <div class="stat-number">${graded}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">متأخر</div>
+        <div class="stat-number" style="color:#d9534f;">${late}</div>
+      </div>
+    `;
+  }
+
+  // تحميل الطلاب الذين لم يسلموا
+  async function loadNotSubmitted(assignmentId) {
+    try {
+      const res = await fetch(`/api/submissions/assignment/${assignmentId}/not-submitted`, {
+        headers: { Authorization: "Bearer " + token }
+      });
+      const data = await res.json();
+
+      const card = document.getElementById('notSubmittedCard');
+      const list = document.getElementById('notSubmittedList');
+
+      if (data.notSubmitted.length === 0) {
+        card.style.display = 'none';
+        return;
+      }
+
+      card.style.display = 'block';
+      list.innerHTML = '';
+
+      data.notSubmitted.forEach(student => {
+        const item = document.createElement('div');
+        item.className = 'student-item';
+        item.innerHTML = `
+          <div>
+            <strong>${student.name}</strong>
+            <br>
+            <small>${student.email}</small>
+          </div>
+          <span style="color:#d9534f; font-weight:bold;">✕ لم يسلم</span>
+        `;
+        list.appendChild(item);
+      });
+
+      // إضافة ملخص
+      const summary = document.createElement('div');
+      summary.style.cssText = 'padding:10px; background:#f0f0f0; border-radius:6px; margin-top:10px; text-align:center; font-weight:bold;';
+      summary.textContent = `${data.notSubmitted.length} من ${data.totalStudents} طالب لم يسلموا`;
+      list.appendChild(summary);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  // فتح نافذة التقييم
+  function openGradeModal(submissionId, studentName) {
+    currentSubmissionId = submissionId;
+    document.getElementById('gradeModalTitle').textContent = `تقييم تسليم ${studentName}`;
+    
+    const submission = allSubmissions.find(s => s._id === submissionId);
+    if (submission) {
+      document.getElementById('submissionInfo').innerHTML = `
+        <p><strong>الطالب:</strong> ${submission.student?.name}</p>
+        <p><strong>البريد:</strong> ${submission.student?.email}</p>
+        <p><strong>الواجب:</strong> ${submission.assignment?.title}</p>
+        <p><strong>تاريخ التسليم:</strong> ${new Date(submission.submissionDate).toLocaleString('ar-EG')}</p>
+      `;
+      document.getElementById('gradeInput').value = submission.grade || '';
+      document.getElementById('feedbackInput').value = submission.feedback || '';
+    }
+
+    document.getElementById('gradeModal').style.display = 'block';
+  }
+
+  // إغلاق نافذة التقييم
+  function closeGradeModal() {
+    document.getElementById('gradeModal').style.display = 'none';
+  }
+
+  // إغلاق نافذة الطلاب الذين لم يسلموا
+  function closeNotSubmittedModal() {
+    document.getElementById('notSubmittedModal').style.display = 'none';
+  }
+
+  // حفظ التقييم
+  document.getElementById('gradeForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const grade = parseInt(document.getElementById('gradeInput').value);
+    const feedback = document.getElementById('feedbackInput').value;
+
+    try {
+      const res = await fetch(`/api/submissions/${currentSubmissionId}/grade`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ grade, feedback })
+      });
+
+      if (res.ok) {
+        alert('تم حفظ التقييم بنجاح');
+        closeGradeModal();
+        loadSubmissions();
+      } else {
+        alert('فشل حفظ التقييم');
+      }
+    } catch (err) {
+      alert('خطأ في الاتصال بالسيرفر');
+    }
+  });
+
+  // إغلاق النافذة عند النقر خارجها
+  window.onclick = function(event) {
+    const gradeModal = document.getElementById('gradeModal');
+    const notSubmittedModal = document.getElementById('notSubmittedModal');
+    
+    if (event.target === gradeModal) {
+      closeGradeModal();
+    }
+    if (event.target === notSubmittedModal) {
+      closeNotSubmittedModal();
+    }
+  }
+
+  // التحميل الأولي
+  loadAssignments();
+</script>
+
+</body>
+</html>
