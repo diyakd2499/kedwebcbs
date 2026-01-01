@@ -9,6 +9,8 @@ app.use(cors());
 app.use(express.json());
 
 // تشغيل ملفات المرفقات
+app.use('/uploads/lectures', express.static(path.join(__dirname, 'uploads/lectures')));
+// تشغيل ملفات المرفقات
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // --- إضافة تشغيل ملفات الواجهة (Frontend) ---
