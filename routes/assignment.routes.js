@@ -19,6 +19,7 @@ router.post("/", auth, role("dean", "doctor", "leader"), upload.single("file"), 
       subject: req.body.subject,
       file: req.file.filename,
       dueDate: req.body.dueDate,
+      dueTime: req.body.dueTime || "23:59",
       addedBy: req.user.id
     });
 
