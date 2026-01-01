@@ -76,6 +76,10 @@
         <input type="date" id="dueDate">
       </div>
       <div class="form-group">
+        <label>وقت التسليم (الساعة والدقيقة)</label>
+        <input type="time" id="dueTime" value="23:59">
+      </div>
+      <div class="form-group">
         <label>الملف (PDF, Word, Image...)</label>
         <input type="file" id="file" required>
       </div>
@@ -155,6 +159,7 @@
       data.forEach(item => {
         const date = new Date(item.createdAt).toLocaleDateString('ar-EG');
         const dueDate = item.dueDate ? new Date(item.dueDate).toLocaleDateString('ar-EG') : 'غير محدد';
+        const dueTime = item.dueTime || '23:59';
         
         const div = document.createElement("div");
         div.className = "card assignment-item";
@@ -163,7 +168,7 @@
             <h3>${item.title} <span class="badge badge-${currentType}">${getArabicType(currentType)}</span></h3>
             <p>المادة: <strong>${item.subject?.name || 'غير معروف'}</strong></p>
             <p>بواسطة: ${item.addedBy?.name || 'النظام'} | بتاريخ: ${date}</p>
-            <p>آخر موعد للتسليم: <span style="color:${isLate(item.dueDate) ? 'red' : 'inherit'}">${dueDate}</span></p>
+            <p>آخر موعد للتسليم: <span style="color:${isLate(item.dueDate) ? 'red' : 'inherit'}">${dueDate} الساعة ${dueTime}</span></p>
             ${item.description ? `<p style="margin-top:10px; font-style:italic;">${item.description}</p>` : ''}
           </div>
           <div style="display:flex; gap:10px; align-items:center;">
@@ -210,6 +215,7 @@
     formData.append("subject", document.getElementById("subject").value);
     formData.append("description", document.getElementById("description").value);
     formData.append("dueDate", document.getElementById("dueDate").value);
+    formData.append("dueTime", document.getElementById("dueTime").value);
     formData.append("type", currentType);
     formData.append("file", document.getElementById("file").files[0]);
 
