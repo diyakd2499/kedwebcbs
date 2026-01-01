@@ -22,6 +22,7 @@ app.use("/api/subjects", require("./routes/subject.routes.js"));
 app.use("/api/lectures", require("./routes/lecture.routes.js"));
 app.use("/api/notifications", require("./routes/notification.routes.js"));
 app.use("/api/references", require("./routes/reference.routes.js"));
+app.use("/api/assignments", require("./routes/assignment.routes.js"));
 app.use("/api/attendance", require("./routes/attendance.routes"));
 
 // تعديل المسار الرئيسي لفتح ملف index.html

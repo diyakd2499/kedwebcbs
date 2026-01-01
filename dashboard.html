@@ -1,391 +1,326 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>لوحة التحكم | كلية تقنية المعلومات</title>
-  
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
 
   <style>
-    :root {
-      /* Palette */
-      --primary: #2563eb;
-      --primary-dark: #1e40af;
-      --secondary: #64748b;
-      --accent: #06b6d4;
-      --danger: #ef4444;
-      
-      /* Backgrounds */
-      --bg-body: #f1f5f9;
-      --bg-card: #ffffff;
-      --bg-header: rgba(255, 255, 255, 0.9);
-      
-      /* Text */
-      --text-main: #0f172a;
-      --text-muted: #64748b;
-
-      /* Effects */
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
-      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
-      --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.05), 0 10px 10px -5px rgba(0,0,0,0.02);
-      --radius: 16px;
-    }
-
-    /* ===== Dark Mode ===== */
-    body.dark {
-      --primary: #60a5fa;
-      --primary-dark: #3b82f6;
-      --bg-body: #0f172a;
-      --bg-card: #1e293b;
-      --bg-header: rgba(15, 23, 42, 0.9);
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
-      --shadow-md: 0 4px 6px rgba(0,0,0,0.3);
-      --shadow-lg: 0 10px 15px rgba(0,0,0,0.3);
-    }
-
     * {
       box-sizing: border-box;
-      font-family: 'Cairo', sans-serif;
-      transition: all 0.25s ease;
+      font-family: "Segoe UI", Tahoma, sans-serif;
     }
 
     body {
       margin: 0;
-      background-color: var(--bg-body);
-      color: var(--text-main);
+      background: #f4f6f8;
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      /* خلفية بنمط نقطي خفيف */
-      background-image: radial-gradient(var(--text-muted) 0.5px, transparent 0.5px);
-      background-size: 24px 24px;
-      background-attachment: fixed;
+      transition: 0.3s;
+    }
+
+    /* ===== Dark Mode ===== */
+    body.dark {
+      background: #121212;
+      color: #e0e0e0;
+    }
+
+    body.dark .card {
+      background: #1e1e1e;
+    }
+
+    body.dark .card-title {
+      color: #90caf9;
+    }
+
+    body.dark .main-header {
+      background: #0a2540;
     }
 
     /* ===== Header ===== */
     .main-header {
-      background: var(--bg-header);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      padding: 1rem 5%;
+      background: #0d3b66;
+      color: white;
+      padding: 15px 25px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      border-bottom: 1px solid rgba(0,0,0,0.05);
+      flex-wrap: wrap;
+      gap: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
     .header-left {
       display: flex;
       align-items: center;
-      gap: 15px;
+      gap: 12px;
     }
 
     .logo {
       width: 45px;
       height: 45px;
-      object-fit: contain;
     }
 
     .header-title strong {
-      font-size: 1.1rem;
-      display: block;
-      color: var(--text-main);
+      font-size: 15px;
     }
 
     .header-title small {
-      font-size: 0.85rem;
-      color: var(--text-muted);
+      font-size: 12px;
+      opacity: 0.85;
     }
 
     .header-actions {
       display: flex;
-      gap: 10px;
-    }
-
-    .icon-btn {
-      background: transparent;
-      border: 1px solid var(--text-muted);
-      color: var(--text-main);
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 1.2rem;
-      opacity: 0.7;
-    }
-
-    .icon-btn:hover {
-      background: var(--primary);
-      border-color: var(--primary);
-      color: white;
-      opacity: 1;
-      transform: translateY(-2px);
-    }
-
-    .btn-logout {
-      background: rgba(239, 68, 68, 0.1);
-      color: var(--danger);
-      border: 1px solid transparent;
-      padding: 0 20px;
-      border-radius: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
       gap: 8px;
     }
 
-    .btn-logout:hover {
-      background: var(--danger);
-      color: white;
+    .btn {
+      background: white;
+      color: #0d3b66;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      min-height: 44px;
+      transition: 0.2s;
     }
 
-    /* ===== Main Layout ===== */
+    .btn:hover {
+      background: #f0f0f0;
+    }
+
+    /* ===== Layout ===== */
     .container {
-      padding: 40px 5%;
+      padding: 25px;
       max-width: 1200px;
-      margin: 0 auto;
-      width: 100%;
-      flex: 1;
+      margin: auto;
     }
 
-    .welcome-section {
-      margin-bottom: 40px;
+    .welcome {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #0d3b66;
+      font-weight: 500;
     }
 
-    .welcome-title {
-      font-size: 2rem;
-      font-weight: 800;
-      margin: 0 0 10px 0;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    
-    .welcome-subtitle {
-      color: var(--text-muted);
-      font-size: 1.1rem;
+    body.dark .welcome {
+      color: #90caf9;
     }
 
-    /* ===== Grid System ===== */
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 25px;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 20px;
     }
 
     /* ===== Cards ===== */
     .card {
-      background: var(--bg-card);
-      padding: 30px;
-      border-radius: var(--radius);
+      background: white;
+      padding: 22px;
+      border-radius: 12px;
       cursor: pointer;
-      box-shadow: var(--shadow-sm);
-      border: 1px solid rgba(0,0,0,0.03);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      transition: 0.3s;
       display: flex;
-      flex-direction: column;
       align-items: center;
-      text-align: center;
+      gap: 15px;
       position: relative;
-      overflow: hidden;
-      text-decoration: none;
-    }
-
-    .card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 4px;
-      background: var(--primary);
-      transform: scaleX(0);
-      transition: transform 0.3s ease;
-      transform-origin: right;
     }
 
     .card:hover {
-      transform: translateY(-8px);
-      box-shadow: var(--shadow-lg);
+      transform: translateY(-4px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.15);
     }
 
-    .card:hover::before {
-      transform: scaleX(1);
+    .icon {
+      font-size: 34px;
     }
-
-    .card-icon-wrapper {
-      width: 70px;
-      height: 70px;
-      background: linear-gradient(135deg, rgba(37, 99, 235, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 20px;
-      color: var(--primary);
-      font-size: 32px;
-    }
-
-    .card.admin .card-icon-wrapper {
-      background: rgba(239, 68, 68, 0.1);
-      color: var(--danger);
-    }
-    .card.admin::before { background: var(--danger); }
 
     .card-title {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--text-main);
-      margin: 0;
-    }
-    
-    .card-desc {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      margin-top: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #0d3b66;
     }
 
-    /* Notification Badge */
+    .admin {
+      border-left: 6px solid #d9534f;
+    }
+
+    /* ===== Notification Badge ===== */
     .badge {
       position: absolute;
-      top: 15px;
-      left: 15px;
-      background: var(--danger);
+      top: 12px;
+      right: 15px;
+      background: #d9534f;
       color: white;
-      font-size: 0.75rem;
-      min-width: 24px;
-      height: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
+      font-size: 11px;
       font-weight: bold;
-      box-shadow: 0 4px 6px rgba(239, 68, 68, 0.3);
-      border: 2px solid var(--bg-card);
+      padding: 2px 6px;
+      border-radius: 10px;
+      display: none;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
 
-    /* ===== Toasts ===== */
+    /* ===== Toast Notification ===== */
     #toast-container {
       position: fixed;
       bottom: 20px;
-      left: 20px; /* في العربية ستظهر يسار الشاشة */
-      z-index: 2000;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+      left: 20px;
+      z-index: 9999;
     }
 
     .toast {
-      background: var(--bg-card);
+      background: white;
+      color: #333;
       padding: 15px 20px;
-      border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-      border-right: 4px solid var(--primary);
-      width: 320px;
+      border-radius: 8px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      margin-top: 10px;
       display: flex;
-      align-items: flex-start;
-      gap: 15px;
+      align-items: center;
+      gap: 12px;
+      min-width: 300px;
+      max-width: 400px;
+      border-right: 5px solid #0d3b66;
+      animation: slideInLeft 0.5s;
       cursor: pointer;
-      animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    .toast.emergency { border-right-color: var(--danger); }
-    
-    .toast-icon { font-size: 1.5rem; color: var(--primary); }
-    .toast.emergency .toast-icon { color: var(--danger); }
+    .toast.emergency {
+      border-right-color: #d9534f;
+      background: #fff1f1;
+    }
 
-    .toast-content { flex: 1; }
-    .toast-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
-    .toast-message { font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; }
-    .toast-meta { font-size: 0.75rem; color: var(--text-muted); margin-top: 8px; opacity: 0.8; }
+    body.dark .toast {
+      background: #1e1e1e;
+      color: #e0e0e0;
+    }
 
-    @keyframes slideIn {
+    body.dark .toast.emergency {
+      background: #3a1f1f;
+      border-right-color: #d9534f;
+    }
+
+    @keyframes slideInLeft {
       from { transform: translateX(-100%); opacity: 0; }
       to { transform: translateX(0); opacity: 1; }
     }
 
     @keyframes fadeOut {
-      to { transform: translateX(-100%); opacity: 0; }
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+
+    .toast-content {
+      flex: 1;
+    }
+
+    .toast-title {
+      font-weight: bold;
+      font-size: 14px;
+      margin-bottom: 3px;
+    }
+
+    .toast-message {
+      font-size: 13px;
+      color: #666;
+    }
+
+    body.dark .toast-message {
+      color: #aaa;
+    }
+
+    .toast-sender {
+      font-size: 11px;
+      color: #888;
+      margin-top: 3px;
+    }
+
+    body.dark .toast-sender {
+      color: #888;
     }
 
     /* ===== Footer ===== */
     .main-footer {
-      padding: 30px;
+      margin-top: 40px;
+      padding: 15px;
       text-align: center;
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      border-top: 1px solid rgba(0,0,0,0.05);
-      background: var(--bg-card);
+      font-size: 13px;
+      color: #666;
+    }
+
+    body.dark .main-footer {
+      color: #aaa;
     }
 
     /* ===== Mobile ===== */
-    @media (max-width: 768px) {
-      .container { padding: 25px 20px; }
-      .welcome-title { font-size: 1.5rem; }
-      .header-title strong { font-size: 1rem; }
-      .header-title small { font-size: 0.7rem; }
-      .grid { grid-template-columns: 1fr; }
-      .card { flex-direction: row; padding: 20px; text-align: right; align-items: center; }
-      .card-icon-wrapper { margin-bottom: 0; margin-left: 20px; width: 50px; height: 50px; font-size: 24px; flex-shrink: 0; }
-      .card::before { height: 100%; width: 4px; top: 0; right: 0; left: auto; transform: scaleY(0); transform-origin: top; }
-      .card:hover::before { transform: scaleY(1); }
-      #toast-container { left: 50%; transform: translateX(-50%); width: 90%; bottom: 10px; }
-      .toast { width: 100%; }
+    @media (max-width: 600px) {
+      .container {
+        padding: 15px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .card {
+        padding: 18px;
+      }
+
+      .welcome {
+        font-size: 16px;
+      }
+
+      .toast {
+        min-width: 280px;
+        max-width: 90%;
+      }
     }
   </style>
 </head>
+
 <body>
 
+<!-- ===== Header ===== -->
 <header class="main-header">
   <div class="header-left">
-    <img src="assets/logo.png" class="logo" alt="Logo">
+    <img src="assets/logo.png" class="logo">
     <div class="header-title">
-      <strong>كلية تقنية المعلومات</strong>
+      <strong>كلية تقنية المعلومات</strong><br>
       <small>جامعة النصر التقنية</small>
     </div>
   </div>
 
   <div class="header-actions">
-    <button class="icon-btn" onclick="toggleDark()" title="تبديل الوضع">
-      <i class="ri-moon-line" id="themeIcon"></i>
-    </button>
-    <button class="btn-logout" onclick="logout()">
-      <i class="ri-logout-box-r-line"></i>
-      <span style="display: none;" class="d-md-inline">خروج</span> </button>
+    <button class="btn" onclick="toggleDark()">🌙</button>
+    <button class="btn" onclick="logout()">خروج</button>
   </div>
 </header>
 
+<!-- ===== Content ===== -->
 <div class="container">
 
-  <div class="welcome-section">
-    <h1 class="welcome-title" id="welcome">مرحبًا 👋</h1>
-    <div class="welcome-subtitle">لوحة التحكم الخاصة بك</div>
-  </div>
+  <div class="welcome" id="welcome"></div>
 
   <div class="grid" id="dashboard">
+    <!-- المواد -->
     <div class="card" onclick="go('subjects.html')">
-      <div class="card-icon-wrapper"><i class="ri-book-3-line"></i></div>
-      <div>
-        <div class="card-title">المواد الدراسية</div>
-        <div class="card-desc">تصفح المقررات والمحتوى</div>
-      </div>
+      <div class="icon">📚</div>
+      <div class="card-title">المواد الدراسية</div>
     </div>
 
+    <!-- التنبيهات -->
     <div class="card" onclick="go('notifications.html')">
-      <div class="card-icon-wrapper"><i class="ri-notification-3-line"></i></div>
-      <div>
-        <div class="card-title">التنبيهات</div>
-        <div class="card-desc">آخر الإعلانات والأخبار</div>
-      </div>
-      <span class="badge" id="notifBadge" style="display:none;">0</span>
+      <div class="icon">🔔</div>
+      <div class="card-title">التنبيهات</div>
+      <span class="badge" id="notifBadge">0</span>
+    </div>
+
+    <!-- الواجبات -->
+    <div class="card" onclick="go('assignments.html')">
+      <div class="icon">📝</div>
+      <div class="card-title">الواجبات والتكاليف</div>
     </div>
   </div>
 
@@ -394,8 +329,8 @@
 <div id="toast-container"></div>
 
 <footer class="main-footer">
-  <div>حقوق النشر © <span id="year"></span> جامعة النصر التقنية</div>
-  <div style="font-size: 0.8rem; margin-top: 5px; opacity: 0.7;">تطوير: ضياء الدين إبراهيم</div>
+  إنشاء: <strong>ضياء الدين إبراهيم</strong> —  
+  حقوق النشر © <span id="year"></span> جامعة النصر التقنية
 </footer>
 
 <script>
@@ -412,62 +347,53 @@
   // التحقق من صلاحية التوكن
   async function verifyToken() {
     try {
-      const response = await fetch('/api/auth/users', {
+      const response = await fetch('/api/verify-token', {
         headers: { Authorization: "Bearer " + token }
       });
-      
-      if (response.status === 401) {
+      if (!response.ok) {
         localStorage.clear();
         window.location.href = "login.html";
         return false;
       }
       return true;
     } catch (error) {
-      console.error("Token verification failed:", error);
-      return true;
+      localStorage.clear();
+      window.location.href = "login.html";
+      return false;
     }
   }
 
-  if (token) {
-    verifyToken();
-  }
-
+  // التحقق من أول دخول أو ضرورة تغيير كلمة المرور
   if (user.firstLogin === true || user.mustChangePassword === true) {
     window.location.href = "change-password.html?firstLogin=true";
   }
 
+  // إذا لم يكن هناك تحويل، نتابع تحميل الصفحة
   document.getElementById("welcome").innerText = "مرحبًا، " + user.name + " 👋";
 
   const dash = document.getElementById("dashboard");
 
-  // إضافة البطاقات بناءً على الدور (تحديث الأيقونات والنصوص هنا)
+  // إضافة خيارات إضافية بناءً على الدور
   if (user.roles && (user.roles.includes("leader") || user.roles.includes("doctor"))) {
     dash.innerHTML += `
       <div class="card" onclick="go('manage-lectures.html')">
-        <div class="card-icon-wrapper"><i class="ri-presentation-line"></i></div>
-        <div>
-          <div class="card-title">إدارة المحاضرات</div>
-          <div class="card-desc">إضافة وتعديل الجداول</div>
-        </div>
+        <div class="icon">🎓</div>
+        <div class="card-title">إدارة المحاضرات</div>
       </div>
       
+      <!-- إضافة بطاقة إدارة التنبيهات للدكتور والليدر -->
       <div class="card" onclick="go('manage-notifications.html')">
-        <div class="card-icon-wrapper"><i class="ri-megaphone-line"></i></div>
-        <div>
-          <div class="card-title">إدارة التنبيهات</div>
-          <div class="card-desc">إرسال إعلانات للطلاب</div>
-        </div>
+        <div class="icon">📋</div>
+        <div class="card-title">إدارة التنبيهات</div>
       </div>
     `;
     
+    // تسجيل الحضور متاح للدكتور والعميد فقط كما طلب المستخدم
     if (user.roles.includes("doctor") || user.roles.includes("dean")) {
       dash.innerHTML += `
         <div class="card" onclick="go('manage-attendance.html')">
-          <div class="card-icon-wrapper"><i class="ri-calendar-check-line"></i></div>
-          <div>
-            <div class="card-title">حضور الطلاب</div>
-            <div class="card-desc">تسجيل ومتابعة الغياب</div>
-          </div>
+          <div class="icon">📝</div>
+          <div class="card-title">تسجيل حضور الطلاب</div>
         </div>
       `;
     }
@@ -476,11 +402,8 @@
   if (user.roles && user.roles.includes("dean")) {
     dash.innerHTML += `
       <div class="card admin" onclick="go('admin_dashboard.html')">
-        <div class="card-icon-wrapper"><i class="ri-settings-4-line"></i></div>
-        <div>
-          <div class="card-title">لوحة الإدارة</div>
-          <div class="card-desc">الإعدادات المتقدمة</div>
-        </div>
+        <div class="icon">🛠️</div>
+        <div class="card-title">لوحة تحكم الإدارة</div>
       </div>
     `;
   }
@@ -496,11 +419,12 @@
     }
   }
 
-  /* ===== Notification Logic Preserved ===== */
+  /* ===== حل مشكلة تكرار الإشعارات الطارئة ===== */
   let notificationCheckInterval;
 
   async function checkNotifications() {
     try {
+      // تحديث عدد الإشعارات غير المقروءة
       const unreadCountRes = await fetch("/api/notifications/unread-count", {
         headers: { Authorization: "Bearer " + token }
       });
@@ -510,12 +434,13 @@
         const badge = document.getElementById("notifBadge");
         if (count > 0) {
           badge.innerText = count > 9 ? "9+" : count;
-          badge.style.display = "flex";
+          badge.style.display = "block";
         } else {
           badge.style.display = "none";
         }
       }
 
+      // التحقق من الإشعارات الطارئة الجديدة فقط (بدون تكرار)
       await checkEmergencyNotifications();
     } catch (err) {
       console.error("Error checking notifications:", err);
@@ -524,6 +449,7 @@
 
   async function checkEmergencyNotifications() {
     try {
+      // استخدام النقطة الجديدة لمنع التكرار
       const lastCheckTime = parseInt(localStorage.getItem("lastEmergencyCheck") || "0");
       const res = await fetch(`/api/notifications/emergency/new?lastCheck=${lastCheckTime}`, {
         headers: { Authorization: "Bearer " + token }
@@ -531,8 +457,11 @@
       
       if (res.ok) {
         const emergencies = await res.json();
+        
+        // الحصول على معرفات الإشعارات المعروضة مسبقاً
         const shownIds = JSON.parse(localStorage.getItem("shownEmergencyIds") || "[]");
         
+        // عرض الإشعارات الطارئة الجديدة فقط
         for (const emergency of emergencies) {
           if (!shownIds.includes(emergency._id)) {
             showToast(emergency);
@@ -540,9 +469,13 @@
           }
         }
         
+        // حفظ معرفات الإشعارات المعروضة
         localStorage.setItem("shownEmergencyIds", JSON.stringify(shownIds));
+        
+        // تحديث وقت آخر فحص
         localStorage.setItem("lastEmergencyCheck", Date.now());
         
+        // تنظيف القائمة القديمة (تحتفظ بآخر 50 إشعار فقط)
         if (shownIds.length > 50) {
           localStorage.setItem("shownEmergencyIds", JSON.stringify(shownIds.slice(-50)));
         }
@@ -555,49 +488,52 @@
   function showToast(notification) {
     const container = document.getElementById("toast-container");
     
+    // التحقق من عدم وجود toast بنفس المعرف
     if (document.querySelector(`[data-notif-id="${notification._id}"]`)) {
       return;
     }
     
+    // معلومات المرسل
     const senderName = notification.createdBy?.name || "النظام";
     const roleName = notification.createdBy?.roleName || 
-                     (notification.createdBy?.roles?.[0] === "dean" ? "العميد" :
-                      notification.createdBy?.roles?.[0] === "doctor" ? "الدكتور" :
-                      notification.createdBy?.roles?.[0] === "leader" ? "الليدر" : "النظام");
-    
-    const isEmergency = notification.type === "emergency";
+                    (notification.createdBy?.roles?.[0] === "dean" ? "العميد" :
+                     notification.createdBy?.roles?.[0] === "doctor" ? "الدكتور" :
+                     notification.createdBy?.roles?.[0] === "leader" ? "الليدر" : "النظام");
     
     const toast = document.createElement("div");
-    toast.className = `toast ${isEmergency ? "emergency" : ""}`;
+    toast.className = `toast ${notification.type === "emergency" ? "emergency" : ""}`;
     toast.setAttribute("data-notif-id", notification._id);
     
     toast.innerHTML = `
-      <div class="toast-icon">
-        <i class="${isEmergency ? 'ri-alarm-warning-fill' : 'ri-notification-3-fill'}"></i>
-      </div>
+      <div class="icon">${notification.type === "emergency" ? "🚨" : "🔔"}</div>
       <div class="toast-content">
         <div class="toast-title">${notification.title}</div>
         <div class="toast-message">${notification.message.substring(0, 60)}${notification.message.length > 60 ? '...' : ''}</div>
-        <div class="toast-meta">
+        <div class="toast-sender">
           ${roleName} ${senderName} • ${new Date(notification.createdAt).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })}
         </div>
       </div>
     `;
     
     toast.onclick = () => {
+      // تسجيل الإشعار كمقروء عند النقر عليه
       markNotificationAsRead(notification._id);
       window.location.href = "notifications.html";
     };
     
     container.appendChild(toast);
 
+    // إزالة الـ toast بعد 8 ثواني
     setTimeout(() => {
-      toast.style.animation = "fadeOut 0.5s forwards";
+      toast.style.animation = "fadeOut 0.5s";
       setTimeout(() => {
-        if (toast.parentNode) toast.remove();
+        if (toast.parentNode) {
+          toast.remove();
+        }
       }, 500);
     }, 8000);
     
+    // الحد الأقصى 3 توست في نفس الوقت
     const toasts = container.querySelectorAll('.toast');
     if (toasts.length > 3) {
       toasts[0].remove();
@@ -615,42 +551,32 @@
     }
   }
 
+  // فحص صلاحية التوكن أولاً
   verifyToken().then(isValid => {
     if (isValid) {
+      // فحص التنبيهات عند التحميل
       checkNotifications();
+      
+      // بدء الفحص الدوري كل دقيقة
       notificationCheckInterval = setInterval(checkNotifications, 60000);
     }
   });
   
+  // تنظيف الفاصل الزمني عند مغادرة الصفحة
   window.addEventListener('beforeunload', () => {
     if (notificationCheckInterval) {
       clearInterval(notificationCheckInterval);
     }
   });
 
-  /* ===== Dark Mode Logic ===== */
+  /* ===== Dark Mode ===== */
   function toggleDark() {
     document.body.classList.toggle("dark");
-    const isDark = document.body.classList.contains("dark");
-    localStorage.setItem("darkMode", isDark);
-    updateThemeIcon(isDark);
+    localStorage.setItem("darkMode", document.body.classList.contains("dark"));
   }
 
-  function updateThemeIcon(isDark) {
-    const icon = document.getElementById("themeIcon");
-    if(isDark) {
-      icon.className = "ri-sun-line";
-    } else {
-      icon.className = "ri-moon-line";
-    }
-  }
-
-  // Initialize Theme
   if (localStorage.getItem("darkMode") === "true") {
     document.body.classList.add("dark");
-    updateThemeIcon(true);
-  } else {
-    updateThemeIcon(false);
   }
 </script>
 

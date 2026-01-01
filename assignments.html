@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>الواجبات والتكاليف | كلية تقنية المعلومات</title>
+  <style>
+    * { box-sizing: border-box; font-family: "Segoe UI", Tahoma, sans-serif; }
+    body { margin: 0; background: #f4f6f8; min-height: 100vh; transition: 0.3s; }
+    body.dark { background: #121212; color: #e0e0e0; }
+    .main-header { background: #0d3b66; color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .container { padding: 25px; max-width: 1000px; margin: auto; }
+    .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #ddd; padding-bottom: 10px; }
+    .tab { padding: 10px 20px; cursor: pointer; border-radius: 8px; font-weight: bold; transition: 0.3s; }
+    .tab.active { background: #0d3b66; color: white; }
+    body.dark .tab.active { background: #90caf9; color: #0d3b66; }
+    .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 15px; }
+    body.dark .card { background: #1e1e1e; }
+    .btn { padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; transition: 0.2s; }
+    .btn-primary { background: #0d3b66; color: white; }
+    .btn-danger { background: #d9534f; color: white; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 5px; font-weight: bold; }
+    input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; }
+    body.dark input, body.dark select, body.dark textarea { background: #2c2c2c; color: white; border-color: #444; }
+    .assignment-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding: 15px 0; }
+    body.dark .assignment-item { border-bottom-color: #333; }
+    .assignment-info h3 { margin: 0 0 5px 0; font-size: 18px; }
+    .assignment-info p { margin: 0; font-size: 14px; color: #666; }
+    body.dark .assignment-info p { color: #aaa; }
+    .upload-section { background: #eef2f7; padding: 20px; border-radius: 12px; margin-bottom: 30px; display: none; }
+    body.dark .upload-section { background: #1a2634; }
+    .badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; margin-right: 10px; }
+    .badge-exercise { background: #d1ecf1; color: #0c5460; }
+    .badge-research { background: #d4edda; color: #155724; }
+    .badge-project { background: #fff3cd; color: #856404; }
+  </style>
+</head>
+<body>
+
+<header class="main-header">
+  <div style="display:flex; align-items:center; gap:10px;">
+    <button class="btn" onclick="history.back()">⬅️</button>
+    <h2 style="margin:0;">الواجبات والتكاليف</h2>
+  </div>
+  <button class="btn btn-primary" id="showUploadBtn" style="display:none;">➕ إضافة تكليف جديد</button>
+</header>
+
+<div class="container">
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('exercise', this)">التمارين (Assignments)</div>
+    <div class="tab" onclick="switchTab('research', this)">البحوث</div>
+    <div class="tab" onclick="switchTab('project', this)">المشاريع</div>
+  </div>
+
+  <!-- قسم الرفع (يظهر للصلاحيات المحددة) -->
+  <div id="uploadSection" class="upload-section">
+    <h3>إضافة تكليف جديد</h3>
+    <form id="uploadForm">
+      <div class="form-group">
+        <label>العنوان</label>
+        <input type="text" id="title" required placeholder="مثلاً: واجب الشبكات الأول">
+      </div>
+      <div class="form-group">
+        <label>المادة</label>
+        <select id="subject" required>
+          <option value="">اختر المادة...</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>الوصف (اختياري)</label>
+        <textarea id="description" rows="3"></textarea>
+      </div>
+      <div class="form-group">
+        <label>تاريخ التسليم (اختياري)</label>
+        <input type="date" id="dueDate">
+      </div>
+      <div class="form-group">
+        <label>الملف (PDF, Word, Image...)</label>
+        <input type="file" id="file" required>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <button type="submit" class="btn btn-primary">حفظ ونشر</button>
+        <button type="button" class="btn" onclick="toggleUploadForm()">إلغاء</button>
+      </div>
+    </form>
+  </div>
+
+  <div id="assignmentsList">
+    <!-- سيتم تحميل البيانات هنا -->
+    <p style="text-align:center;">جاري التحميل...</p>
+  </div>
+</div>
+
+<script>
+  const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  let currentType = 'exercise';
+
+  if (!token) window.location.href = "login.html";
+
+  // إظهار زر الإضافة للصلاحيات المطلوبة
+  const canUpload = user.roles && (user.roles.includes("dean") || user.roles.includes("doctor") || user.roles.includes("leader"));
+  if (canUpload) {
+    document.getElementById("showUploadBtn").style.display = "block";
+    loadSubjects();
+  }
+
+  document.getElementById("showUploadBtn").onclick = toggleUploadForm;
+
+  function toggleUploadForm() {
+    const section = document.getElementById("uploadSection");
+    section.style.display = section.style.display === "block" ? "none" : "block";
+  }
+
+  async function loadSubjects() {
+    try {
+      const res = await fetch("/api/subjects", {
+        headers: { Authorization: "Bearer " + token }
+      });
+      const subjects = await res.json();
+      const select = document.getElementById("subject");
+      subjects.forEach(s => {
+        const opt = document.createElement("option");
+        opt.value = s._id;
+        opt.innerText = s.name;
+        select.appendChild(opt);
+      });
+    } catch (err) { console.error(err); }
+  }
+
+  function switchTab(type, el) {
+    currentType = type;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    loadAssignments();
+  }
+
+  async function loadAssignments() {
+    const list = document.getElementById("assignmentsList");
+    list.innerHTML = '<p style="text-align:center;">جاري التحميل...</p>';
+    
+    try {
+      const res = await fetch(`/api/assignments/type/${currentType}`, {
+        headers: { Authorization: "Bearer " + token }
+      });
+      const data = await res.json();
+      
+      if (data.length === 0) {
+        list.innerHTML = '<p style="text-align:center; padding:20px;">لا توجد تكاليف مضافة حالياً في هذا القسم.</p>';
+        return;
+      }
+
+      list.innerHTML = '';
+      data.forEach(item => {
+        const date = new Date(item.createdAt).toLocaleDateString('ar-EG');
+        const dueDate = item.dueDate ? new Date(item.dueDate).toLocaleDateString('ar-EG') : 'غير محدد';
+        
+        const div = document.createElement("div");
+        div.className = "card assignment-item";
+        div.innerHTML = `
+          <div class="assignment-info">
+            <h3>${item.title} <span class="badge badge-${currentType}">${getArabicType(currentType)}</span></h3>
+            <p>المادة: <strong>${item.subject?.name || 'غير معروف'}</strong></p>
+            <p>بواسطة: ${item.addedBy?.name || 'النظام'} | بتاريخ: ${date}</p>
+            <p>آخر موعد للتسليم: <span style="color:${isLate(item.dueDate) ? 'red' : 'inherit'}">${dueDate}</span></p>
+            ${item.description ? `<p style="margin-top:10px; font-style:italic;">${item.description}</p>` : ''}
+          </div>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <a href="/uploads/${item.file}" target="_blank" class="btn btn-primary" style="text-decoration:none;">تحميل الملف</a>
+            ${(user.roles.includes('dean') || item.addedBy?._id === user._id) ? 
+              `<button class="btn btn-danger" onclick="deleteAssignment('${item._id}')">حذف</button>` : ''}
+          </div>
+        `;
+        list.appendChild(div);
+      });
+    } catch (err) {
+      list.innerHTML = '<p style="text-align:center; color:red;">فشل تحميل البيانات.</p>';
+    }
+  }
+
+  function getArabicType(type) {
+    if (type === 'exercise') return 'تمرين';
+    if (type === 'research') return 'بحث';
+    if (type === 'project') return 'مشروع';
+    return type;
+  }
+
+  function isLate(dueDate) {
+    if (!dueDate) return false;
+    return new Date(dueDate) < new Date();
+  }
+
+  async function deleteAssignment(id) {
+    if (!confirm("هل أنت متأكد من حذف هذا التكليف؟")) return;
+    try {
+      const res = await fetch(`/api/assignments/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: "Bearer " + token }
+      });
+      if (res.ok) loadAssignments();
+      else alert("فشل الحذف");
+    } catch (err) { alert("خطأ في الاتصال"); }
+  }
+
+  document.getElementById("uploadForm").onsubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("title", document.getElementById("title").value);
+    formData.append("subject", document.getElementById("subject").value);
+    formData.append("description", document.getElementById("description").value);
+    formData.append("dueDate", document.getElementById("dueDate").value);
+    formData.append("type", currentType);
+    formData.append("file", document.getElementById("file").files[0]);
+
+    try {
+      const res = await fetch("/api/assignments", {
+        method: "POST",
+        headers: { Authorization: "Bearer " + token },
+        body: formData
+      });
+      if (res.ok) {
+        alert("تمت الإضافة بنجاح");
+        document.getElementById("uploadForm").reset();
+        toggleUploadForm();
+        loadAssignments();
+      } else {
+        const err = await res.json();
+        alert("خطأ: " + err.message);
+      }
+    } catch (err) { alert("خطأ في الاتصال بالسيرفر"); }
+  };
+
+  // التحميل الأولي
+  loadAssignments();
+  
+  // تفعيل الوضع الليلي إذا كان مفعلاً في الصفحة الرئيسية
+  if (localStorage.getItem("darkMode") === "enabled") {
+    document.body.classList.add("dark");
+  }
+</script>
+
+</body>
+</html>
