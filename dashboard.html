@@ -263,6 +263,12 @@
       <div class="icon">📝</div>
       <div class="card-title">الواجبات والتكاليف</div>
     </div>
+
+    <!-- تسليم الواجبات (للطلاب) -->
+    <div class="card" id="submitAssignmentCard" onclick="go('submit-assignment.html')">
+      <div class="icon">📤</div>
+      <div class="card-title">تسليم الواجبات</div>
+    </div>
   </div>
 
 </div>
@@ -314,6 +320,12 @@
 
   const dash = document.getElementById("dashboard");
 
+  // إخفاء بطاقة تسليم الواجبات إذا لم يكن المستخدم طالباً
+  if (user.roles && !user.roles.includes("student")) {
+    const submitCard = document.getElementById("submitAssignmentCard");
+    if (submitCard) submitCard.style.display = "none";
+  }
+
   // إضافة خيارات إضافية بناءً على الدور
   if (user.roles && (user.roles.includes("leader") || user.roles.includes("doctor"))) {
     dash.innerHTML += `
@@ -328,11 +340,15 @@
       </div>
     `;
     
-    if (user.roles.includes("doctor") || user.roles.includes("dean")) {
+    if (user.roles.includes("doctor") || user.roles.includes("dean") || user.roles.includes("leader")) {
       dash.innerHTML += `
         <div class="card" onclick="go('manage-attendance.html')">
           <div class="icon">📝</div>
           <div class="card-title">تسجيل حضور الطلاب</div>
+        </div>
+        <div class="card" onclick="go('manage-submissions.html')">
+          <div class="icon">📊</div>
+          <div class="card-title">إدارة تسليمات الطلاب</div>
         </div>
       `;
     }
