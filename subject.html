@@ -267,7 +267,7 @@
         <div class="card">
           <div class="card-title">${l.title}</div>
           ${l.videoUrl ? `<a href="${l.videoUrl}" target="_blank">🎥 مشاهدة الفيديو</a><br>` : ""}
-          ${l.file ? `<a href="/uploads/lectures/${l.file}" target="_blank">📂 تحميل الملف</a>` : ""}
+          ${l.file ? `<a href="/uploads/${l.file}" target="_blank">📂 تحميل الملف</a>` : ""}
         </div>
       `;
     });
@@ -288,7 +288,7 @@
             <div class="card">
               <div class="card-title">${r.title}</div>
               ${r.link ? `<a href="${r.link}" target="_blank">🔗 فتح الرابط</a><br>` : ""}
-              ${r.file ? `<a href="/uploads/lectures/${r.file}" target="_blank">📂 تحميل الملف</a>` : ""}
+              ${r.file ? `<a href="/uploads/${r.file}" target="_blank">📂 تحميل الملف</a>` : ""}
             </div>
           `;
         });
