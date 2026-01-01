@@ -28,6 +28,11 @@ const AssignmentSchema = new mongoose.Schema(
     dueDate: {
       type: Date
     },
+    // الوقت المحدد للتسليم (الساعة والدقيقة)
+    dueTime: {
+      type: String, // صيغة "HH:mm" مثل "23:59"
+      default: "23:59"
+    },
     addedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
